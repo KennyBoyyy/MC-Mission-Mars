@@ -1,0 +1,31 @@
+<?xml version='1.0'?>
+<sdf version='1.4'>
+	<model name="collection_disk">
+		<static>true</static>
+		<link name="link">
+		  <visual name='visual'>
+		    <geometry>
+		      <box>
+			<size>1.016 1.016 0.001</size>
+		      </box>
+		    </geometry>
+	 	    <material>
+		      <script>
+			<uri>model://collection_disk/materials/scripts</uri>
+			<uri>model://collection_disk/materials/textures</uri>
+			<name>collection_disk/Diffuse</name>
+		      </script>
+		    </material>
+		  </visual>
+		</link>
+		<!-- Score Plugin -->
+		<plugin name="score_sim" filename="libgazebo_plugins_score.so">
+			<!-- required: publishing topic for the collection score -->
+			<scoreTopic>/collectionZone/score</scoreTopic>
+			<!-- optional: the size of the square collection zone used for scoring (default = 1.016 m sides) -->
+			<collectionZoneSquareSize>1.016</collectionZoneSquareSize>
+			<!-- optional: updates per second (default = 0.2, i.e. 1 update very 5 seconds) -->
+			<updateRate>0.2</updateRate>
+		</plugin>
+	</model>
+</sdf>
