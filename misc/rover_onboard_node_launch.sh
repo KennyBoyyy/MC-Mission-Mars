@@ -150,7 +150,8 @@ while true; do
     read choice;
 
     if [ "$choice" == "q" ];then
-	rosnode kill $HOSTNAME\_BEHAVIOUR
+	#rosnode kill $HOSTNAME\_BEHAVIOUR
+  rosnode kill $HOSTNAME\_CONTROLLER
 	rostopic pub -1 /$HOSTNAME\/velocity geometry_msgs/Twist '{linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}}'
 	rosnode kill $HOSTNAME\_ABRIDGE
 	rosnode kill $HOSTNAME\_NAVSAT
