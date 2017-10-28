@@ -2,6 +2,7 @@
 echo "running pkill on old rosnodes"
 pkill usb_cam_node
 pkill behaviours
+pkill controller
 pkill obstacle
 pkill apriltag_detector_node
 pkill abridge
@@ -64,6 +65,8 @@ nohup > logs/$HOSTNAME"_USBCAM_log.txt" rosrun usb_cam usb_cam_node __name:=$HOS
 
 echo "rosrun behaviours"
 nohup > logs/$HOSTNAME"_behaviours_log.txt" rosrun behaviours behaviours &
+echo "rosrun controller"
+nohup > logs/$HOSTNAME"_controller_log.txt" rosrun controller controller &
 echo "rosrun obstacle_detection"
 nohup rosrun obstacle_detection obstacle &
 echo "rosrun diagnostics"
