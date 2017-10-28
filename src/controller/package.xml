@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<package>
+  <name>controller</name>
+  <version>0.0.0</version>
+  <description>The controller package</description>
+
+  <maintainer email="dennisfedorchuk@gmail.com">Dennis Fedorchuk</maintainer>
+
+  <license>MIT</license>
+
+
+  <!-- Maybe put our website here -->
+  <!-- <url type="website">http://wiki.ros.org/controller</url> -->
+
+  <author email="jane.doe@example.com">Jane Doe</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>random_numbers</build_depend>
+  <build_depend>tf</build_depend>
+  <build_depend>apriltags_ros</build_depend>
+  <build_depend>swarmie_msgs</build_depend>
+
+  <run_depend>geometry_msgs</run_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>random_numbers</run_depend>
+  <run_depend>tf</run_depend>
+  <run_depend>apriltags_ros</run_depend>
+  <run_depend>swarmie_msgs</run_depend>
+
+
+  <export>
+
+  </export>
+</package>
