@@ -117,7 +117,7 @@ int main(int argc, char **argv) {
 void tick(const ros::TimerEvent&) {
     if (currentMode == 2 || currentMode == 3) {
         std_msgs::String msg;
-        msg.data = "Tick Auto";
+        msg.data = "Tick tick tick";
         nodeTest.publish(msg);
     } else {
         std_msgs::String msg;
