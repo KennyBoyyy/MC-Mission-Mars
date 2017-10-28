@@ -5,7 +5,7 @@
 #-------------------------READ THIS----------------------------#
 #If you have changed your rovers password you MUST edit this variable with the correct password to 
 #allow the reboot feature to work correctly!!
-roverPass="KSC-2018"
+roverPass="cmsc269"
 #--------------------------------------------------------------#
 
 OPTION=$1
@@ -114,7 +114,7 @@ Run()
 	#ssh and run script from rover --WORKS
 	gnome-terminal --tab -x bash -c "echo -n -e '\033]0;$roverIP\007';
 		ssh -t swarmie@$roverIP 'echo 'Running $roverIP';
-		cd SwarmBaseCode-ROS/misc;
+		cd Swarmathon-MC-UMD/misc;
 		./rover_onboard_node_launch.sh $hostName;
 		exit 1;
 		exit 1;

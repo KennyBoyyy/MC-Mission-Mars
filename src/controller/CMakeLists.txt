@@ -106,6 +106,7 @@ include_directories(
 add_executable(
   controller
   src/MainLoop.cpp
+  src/handlers/Handlers.cpp
 )
 
 add_dependencies(controller ${catkin_EXPORTED_TARGETS})
