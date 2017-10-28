@@ -63,8 +63,8 @@ nohup > logs/$HOSTNAME"_USBCAM_log.txt" rosrun usb_cam usb_cam_node __name:=$HOS
 # deprecated; we are replacing the usb cam with opencv cam
 # mage_raw:=/$HOSTNAME/camera/image _camera_info_url:=file://${HOME}/rover_workspace/camera_info/head_camera.yaml _image_width:=320 _image_height:=240 &
 
-echo "rosrun behaviours"
-nohup > logs/$HOSTNAME"_behaviours_log.txt" rosrun behaviours behaviours &
+#echo "rosrun behaviours"
+#nohup > logs/$HOSTNAME"_behaviours_log.txt" rosrun behaviours behaviours &
 echo "rosrun controller"
 nohup > logs/$HOSTNAME"_controller_log.txt" rosrun controller controller &
 echo "rosrun obstacle_detection"
