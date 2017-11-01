@@ -26,6 +26,9 @@
 #include <ros/ros.h>
 #include <signal.h>
 
+//include this to init the handlers
+#include "handlers/Handlers.h"
+
 using namespace std;
 
 
@@ -58,6 +61,10 @@ ros::Publisher status_publisher;
 //Subscribers
 ros::Subscriber modeSubscriber;
 ros::Subscriber joySubscriber;
+ros::Subscriber leftSonarSubscriber;
+ros::Subscriber centerSonarSubscriber;
+ros::Subscriber rightSonarSubscriber;
+
 
 //Times for ticking the stack
 ros::Timer stateMachineTimer;
@@ -101,11 +108,20 @@ int main(int argc, char **argv) {
 
     modeSubscriber = nh.subscribe((publishedName + "/mode"), 1, modeHandler);
     joySubscriber = nh.subscribe((publishedName + "/joystick"), 10, joyCmdHandler);
+    leftSonarSubscriber = nh.subscribe((publishedName + "/sonarLeft"), 10, &SonarHandler::handleLeft, SonarHandler::instance());
 
     //Timers to publish some stuff.
     stateMachineTimer = nh.createTimer(ros::Duration(behaviourLoopTimeStep), tick);
     publish_status_timer = nh.createTimer(ros::Duration(status_publish_interval), publishStatusTimerEventHandler);
     publish_heartbeat_timer = nh.createTimer(ros::Duration(heartbeat_publish_interval), publishHeartBeatTimerEventHandler);
+
+
+//    message_filters::Subscriber<sensor_msgs::Range> sonarLeftSubscriber(nh, (publishedName + "/sonarLeft"), 10);
+//    message_filters::Subscriber<sensor_msgs::Range> sonarCenterSubscriber(nh, (publishedName + "/sonarCenter"), 10);
+//    message_filters::Subscriber<sensor_msgs::Range> sonarRightSubscriber(nh, (publishedName + "/sonarRight"), 10);
+//    this code syncs the three sonars which we probably do not need to do
+//    message_filters::Synchronizer<sonarSyncPolicy> sonarSync(sonarSyncPolicy(10), sonarLeftSubscriber, sonarCenterSubscriber, sonarRightSubscriber);
+//    sonarSync.registerCallback(boost::bind(&sonarHandler, _1, _2, _3));
 
 
 
@@ -121,7 +137,7 @@ void tick(const ros::TimerEvent&) {
         nodeTest.publish(msg);
     } else {
         std_msgs::String msg;
-        msg.data = "Tick manual";
+        msg.data = SonarHandler::instance()->getLeftSonar();
         nodeTest.publish(msg);
     }
 }
@@ -166,8 +182,8 @@ void joyCmdHandler(const sensor_msgs::Joy::ConstPtr& message) {
 
 void sendDriveCommand(double left, double right)
 {
-  velocity.linear.x = left,
-      velocity.angular.z = right;
+  velocity.linear.x = left;
+  velocity.angular.z = right;
 
   // publish the drive commands
   driveControlPublish.publish(velocity);
