@@ -19,6 +19,8 @@ class SonarHandler{
 
     //values to hold sonar callbacks
     sensor_msgs::Range sonarLeft;
+    sensor_msgs::Range sonarCenter;
+    sensor_msgs::Range sonarRight;
 
     //private by default
     SonarHandler(){
@@ -34,9 +36,16 @@ class SonarHandler{
         }
         void setDisableAvoid(bool &isDisable);
         bool const &isDisabled();
-        void handleLeft(const sensor_msgs::Range::ConstPtr& sonarLeft);
 
-        double getLeftSonar();
+        //handlers
+        void handleLeft(const sensor_msgs::Range::ConstPtr& sonarLeft);
+        void handleCenter(const sensor_msgs::Range::ConstPtr& sonarCenter);
+        void handleRight(const sensor_msgs::Range::ConstPtr& sonarRight);
+
+
+        double getSonarLeft(){return sonarLeft.range;}
+        double getSonarCenter(){return sonarCenter.range;}
+        double getSonarRight(){return sonarRight.range;}
 };
 
 

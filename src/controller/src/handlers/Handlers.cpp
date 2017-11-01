@@ -18,8 +18,14 @@ void SonarHandler::handleLeft(const sensor_msgs::Range::ConstPtr& sonarLeft){
     this->sonarLeft.range = sonarLeft->range;
 }
 
-double SonarHandler::getLeftSonar(){
-    return sonarLeft.range;
+void SonarHandler::handleCenter(const sensor_msgs::Range::ConstPtr& sonarCenter){
+    this->sonarCenter.range = sonarCenter->range;
 }
 
+void SonarHandler::handleRight(const sensor_msgs::Range::ConstPtr& sonarRight){
+    this->sonarRight.range = sonarRight->range;
+}
+
+//==============================================================================//
+//==============================================================================//
 

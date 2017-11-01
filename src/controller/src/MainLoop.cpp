@@ -104,11 +104,13 @@ int main(int argc, char **argv) {
     driveControlPublish = nh.advertise<geometry_msgs::Twist>((publishedName + "/driveControl"), 10);
     heartbeatPublisher = nh.advertise<std_msgs::String>((publishedName + "/controller/heartbeat"), 1, true);
     status_publisher = nh.advertise<std_msgs::String>((publishedName + "/status"), 1, true);
-    nodeTest = nh.advertise<std_msgs::String>((publishedName + "/test"), 1, true);
+    nodeTest = nh.advertise<std_msgs::Float32>((publishedName + "/test"), 1, true);
 
     modeSubscriber = nh.subscribe((publishedName + "/mode"), 1, modeHandler);
     joySubscriber = nh.subscribe((publishedName + "/joystick"), 10, joyCmdHandler);
     leftSonarSubscriber = nh.subscribe((publishedName + "/sonarLeft"), 10, &SonarHandler::handleLeft, SonarHandler::instance());
+    centerSonarSubscriber = nh.subscribe((publishedName + "/sonarCenter"), 10, &SonarHandler::handleCenter, SonarHandler::instance());
+    rightSonarSubscriber = nh.subscribe((publishedName + "/sonarRight"), 10, &SonarHandler::handleRight, SonarHandler::instance());
 
     //Timers to publish some stuff.
     stateMachineTimer = nh.createTimer(ros::Duration(behaviourLoopTimeStep), tick);
@@ -132,12 +134,13 @@ int main(int argc, char **argv) {
 
 void tick(const ros::TimerEvent&) {
     if (currentMode == 2 || currentMode == 3) {
-        std_msgs::String msg;
-        msg.data = "Tick tick tick";
+        std_msgs::Float32 msg;
+        msg.data = SonarHandler::instance()->getSonarRight();
         nodeTest.publish(msg);
     } else {
-        std_msgs::String msg;
-        msg.data = SonarHandler::instance()->getLeftSonar();
+        std_msgs::Float32 msg;
+        msg.data = SonarHandler::instance()->getSonarCenter();
+
         nodeTest.publish(msg);
     }
 }
