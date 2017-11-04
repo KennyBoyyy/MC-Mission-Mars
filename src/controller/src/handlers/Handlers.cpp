@@ -26,6 +26,16 @@ void SonarHandler::handleRight(const sensor_msgs::Range::ConstPtr& sonarRight){
     this->sonarRight.range = sonarRight->range;
 }
 
+/*
 //==============================================================================//
+//                    Odometry handler methods                                  //
+//==============================================================================//
+//declare and init the instance null
+OdometryHandler *OdometryHandler::s_instance = 0;
+
+void OdometryHandler::
+*/
+//==============================================================================//
+//                                                                              //
 //==============================================================================//
 

@@ -40,7 +40,7 @@ string publishedName;
 
 
 
-// Mothods that handle
+// Methods that handle
 void sigintEventHandler(int signal);
 void modeHandler(const std_msgs::UInt8::ConstPtr& message);
 void joyCmdHandler(const sensor_msgs::Joy::ConstPtr& message);
@@ -64,7 +64,8 @@ ros::Subscriber joySubscriber;
 ros::Subscriber leftSonarSubscriber;
 ros::Subscriber centerSonarSubscriber;
 ros::Subscriber rightSonarSubscriber;
-
+/*ros::Subscriber odometrySubscriber;
+*/
 
 //Times for ticking the stack
 ros::Timer stateMachineTimer;
@@ -111,7 +112,8 @@ int main(int argc, char **argv) {
     leftSonarSubscriber = nh.subscribe((publishedName + "/sonarLeft"), 10, &SonarHandler::handleLeft, SonarHandler::instance());
     centerSonarSubscriber = nh.subscribe((publishedName + "/sonarCenter"), 10, &SonarHandler::handleCenter, SonarHandler::instance());
     rightSonarSubscriber = nh.subscribe((publishedName + "/sonarRight"), 10, &SonarHandler::handleRight, SonarHandler::instance());
-
+   /* odometrySubscriber = nh.subscribe((publishedName + ""))
+*/
     //Timers to publish some stuff.
     stateMachineTimer = nh.createTimer(ros::Duration(behaviourLoopTimeStep), tick);
     publish_status_timer = nh.createTimer(ros::Duration(status_publish_interval), publishStatusTimerEventHandler);
