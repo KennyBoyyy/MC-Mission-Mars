@@ -107,6 +107,7 @@ add_executable(
   controller
   src/MainLoop.cpp
   src/handlers/Handlers.cpp
+  src/behaviors/Behaviors.cpp
 )
 
 add_dependencies(controller ${catkin_EXPORTED_TARGETS})

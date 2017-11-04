@@ -26,8 +26,11 @@
 #include <ros/ros.h>
 #include <signal.h>
 
+//using stack for the stack of behaviors
+#include<stack>
 //include this to init the handlers
 #include "handlers/Handlers.h"
+#include "behaviors/Behaviors.h"
 
 using namespace std;
 
@@ -79,6 +82,9 @@ const float heartbeat_publish_interval = 2;
 //They are used a lot so they are global
 geometry_msgs::Twist velocity;
 
+//stack of behaviors that will be ticked every tick
+stack <Behavior*> behaviorStack;
+
 int main(int argc, char **argv) {
 
   
@@ -118,14 +124,6 @@ int main(int argc, char **argv) {
     publish_heartbeat_timer = nh.createTimer(ros::Duration(heartbeat_publish_interval), publishHeartBeatTimerEventHandler);
 
 
-//    message_filters::Subscriber<sensor_msgs::Range> sonarLeftSubscriber(nh, (publishedName + "/sonarLeft"), 10);
-//    message_filters::Subscriber<sensor_msgs::Range> sonarCenterSubscriber(nh, (publishedName + "/sonarCenter"), 10);
-//    message_filters::Subscriber<sensor_msgs::Range> sonarRightSubscriber(nh, (publishedName + "/sonarRight"), 10);
-//    this code syncs the three sonars which we probably do not need to do
-//    message_filters::Synchronizer<sonarSyncPolicy> sonarSync(sonarSyncPolicy(10), sonarLeftSubscriber, sonarCenterSubscriber, sonarRightSubscriber);
-//    sonarSync.registerCallback(boost::bind(&sonarHandler, _1, _2, _3));
-
-
 
     ros::spin();
 
@@ -133,11 +131,17 @@ int main(int argc, char **argv) {
 }
 
 void tick(const ros::TimerEvent&) {
-    if (currentMode == 2 || currentMode == 3) {
-        std_msgs::Float32 msg;
-        msg.data = SonarHandler::instance()->getSonarRight();
-        nodeTest.publish(msg);
-    } else {
+    if (currentMode == 2 || currentMode == 3) { //auto
+        if(!behaviorStack.empty()){
+            //tick the stack
+            behaviorStack.top()->tick();
+        } else {
+
+            //put a default behavior on the stack
+            SimpleBehavior * sb = new SimpleBehavior(nodeTest);
+            behaviorStack.push(sb);
+        }
+    } else {    //manual
         std_msgs::Float32 msg;
         msg.data = SonarHandler::instance()->getSonarCenter();
 
