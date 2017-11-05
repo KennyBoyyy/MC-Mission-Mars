@@ -2,7 +2,10 @@
 #define HANDLERS_H
 
 #include <sensor_msgs/Range.h>
-
+#include <nav_msgs/Odometry.h>
+#include <tf/transform_datatypes.h>
+#include <angles/angles.h>
+#include "../Point.h"
 
 /**
  * This executable file will contain all the handlers and their functionality
@@ -46,6 +49,26 @@ class SonarHandler{
         double getSonarLeft(){return sonarLeft.range;}
         double getSonarCenter(){return sonarCenter.range;}
         double getSonarRight(){return sonarRight.range;}
+};
+
+
+
+
+class OdometryHandler{
+    Point currentLocation;
+    static OdometryHandler* s_instance;
+
+    OdometryHandler(){}
+
+public:
+    static OdometryHandler* instance(){
+        if(!s_instance)
+            s_instance = new OdometryHandler;
+        return s_instance;
+    }
+
+    void handle(const nav_msgs::Odometry::ConstPtr& message);
+    Point getCurrentLocation(){ return currentLocation;}
 };
 
 

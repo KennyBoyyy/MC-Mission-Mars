@@ -31,6 +31,7 @@
 //include this to init the handlers
 #include "handlers/Handlers.h"
 #include "behaviors/Behaviors.h"
+#include "controllers/Controllers.h"
 
 using namespace std;
 
@@ -67,6 +68,7 @@ ros::Subscriber joySubscriber;
 ros::Subscriber leftSonarSubscriber;
 ros::Subscriber centerSonarSubscriber;
 ros::Subscriber rightSonarSubscriber;
+ros::Subscriber odometrySubscriber;
 
 
 //Times for ticking the stack
@@ -117,12 +119,15 @@ int main(int argc, char **argv) {
     leftSonarSubscriber = nh.subscribe((publishedName + "/sonarLeft"), 10, &SonarHandler::handleLeft, SonarHandler::instance());
     centerSonarSubscriber = nh.subscribe((publishedName + "/sonarCenter"), 10, &SonarHandler::handleCenter, SonarHandler::instance());
     rightSonarSubscriber = nh.subscribe((publishedName + "/sonarRight"), 10, &SonarHandler::handleRight, SonarHandler::instance());
+    odometrySubscriber = nh.subscribe((publishedName + "/odom/ekf"), 10, &OdometryHandler::handle, OdometryHandler::instance());
 
     //Timers to publish some stuff.
     stateMachineTimer = nh.createTimer(ros::Duration(behaviourLoopTimeStep), tick);
     publish_status_timer = nh.createTimer(ros::Duration(status_publish_interval), publishStatusTimerEventHandler);
     publish_heartbeat_timer = nh.createTimer(ros::Duration(heartbeat_publish_interval), publishHeartBeatTimerEventHandler);
 
+    //register controllers
+    //XDriveController::instance()->registerDrivePublisher(driveControlPublish);
 
 
     ros::spin();
@@ -132,7 +137,7 @@ int main(int argc, char **argv) {
 
 void tick(const ros::TimerEvent&) {
     if (currentMode == 2 || currentMode == 3) { //auto
-        if(!behaviorStack.empty()){
+        /*if(!behaviorStack.empty()){
             //tick the stack
             behaviorStack.top()->tick();
         } else {
@@ -140,11 +145,14 @@ void tick(const ros::TimerEvent&) {
             //put a default behavior on the stack
             SimpleBehavior * sb = new SimpleBehavior(nodeTest);
             behaviorStack.push(sb);
-        }
+        }*/
+
+        std_msgs::Float32 msg;
+        msg.data = OdometryHandler::instance()->getCurrentLocation().theta;
+        nodeTest.publish(msg);
     } else {    //manual
         std_msgs::Float32 msg;
-        msg.data = SonarHandler::instance()->getSonarCenter();
-
+        msg.data = OdometryHandler::instance()->getCurrentLocation().x;
         nodeTest.publish(msg);
     }
 }
