@@ -2,61 +2,49 @@
 #define CONTROLLERS_H
 #include "ros/ros.h"
 #include <geometry_msgs/Twist.h>
+#include <angles/angles.h>
 #include "PID.h"
+#include "../handlers/Handlers.h"
 
 
 
 
 class DriveController{
     static DriveController *s_instance; //static instance of class
+
+    float rotateOnlyAngleTolerance = 0.3;
+    float finalRotationTolerance = 0.15;
+    const float waypointTolerance = 0.15; //15 cm tolerance.
+    float searchVelocity = 0.5; // meters/second
+
     ros::Publisher drivePublisher;
     geometry_msgs::Twist velocity;
-
-    PIDConfig fastVelConfig();
-    PIDConfig fastYawConfig();
-    PIDConfig slowVelConfig();
-    PIDConfig slowYawConfig();
-    PIDConfig constVelConfig();
-    PIDConfig constYawConfig();
 
     PID fastVelPID;
     PID fastYawPID;
 
-    PID slowVelPID;
-    PID slowYawPID;
+    PIDConfig fastVelConfig();
+    PIDConfig fastYawConfig();
 
-    PID constVelPID;
-    PID constYawPID;
+    void fastPID(float errorVel, float errorYaw , float setPointVel, float setPointYaw);
 
+    float left;
+    float right;
 
-    void fastPID(float errorVel,float errorYaw, float setPointVel, float setPointYaw);
-    void slowPID(float errorVel,float errorYaw, float setPointVel, float setPointYaw);
-    void constPID(float erroVel,float constAngularError, float setPointVel, float setPointYaw);
-    void ProcessData();
-
-    void sendDriveCommand(double left, double right)
-    {
-      velocity.linear.x = left,
-          velocity.angular.z = right;
-
-      // publish the drive commands
-      drivePublisher.publish(velocity);
-    }
-
-    //private by default
     DriveController(){
         fastVelPID.SetConfiguration(fastVelConfig());
         fastYawPID.SetConfiguration(fastYawConfig());
+    }
 
-        slowVelPID.SetConfiguration(slowVelConfig());
-        slowYawPID.SetConfiguration(slowYawConfig());
+    void sendDriveCommand(double left, double right){
+        velocity.linear.x = left;
+        velocity.angular.z = right;
 
-        constVelPID.SetConfiguration(constVelConfig());
-        constYawPID.SetConfiguration(constYawConfig());
+        // publish the drive commands
+        drivePublisher.publish(velocity);
     }
 
     public:
-
         static DriveController* instance(){
             if (!s_instance)
               s_instance = new DriveController;
@@ -71,10 +59,7 @@ class DriveController{
             this->drivePublisher = drivePublisher;
         }
 
-
-        void driveToPoint(float x, float y, float theta);
-
-        void driveWithVelocity(float linear, float angular);
+        bool goToLocation(float x, float y);
 
 };
 

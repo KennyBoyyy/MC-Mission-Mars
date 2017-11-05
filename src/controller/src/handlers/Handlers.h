@@ -68,7 +68,9 @@ public:
     }
 
     void handle(const nav_msgs::Odometry::ConstPtr& message);
-    Point getCurrentLocation(){ return currentLocation;}
+    float getTheta(){return currentLocation.theta;}
+    float getX(){return currentLocation.x;}
+    float getY(){return currentLocation.y;}
 };
 
 

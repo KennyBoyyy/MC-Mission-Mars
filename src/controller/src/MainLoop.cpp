@@ -127,7 +127,7 @@ int main(int argc, char **argv) {
     publish_heartbeat_timer = nh.createTimer(ros::Duration(heartbeat_publish_interval), publishHeartBeatTimerEventHandler);
 
     //register controllers
-    //XDriveController::instance()->registerDrivePublisher(driveControlPublish);
+    DriveController::instance()->registerDrivePublisher(driveControlPublish);
 
 
     ros::spin();
@@ -147,13 +147,15 @@ void tick(const ros::TimerEvent&) {
             behaviorStack.push(sb);
         }*/
 
-        std_msgs::Float32 msg;
-        msg.data = OdometryHandler::instance()->getCurrentLocation().theta;
-        nodeTest.publish(msg);
+        //std_msgs::Float32 msg;
+        //msg.data = OdometryHandler::instance()->getCurrentLocation().theta;
+        //nodeTest.publish(msg);
+
+        DriveController::instance()->goToLocation(4.0, 4.0);
     } else {    //manual
-        std_msgs::Float32 msg;
-        msg.data = OdometryHandler::instance()->getCurrentLocation().x;
-        nodeTest.publish(msg);
+        //std_msgs::Float32 msg;
+        //nodeTest.publish(msg);
+
     }
 }
 
