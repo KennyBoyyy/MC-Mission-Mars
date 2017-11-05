@@ -5,5 +5,5 @@ SimpleBehavior::SimpleBehavior(){}
 
 bool SimpleBehavior::tick(){
     ClawController::instance()->fingerOpen();
-    ClawController::instance()->wristDown();
+    return DriveController::instance()->spinInCircle(255, 5);
 }

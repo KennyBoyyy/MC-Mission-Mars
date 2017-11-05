@@ -137,6 +137,7 @@ int main(int argc, char **argv) {
 
     //for testing
     behaviorStack.push(new SimpleBehavior());
+    behaviorStack.push(new SimpleBehavior());
 
     ros::spin();
 

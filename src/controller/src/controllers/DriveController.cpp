@@ -2,7 +2,6 @@
 
 DriveController* DriveController::s_instance = 0;
 
-
 bool DriveController::goToLocation(float x, float y){
     if(!isInitThetaCalculated){
         //calculate theta to the desired location
@@ -11,7 +10,7 @@ bool DriveController::goToLocation(float x, float y){
     }
 
     // Calculate the diffrence between current and desired heading in radians.
-    float errorYaw = angles::shortest_angular_distance(OdometryHandler::instance()->getTheta(), initTheta);
+    float errorYaw = angles::shortest_angular_distance(OdometryHandler::instance()->getTheta(), OdometryHandler::instance()->getTheta());
     float errorVel = searchVelocity - (left/255);
     // If angle > rotateOnlyAngleTolerance radians rotate but dont drive forward.
     if (fabs(angles::shortest_angular_distance(OdometryHandler::instance()->getTheta(), initTheta)) > rotateOnlyAngleTolerance) {
@@ -38,6 +37,7 @@ bool DriveController::goToLocation(float x, float y){
           // stopno change
           fastPID(0.0, 0.0, 0.0, 0.0);
           sendDriveCommand(this->left, this->right);
+          isInitThetaCalculated = false;
           if(this->left == 0 && this->right == 0){
               return true;
           }else{
@@ -66,6 +66,54 @@ void DriveController::fastPID(float errorVel, float errorYaw , float setPointVel
   this->right = right;
 }
 
+
+int DriveController::spinCounter = 0;
+bool DriveController::spinInCircle(float spinVel, int spinTimes){
+    if(!isInitLocation){
+        initLocation.x = OdometryHandler::instance()->getX();
+        initLocation.y = OdometryHandler::instance()->getY();
+        initLocation.theta = OdometryHandler::instance()->getTheta();
+        isInitLocation = true;
+    }
+
+    if(spinCounter <= spinTimes+100){  //if was spinnig less than desired
+        sendDriveCommand(left, right);
+        if(right < spinVel){
+            left -=10;
+            right += 10;
+        }
+        sendDriveCommand(left, right);
+
+        if (fabs(angles::shortest_angular_distance(OdometryHandler::instance()->getTheta(), initLocation.theta)) > 0.01)
+            spinCounter ++;
+
+        return false;
+    } else {
+        float errorYaw = angles::shortest_angular_distance(OdometryHandler::instance()->getTheta(), initLocation.theta);
+        //we were spinnign for enough time, now level out
+        if (fabs(angles::shortest_angular_distance(OdometryHandler::instance()->getTheta(), initLocation.theta)) > rotateOnlyAngleTolerance) {
+            // rotate but dont drive.
+            fastPID(0.0, errorYaw, 0.0, initLocation.theta);
+            sendDriveCommand(this->left, this->right);
+            return false;
+        } else {
+            // stopno change
+            fastPID(0.0, 0.0, 0.0, 0.0);
+            sendDriveCommand(this->left, this->right);
+            isInitThetaCalculated = false;
+            if(this->left == 0 && this->right == 0){
+                return true;
+                isInitLocation = false;
+                isInitTime = false;
+                spinCounter = 0;
+            }else{
+                return false;
+            }
+        }
+    }
+
+
+}
 
 
 

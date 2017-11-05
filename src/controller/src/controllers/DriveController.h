@@ -5,7 +5,7 @@
 #include <angles/angles.h>
 #include "PID.h"
 #include "../handlers/Handlers.h"
-
+#include "../Point.h"
 
 
 
@@ -33,6 +33,15 @@ class DriveController{
 
     bool isInitThetaCalculated = false;
     float initTheta = 0;
+
+    //for timings
+    int initTime;
+    bool isInitTime = false;
+
+    // for storing initial location
+    Point initLocation;
+    bool isInitLocation = false;
+    static int spinCounter;
 
     DriveController(){
         fastVelPID.SetConfiguration(fastVelConfig());
@@ -63,7 +72,7 @@ class DriveController{
         }
 
         bool goToLocation(float x, float y);
-
+        bool spinInCircle(float spinVel, int spinTimes);
 
 };
 
