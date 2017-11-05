@@ -31,7 +31,8 @@
 //include this to init the handlers
 #include "handlers/Handlers.h"
 #include "behaviors/Behaviors.h"
-#include "controllers/Controllers.h"
+#include "controllers/DriveController.h"
+#include "controllers/ClawController.h"
 
 using namespace std;
 
@@ -61,6 +62,8 @@ ros::Publisher nodeTest;
 ros::Publisher driveControlPublish;
 ros::Publisher heartbeatPublisher;
 ros::Publisher status_publisher;
+ros::Publisher fingerAnglePublish;
+ros::Publisher wristAnglePublish;
 
 //Subscribers
 ros::Subscriber modeSubscriber;
@@ -113,6 +116,8 @@ int main(int argc, char **argv) {
     heartbeatPublisher = nh.advertise<std_msgs::String>((publishedName + "/controller/heartbeat"), 1, true);
     status_publisher = nh.advertise<std_msgs::String>((publishedName + "/status"), 1, true);
     nodeTest = nh.advertise<std_msgs::Float32>((publishedName + "/test"), 1, true);
+    fingerAnglePublish = nh.advertise<std_msgs::Float32>((publishedName + "/fingerAngle/cmd"), 1, true);
+    wristAnglePublish = nh.advertise<std_msgs::Float32>((publishedName + "/wristAngle/cmd"), 1, true);
 
     modeSubscriber = nh.subscribe((publishedName + "/mode"), 1, modeHandler);
     joySubscriber = nh.subscribe((publishedName + "/joystick"), 10, joyCmdHandler);
@@ -128,7 +133,10 @@ int main(int argc, char **argv) {
 
     //register controllers
     DriveController::instance()->registerDrivePublisher(driveControlPublish);
+    ClawController::instance()->registerPublishers(fingerAnglePublish, wristAnglePublish);
 
+    //for testing
+    behaviorStack.push(new SimpleBehavior());
 
     ros::spin();
 
@@ -137,25 +145,21 @@ int main(int argc, char **argv) {
 
 void tick(const ros::TimerEvent&) {
     if (currentMode == 2 || currentMode == 3) { //auto
-        /*if(!behaviorStack.empty()){
+        if(!behaviorStack.empty()){
             //tick the stack
-            behaviorStack.top()->tick();
-        } else {
-
-            //put a default behavior on the stack
-            SimpleBehavior * sb = new SimpleBehavior(nodeTest);
-            behaviorStack.push(sb);
-        }*/
+            if(behaviorStack.top()->tick() == true){
+                behaviorStack.pop();
+            }
+        }
 
         //std_msgs::Float32 msg;
         //msg.data = OdometryHandler::instance()->getCurrentLocation().theta;
         //nodeTest.publish(msg);
-
-        DriveController::instance()->goToLocation(4.0, 4.0);
     } else {    //manual
         //std_msgs::Float32 msg;
         //nodeTest.publish(msg);
-
+        ClawController::instance()->fingerClose();
+        ClawController::instance()->wristUp();
     }
 }
 

@@ -2,7 +2,8 @@
 #define BEHAVIORS_H
 
 #include "ros/ros.h"
-//#include "../controllers/Controllers.h"
+#include "../controllers/DriveController.h"
+#include "../controllers/ClawController.h"
 #include "std_msgs/Float32.h"
 
 /**
@@ -23,8 +24,9 @@ class SimpleBehavior: public Behavior{
     ros::Publisher test;
 
     public:
-        SimpleBehavior(ros::Publisher&);
+        SimpleBehavior();
         bool tick();
+
 };
 
 #endif

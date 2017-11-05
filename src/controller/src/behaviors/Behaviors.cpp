@@ -1,10 +1,9 @@
 #include "Behaviors.h"
 //=============================================================================================================//
 //==============================================SimpleBehavior=================================================//
-SimpleBehavior::SimpleBehavior(ros::Publisher& test){
-    this->test = test;
-}
+SimpleBehavior::SimpleBehavior(){}
 
 bool SimpleBehavior::tick(){
-    //DriveController::instance()->sendDriveCommand(20, 20);
+    ClawController::instance()->fingerOpen();
+    ClawController::instance()->wristDown();
 }

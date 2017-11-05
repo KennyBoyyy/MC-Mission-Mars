@@ -1,5 +1,5 @@
-#ifndef DRIVECONTROLLER_H
-#define DRIVECONTROLLER_H
+#ifndef DRIVECONTROLLERddd_H
+#define DRIVECONTROLLERddd_H
 
 #include "PID.h"
 #include "Controller.h"

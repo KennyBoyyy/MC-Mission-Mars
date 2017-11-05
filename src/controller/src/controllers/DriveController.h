@@ -1,5 +1,5 @@
-#ifndef CONTROLLERS_H
-#define CONTROLLERS_H
+#ifndef DRIVECONTROLLER_H
+#define DRIVECONTROLLER_H
 #include "ros/ros.h"
 #include <geometry_msgs/Twist.h>
 #include <angles/angles.h>
@@ -12,7 +12,7 @@
 class DriveController{
     static DriveController *s_instance; //static instance of class
 
-    float rotateOnlyAngleTolerance = 0.3;
+    float rotateOnlyAngleTolerance = 0.20;
     float finalRotationTolerance = 0.15;
     const float waypointTolerance = 0.15; //15 cm tolerance.
     float searchVelocity = 0.5; // meters/second
@@ -30,6 +30,9 @@ class DriveController{
 
     float left;
     float right;
+
+    bool isInitThetaCalculated = false;
+    float initTheta = 0;
 
     DriveController(){
         fastVelPID.SetConfiguration(fastVelConfig());
@@ -60,6 +63,7 @@ class DriveController{
         }
 
         bool goToLocation(float x, float y);
+
 
 };
 
