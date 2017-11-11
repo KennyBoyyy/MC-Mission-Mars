@@ -1,11 +1,19 @@
 #ifndef HANDLERS_H
 #define HANDLERS_H
 
+//ROS messages
 #include <sensor_msgs/Range.h>
 #include <nav_msgs/Odometry.h>
+#include <apriltags_ros/AprilTagDetectionArray.h>
+
+//ROS libraries
 #include <tf/transform_datatypes.h>
 #include <angles/angles.h>
+
+#include <vector>
+
 #include "../Point.h"
+#include "../Tag.h"
 
 /**
  * This executable file will contain all the handlers and their functionality
@@ -60,20 +68,36 @@ class OdometryHandler{
 
     OdometryHandler(){}
 
-public:
-    static OdometryHandler* instance(){
-        if(!s_instance)
-            s_instance = new OdometryHandler;
-        return s_instance;
-    }
+    public:
+        static OdometryHandler* instance(){
+            if(!s_instance)
+                s_instance = new OdometryHandler;
+            return s_instance;
+        }
 
-    void handle(const nav_msgs::Odometry::ConstPtr& message);
-    float getTheta(){return currentLocation.theta;}
-    float getX(){return currentLocation.x;}
-    float getY(){return currentLocation.y;}
+        void handle(const nav_msgs::Odometry::ConstPtr& message);
+        float getTheta(){return currentLocation.theta;}
+        float getX(){return currentLocation.x;}
+        float getY(){return currentLocation.y;}
 };
 
+class TargetHandler
+{
+    static TargetHandler* s_instance;
 
+    TargetHandler(){}
+
+    public:
+        static TargetHandler* instance()
+        {
+            if(!s_instance)
+                s_instance = new TargetHandler;
+            return s_instance;
+        }
+
+        void handle(const apriltags_ros::AprilTagDetectionArray::ConstPtr& message);
+
+};
 
 
 

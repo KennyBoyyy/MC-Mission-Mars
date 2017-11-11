@@ -68,6 +68,7 @@ ros::Publisher wristAnglePublish;
 //Subscribers
 ros::Subscriber modeSubscriber;
 ros::Subscriber joySubscriber;
+//ros::Subscriber targetSubscriber; //I believe this is the Camera Sensor
 ros::Subscriber leftSonarSubscriber;
 ros::Subscriber centerSonarSubscriber;
 ros::Subscriber rightSonarSubscriber;
@@ -125,6 +126,7 @@ int main(int argc, char **argv) {
     centerSonarSubscriber = nh.subscribe((publishedName + "/sonarCenter"), 10, &SonarHandler::handleCenter, SonarHandler::instance());
     rightSonarSubscriber = nh.subscribe((publishedName + "/sonarRight"), 10, &SonarHandler::handleRight, SonarHandler::instance());
     odometrySubscriber = nh.subscribe((publishedName + "/odom/ekf"), 10, &OdometryHandler::handle, OdometryHandler::instance());
+  //  targetSubscriber = nh.subscribe((publishedName + "/targets"), 10, &TargetHandler::handle, TargetHandler::instance());
 
     //Timers to publish some stuff.
     stateMachineTimer = nh.createTimer(ros::Duration(behaviourLoopTimeStep), tick);
@@ -138,6 +140,7 @@ int main(int argc, char **argv) {
     //for testing
     behaviorStack.push(new SimpleBehavior());
     behaviorStack.push(new SimpleBehavior());
+    behaviorStack.push(new SquarePathBehavior());
 
     ros::spin();
 

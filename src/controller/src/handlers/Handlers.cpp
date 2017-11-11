@@ -33,7 +33,7 @@ void SonarHandler::handleRight(const sensor_msgs::Range::ConstPtr& sonarRight){
 //==============================================================================//
 //                          Odom handler methods                                //
 //==============================================================================//
-OdometryHandler* OdometryHandler::s_instance = 0;
+OdometryHandler *OdometryHandler::s_instance = 0;
 
 void OdometryHandler::handle(const nav_msgs::Odometry::ConstPtr &message){
     this->currentLocation.x = message->pose.pose.position.x;
@@ -47,3 +47,37 @@ void OdometryHandler::handle(const nav_msgs::Odometry::ConstPtr &message){
     currentLocation.theta = yaw;
 }
 
+
+/* Work in Progress
+//==============================================================================//
+//                          Targets handler methods                             //
+//==============================================================================//
+TargetHandler *TargetHandler::s_instance = 0;
+
+void TargetHandler::handle(const apriltags_ros::AprilTagDetectionArray::ConstPtr& message)
+{
+    if (message->detections.size() > 0) {
+        vector<Tag> tags;
+    
+        for (int i = 0; i < message->detections.size(); i++) {
+    
+          // Package up the ROS AprilTag data into our own type that does not rely on ROS.
+          Tag loc;
+          loc.setID( message->detections[i].id );
+    
+          // Pass the position of the AprilTag
+          geometry_msgs::PoseStamped tagPose = message->detections[i].pose;
+          loc.setPosition( make_tuple( tagPose.pose.position.x,
+                       tagPose.pose.position.y,
+                       tagPose.pose.position.z ) );
+    
+          // Pass the orientation of the AprilTag
+          loc.setOrientation( ::boost::math::quaternion<float>( tagPose.pose.orientation.x,
+                                    tagPose.pose.orientation.y,
+                                    tagPose.pose.orientation.z,
+                                    tagPose.pose.orientation.w ) );
+          tags.push_back(loc);
+        }
+    }
+}
+*/

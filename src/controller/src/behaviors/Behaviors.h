@@ -29,4 +29,14 @@ class SimpleBehavior: public Behavior{
 
 };
 
+class SquarePathBehavior: public Behavior
+{
+    ros::Publisher test;
+
+    public:
+        SquarePathBehavior();
+        bool tick();
+
+};
+
 #endif
