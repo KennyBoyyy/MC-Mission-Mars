@@ -93,7 +93,7 @@ stack <Behavior*> behaviorStack;
 
 int main(int argc, char **argv) {
 
-  
+
     gethostname(host, sizeof (host));
     string hostname(host);
 
@@ -214,10 +214,6 @@ void publishHeartBeatTimerEventHandler(const ros::TimerEvent&) {
   msg.data = "";
   heartbeatPublisher.publish(msg);
 }
-
-
-
-
 
 
 
