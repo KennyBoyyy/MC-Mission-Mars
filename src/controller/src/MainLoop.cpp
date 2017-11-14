@@ -26,6 +26,14 @@
 #include <ros/ros.h>
 #include <signal.h>
 
+//using stack for the stack of behaviors
+#include<stack>
+//include this to init the handlers
+#include "handlers/Handlers.h"
+#include "behaviors/Behaviors.h"
+#include "controllers/DriveController.h"
+#include "controllers/ClawController.h"
+
 using namespace std;
 
 
@@ -54,10 +62,18 @@ ros::Publisher nodeTest;
 ros::Publisher driveControlPublish;
 ros::Publisher heartbeatPublisher;
 ros::Publisher status_publisher;
+ros::Publisher fingerAnglePublish;
+ros::Publisher wristAnglePublish;
 
 //Subscribers
 ros::Subscriber modeSubscriber;
 ros::Subscriber joySubscriber;
+ros::Subscriber targetSubscriber;
+ros::Subscriber leftSonarSubscriber;
+ros::Subscriber centerSonarSubscriber;
+ros::Subscriber rightSonarSubscriber;
+ros::Subscriber odometrySubscriber;
+
 
 //Times for ticking the stack
 ros::Timer stateMachineTimer;
@@ -72,9 +88,12 @@ const float heartbeat_publish_interval = 2;
 //They are used a lot so they are global
 geometry_msgs::Twist velocity;
 
+//stack of behaviors that will be ticked every tick
+stack <Behavior*> behaviorStack;
+
 int main(int argc, char **argv) {
 
-  
+
     gethostname(host, sizeof (host));
     string hostname(host);
 
@@ -97,17 +116,29 @@ int main(int argc, char **argv) {
     driveControlPublish = nh.advertise<geometry_msgs::Twist>((publishedName + "/driveControl"), 10);
     heartbeatPublisher = nh.advertise<std_msgs::String>((publishedName + "/controller/heartbeat"), 1, true);
     status_publisher = nh.advertise<std_msgs::String>((publishedName + "/status"), 1, true);
-    nodeTest = nh.advertise<std_msgs::String>((publishedName + "/test"), 1, true);
+    nodeTest = nh.advertise<std_msgs::Int16>((publishedName + "/test"), 1, true);
+    fingerAnglePublish = nh.advertise<std_msgs::Float32>((publishedName + "/fingerAngle/cmd"), 1, true);
+    wristAnglePublish = nh.advertise<std_msgs::Float32>((publishedName + "/wristAngle/cmd"), 1, true);
 
     modeSubscriber = nh.subscribe((publishedName + "/mode"), 1, modeHandler);
     joySubscriber = nh.subscribe((publishedName + "/joystick"), 10, joyCmdHandler);
+    leftSonarSubscriber = nh.subscribe((publishedName + "/sonarLeft"), 10, &SonarHandler::handleLeft, SonarHandler::instance());
+    centerSonarSubscriber = nh.subscribe((publishedName + "/sonarCenter"), 10, &SonarHandler::handleCenter, SonarHandler::instance());
+    rightSonarSubscriber = nh.subscribe((publishedName + "/sonarRight"), 10, &SonarHandler::handleRight, SonarHandler::instance());
+    odometrySubscriber = nh.subscribe((publishedName + "/odom/filtered"), 10, &OdometryHandler::handle, OdometryHandler::instance());
+    targetSubscriber = nh.subscribe((publishedName + "/targets"), 10, &TargetHandler::handle, TargetHandler::instance());
 
     //Timers to publish some stuff.
     stateMachineTimer = nh.createTimer(ros::Duration(behaviourLoopTimeStep), tick);
     publish_status_timer = nh.createTimer(ros::Duration(status_publish_interval), publishStatusTimerEventHandler);
     publish_heartbeat_timer = nh.createTimer(ros::Duration(heartbeat_publish_interval), publishHeartBeatTimerEventHandler);
 
+    //register controllers
+    DriveController::instance()->registerDrivePublisher(driveControlPublish);
+    ClawController::instance()->registerPublishers(fingerAnglePublish, wristAnglePublish);
 
+    //for testing
+    behaviorStack.push(new SimpleBehavior());
 
     ros::spin();
 
@@ -115,13 +146,13 @@ int main(int argc, char **argv) {
 }
 
 void tick(const ros::TimerEvent&) {
-    if (currentMode == 2 || currentMode == 3) {
-        std_msgs::String msg;
-        msg.data = "Tick tick tick";
+    if (currentMode == 2 || currentMode == 3) { //auto
+        std_msgs::Int16 msg;
+        msg.data = TargetHandler::instance()->numberOfTagsSeen();
         nodeTest.publish(msg);
-    } else {
-        std_msgs::String msg;
-        msg.data = "Tick manual";
+    } else {    //manual
+        std_msgs::Int16 msg;
+        msg.data = TargetHandler::instance()->numberOfTagsSeen();
         nodeTest.publish(msg);
     }
 }
@@ -166,8 +197,8 @@ void joyCmdHandler(const sensor_msgs::Joy::ConstPtr& message) {
 
 void sendDriveCommand(double left, double right)
 {
-  velocity.linear.x = left,
-      velocity.angular.z = right;
+  velocity.linear.x = left;
+  velocity.angular.z = right;
 
   // publish the drive commands
   driveControlPublish.publish(velocity);
@@ -183,10 +214,6 @@ void publishHeartBeatTimerEventHandler(const ros::TimerEvent&) {
   msg.data = "";
   heartbeatPublisher.publish(msg);
 }
-
-
-
-
 
 
 

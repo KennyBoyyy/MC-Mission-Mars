@@ -106,6 +106,12 @@ include_directories(
 add_executable(
   controller
   src/MainLoop.cpp
+  src/handlers/Handlers.cpp
+  src/handlers/Tag.cpp
+  src/behaviors/Behaviors.cpp
+  src/controllers/DriveController.cpp
+  src/controllers/PID.cpp
+  src/controllers/ClawController.cpp
 )
 
 add_dependencies(controller ${catkin_EXPORTED_TARGETS})
