@@ -68,6 +68,7 @@ ros::Publisher wristAnglePublish;
 //Subscribers
 ros::Subscriber modeSubscriber;
 ros::Subscriber joySubscriber;
+ros::Subscriber targetSubscriber;
 ros::Subscriber leftSonarSubscriber;
 ros::Subscriber centerSonarSubscriber;
 ros::Subscriber rightSonarSubscriber;
@@ -115,7 +116,7 @@ int main(int argc, char **argv) {
     driveControlPublish = nh.advertise<geometry_msgs::Twist>((publishedName + "/driveControl"), 10);
     heartbeatPublisher = nh.advertise<std_msgs::String>((publishedName + "/controller/heartbeat"), 1, true);
     status_publisher = nh.advertise<std_msgs::String>((publishedName + "/status"), 1, true);
-    nodeTest = nh.advertise<std_msgs::Float32>((publishedName + "/test"), 1, true);
+    nodeTest = nh.advertise<std_msgs::Int16>((publishedName + "/test"), 1, true);
     fingerAnglePublish = nh.advertise<std_msgs::Float32>((publishedName + "/fingerAngle/cmd"), 1, true);
     wristAnglePublish = nh.advertise<std_msgs::Float32>((publishedName + "/wristAngle/cmd"), 1, true);
 
@@ -124,7 +125,8 @@ int main(int argc, char **argv) {
     leftSonarSubscriber = nh.subscribe((publishedName + "/sonarLeft"), 10, &SonarHandler::handleLeft, SonarHandler::instance());
     centerSonarSubscriber = nh.subscribe((publishedName + "/sonarCenter"), 10, &SonarHandler::handleCenter, SonarHandler::instance());
     rightSonarSubscriber = nh.subscribe((publishedName + "/sonarRight"), 10, &SonarHandler::handleRight, SonarHandler::instance());
-    odometrySubscriber = nh.subscribe((publishedName + "/odom/ekf"), 10, &OdometryHandler::handle, OdometryHandler::instance());
+    odometrySubscriber = nh.subscribe((publishedName + "/odom/filtered"), 10, &OdometryHandler::handle, OdometryHandler::instance());
+    targetSubscriber = nh.subscribe((publishedName + "/targets"), 10, &TargetHandler::handle, TargetHandler::instance());
 
     //Timers to publish some stuff.
     stateMachineTimer = nh.createTimer(ros::Duration(behaviourLoopTimeStep), tick);
@@ -137,7 +139,6 @@ int main(int argc, char **argv) {
 
     //for testing
     behaviorStack.push(new SimpleBehavior());
-    behaviorStack.push(new SimpleBehavior());
 
     ros::spin();
 
@@ -146,21 +147,13 @@ int main(int argc, char **argv) {
 
 void tick(const ros::TimerEvent&) {
     if (currentMode == 2 || currentMode == 3) { //auto
-        if(!behaviorStack.empty()){
-            //tick the stack
-            if(behaviorStack.top()->tick() == true){
-                behaviorStack.pop();
-            }
-        }
-
-        //std_msgs::Float32 msg;
-        //msg.data = OdometryHandler::instance()->getCurrentLocation().theta;
-        //nodeTest.publish(msg);
+        std_msgs::Int16 msg;
+        msg.data = TargetHandler::instance()->numberOfTagsSeen();
+        nodeTest.publish(msg);
     } else {    //manual
-        //std_msgs::Float32 msg;
-        //nodeTest.publish(msg);
-        ClawController::instance()->fingerClose();
-        ClawController::instance()->wristUp();
+        std_msgs::Int16 msg;
+        msg.data = TargetHandler::instance()->numberOfTagsSeen();
+        nodeTest.publish(msg);
     }
 }
 

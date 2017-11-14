@@ -1,11 +1,19 @@
 #ifndef HANDLERS_H
 #define HANDLERS_H
 
+//ROS messages
 #include <sensor_msgs/Range.h>
 #include <nav_msgs/Odometry.h>
+#include <apriltags_ros/AprilTagDetectionArray.h>
+
+//ROS libraries
 #include <tf/transform_datatypes.h>
 #include <angles/angles.h>
+
+#include <vector>
+
 #include "../Point.h"
+#include "Tag.h"
 
 /**
  * This executable file will contain all the handlers and their functionality
@@ -31,24 +39,24 @@ class SonarHandler{
         isAvoidDisabled = false;
     }
 
-    public:
-        static SonarHandler* instance(){
-            if (!s_instance)
-              s_instance = new SonarHandler;
-            return s_instance;
-        }
-        void setDisableAvoid(bool &isDisable);
-        bool const &isDisabled();
+public:
+    static SonarHandler* instance(){
+        if (!s_instance)
+          s_instance = new SonarHandler;
+        return s_instance;
+    }
+    void setDisableAvoid(bool &isDisable);
+    bool const &isDisabled();
 
-        //handlers
-        void handleLeft(const sensor_msgs::Range::ConstPtr& sonarLeft);
-        void handleCenter(const sensor_msgs::Range::ConstPtr& sonarCenter);
-        void handleRight(const sensor_msgs::Range::ConstPtr& sonarRight);
+    //handlers
+    void handleLeft(const sensor_msgs::Range::ConstPtr& sonarLeft);
+    void handleCenter(const sensor_msgs::Range::ConstPtr& sonarCenter);
+    void handleRight(const sensor_msgs::Range::ConstPtr& sonarRight);
 
 
-        double getSonarLeft(){return sonarLeft.range;}
-        double getSonarCenter(){return sonarCenter.range;}
-        double getSonarRight(){return sonarRight.range;}
+    double getSonarLeft(){return sonarLeft.range;}
+    double getSonarCenter(){return sonarCenter.range;}
+    double getSonarRight(){return sonarRight.range;}
 };
 
 
@@ -74,6 +82,23 @@ public:
 };
 
 
+class TargetHandler{
+    static TargetHandler* s_instance;
+    std::vector<Tag> tagList;
+
+    TargetHandler(){}
+
+public:
+    static TargetHandler* instance() {
+        if(!s_instance)
+            s_instance = new TargetHandler;
+        return s_instance;
+    }
+
+    void handle(const apriltags_ros::AprilTagDetectionArray::ConstPtr& message);
+    int numberOfTagsSeen(){return tagList.size();}
+
+};
 
 
 

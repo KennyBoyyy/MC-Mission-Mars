@@ -107,6 +107,7 @@ add_executable(
   controller
   src/MainLoop.cpp
   src/handlers/Handlers.cpp
+  src/handlers/Tag.cpp
   src/behaviors/Behaviors.cpp
   src/controllers/DriveController.cpp
   src/controllers/PID.cpp
