@@ -12,8 +12,8 @@
 class DriveController{
     static DriveController *s_instance; //static instance of class
 
-    float rotateOnlyAngleTolerance = 0.20;
-    float finalRotationTolerance = 0.15;
+    float rotateOnlyAngleTolerance = 0.15;
+    float finalRotationTolerance = 0.2;
     const float waypointTolerance = 0.15; //15 cm tolerance.
     float searchVelocity = 0.5; // meters/second
 
@@ -23,10 +23,22 @@ class DriveController{
     PID fastVelPID;
     PID fastYawPID;
 
+    PID slowVelPID;
+    PID slowYawPID;
+
+    PID constVelPID;
+    PID constYawPID;
+
     PIDConfig fastVelConfig();
     PIDConfig fastYawConfig();
+    PIDConfig slowVelConfig();
+    PIDConfig slowYawConfig();
+    PIDConfig constVelConfig();
+    PIDConfig constYawConfig();
 
     void fastPID(float errorVel, float errorYaw , float setPointVel, float setPointYaw);
+    void slowPID(float errorVel,float errorYaw, float setPointVel, float setPointYaw);
+    void constPID(float erroVel,float constAngularError, float setPointVel, float setPointYaw);
 
     float left;
     float right;
@@ -46,6 +58,12 @@ class DriveController{
     DriveController(){
         fastVelPID.SetConfiguration(fastVelConfig());
         fastYawPID.SetConfiguration(fastYawConfig());
+        
+        slowVelPID.SetConfiguration(slowVelConfig());
+        slowYawPID.SetConfiguration(slowYawConfig());
+
+        constVelPID.SetConfiguration(constVelConfig());
+        constYawPID.SetConfiguration(constYawConfig());
     }
 
     void sendDriveCommand(double left, double right){

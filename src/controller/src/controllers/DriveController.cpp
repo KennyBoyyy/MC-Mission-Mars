@@ -10,7 +10,7 @@ bool DriveController::goToLocation(float x, float y){
     }
 
     // Calculate the diffrence between current and desired heading in radians.
-    float errorYaw = angles::shortest_angular_distance(OdometryHandler::instance()->getTheta(), OdometryHandler::instance()->getTheta());
+    float errorYaw = angles::shortest_angular_distance(OdometryHandler::instance()->getTheta(), initTheta);
     float errorVel = searchVelocity - (left/255);
     // If angle > rotateOnlyAngleTolerance radians rotate but dont drive forward.
     if (fabs(angles::shortest_angular_distance(OdometryHandler::instance()->getTheta(), initTheta)) > rotateOnlyAngleTolerance) {
@@ -47,7 +47,6 @@ bool DriveController::goToLocation(float x, float y){
     }
 }
 
-
 void DriveController::fastPID(float errorVel, float errorYaw , float setPointVel, float setPointYaw) {
 
   float velOut = fastVelPID.PIDOut(errorVel, setPointVel);
@@ -66,6 +65,41 @@ void DriveController::fastPID(float errorVel, float errorYaw , float setPointVel
   this->right = right;
 }
 
+void DriveController::slowPID(float errorVel,float errorYaw, float setPointVel, float setPointYaw) {
+    
+      float velOut = slowVelPID.PIDOut(errorVel, setPointVel);
+      float yawOut = slowYawPID.PIDOut(errorYaw, setPointYaw);
+    
+      int left = velOut - yawOut;
+      int right = velOut + yawOut;
+    
+      int sat = 255;
+      if (left  >  sat) {left  =  sat;}
+      if (left  < -sat) {left  = -sat;}
+      if (right >  sat) {right =  sat;}
+      if (right < -sat) {right = -sat;}
+    
+      this->left = left;
+      this->right = right;
+}
+    
+void DriveController::constPID(float erroVel,float constAngularError, float setPointVel, float setPointYaw) {
+        
+      float velOut = fastVelPID.PIDOut(erroVel, setPointVel);
+      float yawOut = fastYawPID.PIDOut(constAngularError, setPointYaw);
+        
+      int left = velOut - yawOut;
+      int right = velOut + yawOut;
+        
+      int sat = 255;
+      if (left  >  sat) {left  =  sat;}
+      if (left  < -sat) {left  = -sat;}
+      if (right >  sat) {right =  sat;}
+      if (right < -sat) {right = -sat;}
+        
+      this->left = left;
+      this->right = right;
+}
 
 int DriveController::spinCounter = 0;
 bool DriveController::spinInCircle(float spinVel, int spinTimes){
@@ -164,3 +198,91 @@ PIDConfig DriveController::fastYawConfig() {
   return config;
 
 }
+
+PIDConfig DriveController::slowVelConfig() {
+    PIDConfig config;
+  
+    config.Kp = 100;
+    config.Ki = 8;
+    config.Kd = 1.1;
+    config.satUpper = 255;
+    config.satLower = -255;
+    config.antiWindup = config.satUpper/2;
+    config.errorHistLength = 4;
+    config.alwaysIntegral = true;
+    config.resetOnSetpoint = true;
+    config.feedForwardMultiplier = 320; //gives 127 pwm at 0.4 commandedspeed
+    config.integralDeadZone = 0.01;
+    config.integralErrorHistoryLength = 10000;
+    config.integralMax = config.satUpper/2;
+    config.derivativeAlpha = 0.7;
+  
+    return config;
+  
+  }
+  
+  PIDConfig DriveController::slowYawConfig() {
+    PIDConfig config;
+  
+    config.Kp = 70;
+    config.Ki = 16;
+    config.Kd = 10;
+    config.satUpper = 255;
+    config.satLower = -255;
+    config.antiWindup = config.satUpper/4;
+    config.errorHistLength = 4;
+    config.alwaysIntegral = false;
+    config.resetOnSetpoint = true;
+    config.feedForwardMultiplier = 0;
+    config.integralDeadZone = 0.01;
+    config.integralErrorHistoryLength = 10000;
+    config.integralMax = config.satUpper/6;
+    config.derivativeAlpha = 0.7;
+  
+    return config;
+  
+  }
+  
+  PIDConfig DriveController::constVelConfig() {
+    PIDConfig config;
+  
+    config.Kp = 140;
+    config.Ki = 10;
+    config.Kd = 0.8;
+    config.satUpper = 255;
+    config.satLower = -255;
+    config.antiWindup = config.satUpper/2;
+    config.errorHistLength = 4;
+    config.alwaysIntegral = true;
+    config.resetOnSetpoint = true;
+    config.feedForwardMultiplier = 320; //gives 127 pwm at 0.4 commandedspeed
+    config.integralDeadZone = 0.01;
+    config.integralErrorHistoryLength = 10000;
+    config.integralMax = config.satUpper/2;
+    config.derivativeAlpha = 0.7;
+  
+    return config;
+  
+  }
+  
+  PIDConfig DriveController::constYawConfig() {
+    PIDConfig config;
+  
+    config.Kp = 100;
+    config.Ki = 5;
+    config.Kd = 1.2;
+    config.satUpper = 255;
+    config.satLower = -255;
+    config.antiWindup = config.satUpper/4;
+    config.errorHistLength = 4;
+    config.alwaysIntegral = true;
+    config.resetOnSetpoint = true;
+    config.feedForwardMultiplier = 120;
+    config.integralDeadZone = 0.01;
+    config.integralErrorHistoryLength = 10000;
+    config.integralMax = config.satUpper/2;
+    config.derivativeAlpha = 0.6;
+  
+    return config;
+  
+  }

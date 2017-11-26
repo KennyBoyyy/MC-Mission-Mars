@@ -138,7 +138,8 @@ int main(int argc, char **argv) {
     ClawController::instance()->registerPublishers(fingerAnglePublish, wristAnglePublish);
 
     //for testing
-    behaviorStack.push(new SimpleBehavior());
+    //behaviorStack.push(new SimpleBehavior());
+    behaviorStack.push(new SquarePathBehavior());
 
     ros::spin();
 
@@ -147,6 +148,13 @@ int main(int argc, char **argv) {
 
 void tick(const ros::TimerEvent&) {
     if (currentMode == 2 || currentMode == 3) { //auto
+        if(!behaviorStack.empty()){
+          //tick the stack
+              if(behaviorStack.top()->tick() == true){
+                 behaviorStack.pop();
+               }
+        }
+      
         std_msgs::Int16 msg;
         msg.data = TargetHandler::instance()->numberOfTagsSeen();
         nodeTest.publish(msg);

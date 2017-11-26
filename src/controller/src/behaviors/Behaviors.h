@@ -39,4 +39,13 @@ class SquarePathBehavior: public Behavior
 
 };
 
+class PickUpBehavior: public Behavior
+{
+    ros::Publisher test;
+
+    public:
+        PickUpBehavior();
+        bool tick();
+};
+
 #endif
