@@ -139,7 +139,7 @@ int main(int argc, char **argv) {
 
     //for testing
     //behaviorStack.push(new SimpleBehavior());
-    behaviorStack.push(new SquarePathBehavior());
+    behaviorStack.push(new SearchBehavior());
 
     ros::spin();
 
@@ -159,9 +159,7 @@ void tick(const ros::TimerEvent&) {
         msg.data = TargetHandler::instance()->numberOfTagsSeen();
         nodeTest.publish(msg);
     } else {    //manual
-        std_msgs::Int16 msg;
-        msg.data = TargetHandler::instance()->numberOfTagsSeen();
-        nodeTest.publish(msg);
+        DriveController::instance()->stop();
     }
 }
 

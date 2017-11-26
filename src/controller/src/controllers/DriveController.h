@@ -13,8 +13,8 @@ class DriveController{
     static DriveController *s_instance; //static instance of class
 
     float rotateOnlyAngleTolerance = 0.15;
-    float finalRotationTolerance = 0.2;
-    const float waypointTolerance = 0.15; //15 cm tolerance.
+    float finalRotationTolerance = 0.15;
+    const float waypointTolerance = M_PI_2; //15 cm tolerance.
     float searchVelocity = 0.5; // meters/second
 
     ros::Publisher drivePublisher;
@@ -91,6 +91,8 @@ class DriveController{
 
         bool goToLocation(float x, float y);
         bool spinInCircle(float spinVel, int spinTimes);
+        bool goToDistance(float distance, float direction);
+        bool stop();
 
 };
 

@@ -48,4 +48,13 @@ class PickUpBehavior: public Behavior
         bool tick();
 };
 
+class SearchBehavior: public Behavior{
+    bool first = true;
+    bool second = true;
+    float theta;
+    float distance;
+    public:
+        bool tick();
+};
+
 #endif

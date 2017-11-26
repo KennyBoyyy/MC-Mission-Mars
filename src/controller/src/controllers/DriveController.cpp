@@ -20,7 +20,7 @@ bool DriveController::goToLocation(float x, float y){
         return false;
     } else {    //angle is correct. Do drive
         // goal not yet reached drive while maintaining proper heading.
-        if (fabs(angles::shortest_angular_distance(OdometryHandler::instance()->getTheta(), atan2(y - OdometryHandler::instance()->getY(), x - OdometryHandler::instance()->getX()))) < M_PI_2) {
+        if (fabs(angles::shortest_angular_distance(OdometryHandler::instance()->getTheta(), atan2(y - OdometryHandler::instance()->getY(), x - OdometryHandler::instance()->getX()))) < waypointTolerance) {
             // drive and turn simultaniously
             fastPID(errorVel, errorYaw, searchVelocity, initTheta);
             sendDriveCommand(this->left, this->right);
@@ -47,58 +47,71 @@ bool DriveController::goToLocation(float x, float y){
     }
 }
 
-void DriveController::fastPID(float errorVel, float errorYaw , float setPointVel, float setPointYaw) {
+bool DriveController::goToDistance(float distance, float direction){
+    if(!isInitLocation){
+        //initLocation.theta = direction; //set the dirrection
+        initTheta = direction;
+        initLocation.x = OdometryHandler::instance()->getX() + (distance * cos(direction));     //Find x
+        initLocation.y = OdometryHandler::instance()->getY() + (distance * sin(direction));     //Find y
+        isInitLocation = true;
+    }
 
-  float velOut = fastVelPID.PIDOut(errorVel, setPointVel);
-  float yawOut = fastYawPID.PIDOut(errorYaw, setPointYaw);
 
-  int left = velOut - yawOut;
-  int right = velOut + yawOut;
 
-  int sat = 255;
-  if (left  >  sat) {left  =  sat;}
-  if (left  < -sat) {left  = -sat;}
-  if (right >  sat) {right =  sat;}
-  if (right < -sat) {right = -sat;}
+    // Calculate the diffrence between current and desired heading in radians.
+    float errorYaw = angles::shortest_angular_distance(OdometryHandler::instance()->getTheta(), initTheta);
+    float errorVel = searchVelocity - (left/255);
+    // If angle > rotateOnlyAngleTolerance radians rotate but dont drive forward.
+    if (fabs(angles::shortest_angular_distance(OdometryHandler::instance()->getTheta(), initTheta)) > rotateOnlyAngleTolerance) {
+        // rotate but dont drive.
+        fastPID(0.0, errorYaw, 0.0, initTheta);
+        sendDriveCommand(this->left, this->right);
+        return false;
+    } else {    //angle is correct. Do drive
+        // goal not yet reached drive while maintaining proper heading.
+        if (fabs(angles::shortest_angular_distance(OdometryHandler::instance()->getTheta(), atan2(initLocation.y - OdometryHandler::instance()->getY(), initLocation.x - OdometryHandler::instance()->getX()))) < waypointTolerance) {
+            // drive and turn simultaniously
+            fastPID(errorVel, errorYaw, searchVelocity, initTheta);
+            sendDriveCommand(this->left, this->right);
+            return false;
+        }
+        // goal is reached but desired heading is still wrong turn only
+        else if (fabs(angles::shortest_angular_distance(OdometryHandler::instance()->getTheta(), initTheta)) > finalRotationTolerance) {
+            // rotate but dont drive
+            fastPID(0.0, errorYaw, 0.0, initTheta);
+            sendDriveCommand(this->left, this->right);
+            return false;
+        }
+        else {
+          // stopno change
+          fastPID(0.0, 0.0, 0.0, 0.0);
+          sendDriveCommand(this->left, this->right);
+          if(this->left == 0 && this->right == 0){
+              isInitThetaCalculated = false;
+              isInitLocation = false;
+              return true;
+          }else{
+              return false;
+          }
+        }
+    }
 
-  this->left = left;
-  this->right = right;
+    return false;
+
+
 }
 
-void DriveController::slowPID(float errorVel,float errorYaw, float setPointVel, float setPointYaw) {
-    
-      float velOut = slowVelPID.PIDOut(errorVel, setPointVel);
-      float yawOut = slowYawPID.PIDOut(errorYaw, setPointYaw);
-    
-      int left = velOut - yawOut;
-      int right = velOut + yawOut;
-    
-      int sat = 255;
-      if (left  >  sat) {left  =  sat;}
-      if (left  < -sat) {left  = -sat;}
-      if (right >  sat) {right =  sat;}
-      if (right < -sat) {right = -sat;}
-    
-      this->left = left;
-      this->right = right;
-}
-    
-void DriveController::constPID(float erroVel,float constAngularError, float setPointVel, float setPointYaw) {
-        
-      float velOut = fastVelPID.PIDOut(erroVel, setPointVel);
-      float yawOut = fastYawPID.PIDOut(constAngularError, setPointYaw);
-        
-      int left = velOut - yawOut;
-      int right = velOut + yawOut;
-        
-      int sat = 255;
-      if (left  >  sat) {left  =  sat;}
-      if (left  < -sat) {left  = -sat;}
-      if (right >  sat) {right =  sat;}
-      if (right < -sat) {right = -sat;}
-        
-      this->left = left;
-      this->right = right;
+bool DriveController::stop(){
+    fastPID(0.0, 0.0, 0.0, 0.0);
+    sendDriveCommand(this->left, this->right);
+    isInitThetaCalculated = false;
+    if(this->left == 0 && this->right == 0){
+        return true;
+        isInitLocation = false;
+        isInitTime = false;
+    }else{
+        return false;
+    }
 }
 
 int DriveController::spinCounter = 0;
@@ -151,7 +164,59 @@ bool DriveController::spinInCircle(float spinVel, int spinTimes){
 
 
 
+void DriveController::fastPID(float errorVel, float errorYaw , float setPointVel, float setPointYaw) {
 
+  float velOut = fastVelPID.PIDOut(errorVel, setPointVel);
+  float yawOut = fastYawPID.PIDOut(errorYaw, setPointYaw);
+
+  int left = velOut - yawOut;
+  int right = velOut + yawOut;
+
+  int sat = 255;
+  if (left  >  sat) {left  =  sat;}
+  if (left  < -sat) {left  = -sat;}
+  if (right >  sat) {right =  sat;}
+  if (right < -sat) {right = -sat;}
+
+  this->left = left;
+  this->right = right;
+}
+
+void DriveController::slowPID(float errorVel,float errorYaw, float setPointVel, float setPointYaw) {
+
+      float velOut = slowVelPID.PIDOut(errorVel, setPointVel);
+      float yawOut = slowYawPID.PIDOut(errorYaw, setPointYaw);
+
+      int left = velOut - yawOut;
+      int right = velOut + yawOut;
+
+      int sat = 255;
+      if (left  >  sat) {left  =  sat;}
+      if (left  < -sat) {left  = -sat;}
+      if (right >  sat) {right =  sat;}
+      if (right < -sat) {right = -sat;}
+
+      this->left = left;
+      this->right = right;
+}
+
+void DriveController::constPID(float erroVel,float constAngularError, float setPointVel, float setPointYaw) {
+
+      float velOut = fastVelPID.PIDOut(erroVel, setPointVel);
+      float yawOut = fastYawPID.PIDOut(constAngularError, setPointYaw);
+
+      int left = velOut - yawOut;
+      int right = velOut + yawOut;
+
+      int sat = 255;
+      if (left  >  sat) {left  =  sat;}
+      if (left  < -sat) {left  = -sat;}
+      if (right >  sat) {right =  sat;}
+      if (right < -sat) {right = -sat;}
+
+      this->left = left;
+      this->right = right;
+}
 
 
 
