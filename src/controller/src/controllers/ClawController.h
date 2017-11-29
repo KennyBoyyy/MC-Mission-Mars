@@ -16,24 +16,12 @@ class ClawController
     ros::Publisher fingerPublisher;
     ros::Publisher wristPublisher;
 
-    ClawController() {
-        fingerOpenAngle.data =  M_PI_2;
-        fingerCloseAngle.data = 0.0;
-        wristDownAngle.data = M_PI_2;
-        wristUpAngle.data = 0.0;
-    }
+    ClawController();
 
 public:
-    static ClawController* instance(){
-        if(!s_instance)
-            s_instance = new ClawController;
-        return s_instance;
-    }
+    static ClawController* instance();
 
-    void registerPublishers(ros::Publisher& fingerPublisher, ros::Publisher wristPublisher){
-        this->fingerPublisher = fingerPublisher;
-        this->wristPublisher = wristPublisher;
-    }
+    void registerPublishers(ros::Publisher& fingerPublisher, ros::Publisher wristPublisher);
 
     bool wristDown();
     bool wristUp();

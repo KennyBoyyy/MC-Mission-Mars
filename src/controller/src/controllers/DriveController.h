@@ -12,10 +12,10 @@
 class DriveController{
     static DriveController *s_instance; //static instance of class
 
-    float rotateOnlyAngleTolerance = 0.15;
-    float finalRotationTolerance = 0.15;
-    const float waypointTolerance = M_PI_2; //15 cm tolerance.
-    float searchVelocity = 0.5; // meters/second
+    float rotateOnlyAngleTolerance;
+    float finalRotationTolerance;
+    float waypointTolerance;
+    float searchVelocity;
 
     ros::Publisher drivePublisher;
     geometry_msgs::Twist velocity;
@@ -43,44 +43,29 @@ class DriveController{
     float left;
     float right;
 
-    bool isInitThetaCalculated = false;
-    float initTheta = 0;
+    bool isInitThetaCalculated;
+    float initTheta;
 
     //for timings
     int initTime;
-    bool isInitTime = false;
+    bool isInitTime;
 
     // for storing initial location
     Point initLocation;
-    bool isInitLocation = false;
+    bool isInitLocation;
     static int spinCounter;
 
-    DriveController(){
-        fastVelPID.SetConfiguration(fastVelConfig());
-        fastYawPID.SetConfiguration(fastYawConfig());
-        
-        slowVelPID.SetConfiguration(slowVelConfig());
-        slowYawPID.SetConfiguration(slowYawConfig());
-
-        constVelPID.SetConfiguration(constVelConfig());
-        constYawPID.SetConfiguration(constYawConfig());
-    }
+    DriveController();
 
 
     public:
-        static DriveController* instance(){
-            if (!s_instance)
-              s_instance = new DriveController;
-            return s_instance;
-        }
+        static DriveController* instance();
 
         /**
          * @brief registerDrivePublisher - to register a drive publisher. Has to only be called once
          * @param drivePublisher - publisher connected to wheels
          */
-        void registerDrivePublisher(ros::Publisher& drivePublisher){
-            this->drivePublisher = drivePublisher;
-        }
+        void registerDrivePublisher(ros::Publisher& drivePublisher);
 
         bool goToLocation(float x, float y);
         bool spinInCircle(float spinVel, int spinTimes);

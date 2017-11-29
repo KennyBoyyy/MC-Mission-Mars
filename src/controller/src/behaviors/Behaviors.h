@@ -12,7 +12,7 @@
  */
 class Behavior{
     public:
-        virtual bool tick() = 0;    // =0 makes it a pure virtual method, meaning you do not have to implement it in the scope of Behavior
+        virtual bool tick()=0;    // =0 makes it a pure virtual method, meaning you do not have to implement it in the scope of Behavior
 };
 
 
@@ -49,12 +49,48 @@ class PickUpBehavior: public Behavior
 };
 
 class SearchBehavior: public Behavior{
-    bool first = true;
-    bool second = true;
+    bool first;
+    bool second;
     float theta;
     float distance;
     public:
+        SearchBehavior();
         bool tick();
 };
 
 #endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
