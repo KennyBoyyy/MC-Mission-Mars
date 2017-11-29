@@ -106,6 +106,7 @@ include_directories(
 add_executable(
   controller
   src/MainLoop.cpp
+  src/SMACS.cpp
   src/handlers/Handlers.cpp
   src/handlers/Tag.cpp
   src/behaviors/Behaviors.cpp
