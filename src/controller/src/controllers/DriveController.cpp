@@ -1,5 +1,6 @@
 #include "DriveController.h"
 
+
 DriveController* DriveController::s_instance = 0;
 
 bool DriveController::goToLocation(float x, float y){
@@ -16,29 +17,29 @@ bool DriveController::goToLocation(float x, float y){
     if (fabs(angles::shortest_angular_distance(OdometryHandler::instance()->getTheta(), initTheta)) > rotateOnlyAngleTolerance) {
         // rotate but dont drive.
         fastPID(0.0, errorYaw, 0.0, initTheta);
-        sendDriveCommand(this->left, this->right);
+        sendDriveCommand(left, right);
         return false;
     } else {    //angle is correct. Do drive
         // goal not yet reached drive while maintaining proper heading.
         if (fabs(angles::shortest_angular_distance(OdometryHandler::instance()->getTheta(), atan2(y - OdometryHandler::instance()->getY(), x - OdometryHandler::instance()->getX()))) < waypointTolerance) {
             // drive and turn simultaniously
             fastPID(errorVel, errorYaw, searchVelocity, initTheta);
-            sendDriveCommand(this->left, this->right);
+            sendDriveCommand(left, right);
             return false;
         }
         // goal is reached but desired heading is still wrong turn only
         else if (fabs(angles::shortest_angular_distance(OdometryHandler::instance()->getTheta(), initTheta)) > finalRotationTolerance) {
             // rotate but dont drive
             fastPID(0.0, errorYaw, 0.0, initTheta);
-            sendDriveCommand(this->left, this->right);
+            sendDriveCommand(left, right);
             return false;
         }
         else {
           // stopno change
           fastPID(0.0, 0.0, 0.0, 0.0);
-          sendDriveCommand(this->left, this->right);
+          sendDriveCommand(left, right);
           isInitThetaCalculated = false;
-          if(this->left == 0 && this->right == 0){
+          if(left == 0 && right == 0){
               return true;
           }else{
               return false;
@@ -54,6 +55,7 @@ bool DriveController::goToDistance(float distance, float direction){
         initLocation.x = OdometryHandler::instance()->getX() + (distance * cos(direction));     //Find x
         initLocation.y = OdometryHandler::instance()->getY() + (distance * sin(direction));     //Find y
         isInitLocation = true;
+        rotateFinished = false;
     }
 
 
@@ -62,10 +64,11 @@ bool DriveController::goToDistance(float distance, float direction){
     float errorYaw = angles::shortest_angular_distance(OdometryHandler::instance()->getTheta(), initTheta);
     float errorVel = searchVelocity - (left/255);
     // If angle > rotateOnlyAngleTolerance radians rotate but dont drive forward.
-    if (fabs(angles::shortest_angular_distance(OdometryHandler::instance()->getTheta(), initTheta)) > rotateOnlyAngleTolerance) {
+    if (fabs(angles::shortest_angular_distance(OdometryHandler::instance()->getTheta(), initTheta)) > rotateOnlyAngleTolerance && !rotateFinished) {
         // rotate but dont drive.
         fastPID(0.0, errorYaw, 0.0, initTheta);
         sendDriveCommand(this->left, this->right);
+        rotateFinished = true;
         return false;
     } else {    //angle is correct. Do drive
         // goal not yet reached drive while maintaining proper heading.
@@ -89,6 +92,7 @@ bool DriveController::goToDistance(float distance, float direction){
           if(this->left == 0 && this->right == 0){
               isInitThetaCalculated = false;
               isInitLocation = false;
+              rotateFinished = false;
               return true;
           }else{
               return false;

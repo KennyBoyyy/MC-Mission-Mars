@@ -6,7 +6,7 @@
 #include "PID.h"
 #include "../handlers/Handlers.h"
 #include "../Point.h"
-
+#include <thread>
 
 
 class DriveController{
@@ -49,6 +49,7 @@ class DriveController{
     //for timings
     int initTime;
     bool isInitTime = false;
+    bool rotateFinished = false;
 
     // for storing initial location
     Point initLocation;
