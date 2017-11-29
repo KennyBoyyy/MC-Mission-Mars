@@ -1,8 +1,9 @@
 #include "Behaviors.h"
 
+
 //=============================================================================================================//
 //==============================================SimpleBehavior=================================================//
-SimpleBehavior::SimpleBehavior(){}
+SimpleBehavior::SimpleBehavior() : Behavior(TestBehaviorType){}
 
 bool SimpleBehavior::tick(){
     ClawController::instance()->wristDown();
@@ -13,7 +14,7 @@ bool SimpleBehavior::tick(){
 //=============================================================================================================//
 //============================================SquarePathBehavior===============================================//
 
-SquarePathBehavior::SquarePathBehavior(){}
+SquarePathBehavior::SquarePathBehavior() : Behavior(TestBehaviorType){}
 
 bool SquarePathBehavior::tick()
 {
@@ -22,7 +23,7 @@ bool SquarePathBehavior::tick()
 
 //=============================================================================================================//
 //============================================SearchBehavior===================================================//
-SearchBehavior::SearchBehavior(){
+SearchBehavior::SearchBehavior() : Behavior(TestBehaviorType){
     first = true;
     second = true;
 }

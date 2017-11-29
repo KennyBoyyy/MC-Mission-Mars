@@ -9,8 +9,16 @@ SMACS* SMACS::instance(){
         s_instance = new SMACS;
     return s_instance;
 }
-void SMACS::push(Behavior* b){behaviorStack.push(b);}
-void SMACS::pop(){behaviorStack.pop();}
+void SMACS::push(Behavior* b){
+    DriveController::instance()->stop();
+    behaviorStack.push(b);
+}
+
+void SMACS::pop(){
+    DriveController::instance()->stop();
+    behaviorStack.pop();
+}
+
 bool SMACS::isEmpty(){return behaviorStack.empty();}
 
 bool SMACS::tick(){

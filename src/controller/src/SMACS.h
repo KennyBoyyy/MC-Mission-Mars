@@ -19,6 +19,7 @@ public:
     void pop();
     bool isEmpty();
     bool tick();
+    Behavior* top()const {return behaviorStack.top();}
 
 
 };
