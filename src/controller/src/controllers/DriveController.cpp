@@ -114,6 +114,14 @@ bool DriveController::stop(){
     }
 }
 
+void DriveController::sendDriveCommand(double left, double right){
+    velocity.linear.x = left;
+    velocity.angular.z = right;
+
+    // publish the drive commands
+    drivePublisher.publish(velocity);
+}
+
 int DriveController::spinCounter = 0;
 bool DriveController::spinInCircle(float spinVel, int spinTimes){
     if(!isInitLocation){
@@ -285,8 +293,8 @@ PIDConfig DriveController::slowVelConfig() {
     return config;
   
   }
-  
-  PIDConfig DriveController::slowYawConfig() {
+
+PIDConfig DriveController::slowYawConfig() {
     PIDConfig config;
   
     config.Kp = 70;
@@ -308,7 +316,7 @@ PIDConfig DriveController::slowVelConfig() {
   
   }
   
-  PIDConfig DriveController::constVelConfig() {
+PIDConfig DriveController::constVelConfig() {
     PIDConfig config;
   
     config.Kp = 140;
@@ -330,7 +338,7 @@ PIDConfig DriveController::slowVelConfig() {
   
   }
   
-  PIDConfig DriveController::constYawConfig() {
+PIDConfig DriveController::constYawConfig() {
     PIDConfig config;
   
     config.Kp = 100;

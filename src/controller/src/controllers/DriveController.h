@@ -66,13 +66,6 @@ class DriveController{
         constYawPID.SetConfiguration(constYawConfig());
     }
 
-    void sendDriveCommand(double left, double right){
-        velocity.linear.x = left;
-        velocity.angular.z = right;
-
-        // publish the drive commands
-        drivePublisher.publish(velocity);
-    }
 
     public:
         static DriveController* instance(){
@@ -93,6 +86,7 @@ class DriveController{
         bool spinInCircle(float spinVel, int spinTimes);
         bool goToDistance(float distance, float direction);
         bool stop();
+        void sendDriveCommand(double left, double right);
 
 };
 
