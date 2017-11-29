@@ -53,8 +53,6 @@ void publishHeartBeatTimerEventHandler(const ros::TimerEvent& event);
 void publishStatusTimerEventHandler(const ros::TimerEvent& event);
 void tick(const ros::TimerEvent&); //main tick of the robot
 
-//Methods that publish
-void sendDriveCommand(double left, double right);
 
 
 //Publishers
@@ -93,17 +91,16 @@ stack <Behavior*> behaviorStack;
 
 int main(int argc, char **argv) {
 
-
     gethostname(host, sizeof (host));
     string hostname(host);
 
     if (argc >= 2) {
     publishedName = argv[1];
     cout << "Welcome to the world of tomorrow " << publishedName
-         << "!  Behaviour turnDirectionule started." << endl;
+         << "!  Controller turnDirectionule started." << endl;
     } else {
-    publishedName = hostname;
-    cout << "No Name Selected. Default is: " << publishedName << endl;
+        publishedName = hostname;
+        cout << "No Name Selected. Default is: " << publishedName << endl;
     }
 
     // NoSignalHandler so we can catch SIGINT ourselves and shutdown the node
@@ -197,17 +194,8 @@ void joyCmdHandler(const sensor_msgs::Joy::ConstPtr& message) {
       right = -max_motor_cmd;
     }
 
-    sendDriveCommand(left, right);
+    DriveController::instance()->sendDriveCommand(left, right);
   }
-}
-
-void sendDriveCommand(double left, double right)
-{
-  velocity.linear.x = left;
-  velocity.angular.z = right;
-
-  // publish the drive commands
-  driveControlPublish.publish(velocity);
 }
 
 void sigintEventHandler(int sig) {
