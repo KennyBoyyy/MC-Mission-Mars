@@ -26,6 +26,7 @@ class DriveController{
     float searchVelocity = 0.65; // meters/second  //0.65 MAX value
     float yawVelocity = 0.65;
 
+
     ros::Publisher drivePublisher;
     geometry_msgs::Twist velocity;
 
@@ -88,19 +89,13 @@ class DriveController{
 
 
     public:
-        static DriveController* instance(){
-            if (!s_instance)
-              s_instance = new DriveController;
-            return s_instance;
-        }
+        static DriveController* instance();
 
         /**
          * @brief registerDrivePublisher - to register a drive publisher. Has to only be called once
          * @param drivePublisher - publisher connected to wheels
          */
-        void registerDrivePublisher(ros::Publisher& drivePublisher){
-            this->drivePublisher = drivePublisher;
-        }
+        void registerDrivePublisher(ros::Publisher& drivePublisher);
 
         bool goToLocation(float x, float y);
         bool goToDistance(float distance, float direction);

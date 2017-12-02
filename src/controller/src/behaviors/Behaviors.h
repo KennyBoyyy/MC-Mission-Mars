@@ -4,8 +4,17 @@
 #ifndef BEHAVIORS_H
 #define BEHAVIORS_H
 
+
 //include SearchController
 #include "SearchBehavior.h"
+
+#include "ros/ros.h"
+#include "../controllers/DriveController.h"
+#include "../controllers/ClawController.h"
+#include "std_msgs/Float32.h"
+
+enum Type{ SearchBehaviorType, AvoidBehaviorType, PickUpBehaviorType, TestBehaviorType };
+
 
 
 /**
@@ -38,3 +47,38 @@ class PickUpBehavior: public Behavior
 
 
 #endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

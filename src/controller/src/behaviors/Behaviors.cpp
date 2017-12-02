@@ -1,7 +1,9 @@
 #include "Behaviors.h"
+
+
 //=============================================================================================================//
 //==============================================SimpleBehavior=================================================//
-SimpleBehavior::SimpleBehavior(){}
+SimpleBehavior::SimpleBehavior() : Behavior(TestBehaviorType){}
 
 bool SimpleBehavior::tick(){
     ClawController::instance()->wristDown();
@@ -12,11 +14,10 @@ bool SimpleBehavior::tick(){
 //=============================================================================================================//
 //============================================SquarePathBehavior===============================================//
 
-SquarePathBehavior::SquarePathBehavior(){}
+SquarePathBehavior::SquarePathBehavior() : Behavior(TestBehaviorType){}
 
 bool SquarePathBehavior::tick()
 {
     return DriveController::instance()->goToLocation(5, 5);
 }
-
 

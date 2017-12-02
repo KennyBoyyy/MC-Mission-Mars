@@ -6,25 +6,52 @@
 //declare and init the instance to null
 SonarHandler *SonarHandler::s_instance = 0;
 
-void SonarHandler::setDisableAvoid(bool &isDisable){
-    isAvoidDisabled = isDisable;
+SonarHandler::SonarHandler(){
+    minDistance = 1; //min distance to call an avoid.
+    isAvoidEnabled = true;
 }
 
-bool const &SonarHandler::isDisabled(){
-    return isAvoidDisabled;
+SonarHandler* SonarHandler::instance(){
+    if (!s_instance)
+      s_instance = new SonarHandler;
+    return s_instance;
+}
+
+void SonarHandler::setEnable(const bool &isEnabled){
+    isAvoidEnabled = isEnabled;
+}
+
+bool const &SonarHandler::isEnabled(){
+    return isAvoidEnabled;
 }
 
 void SonarHandler::handleLeft(const sensor_msgs::Range::ConstPtr& sonarLeft){
     this->sonarLeft.range = sonarLeft->range;
+    if(sonarLeft->range <= minDistance && isAvoidEnabled){
+        if(SMACS::instance()->top()->getType() != AvoidBehaviorType)
+            SMACS::instance()->push(new SimpleBehavior());
+    }
 }
 
 void SonarHandler::handleCenter(const sensor_msgs::Range::ConstPtr& sonarCenter){
     this->sonarCenter.range = sonarCenter->range;
+    if(sonarCenter->range <= minDistance && isAvoidEnabled){
+        if(SMACS::instance()->top()->getType() != AvoidBehaviorType)
+            SMACS::instance()->push(new SimpleBehavior());
+    }
 }
 
 void SonarHandler::handleRight(const sensor_msgs::Range::ConstPtr& sonarRight){
     this->sonarRight.range = sonarRight->range;
+    if(sonarRight->range <= minDistance && isAvoidEnabled){
+        if(SMACS::instance()->top()->getType() != AvoidBehaviorType)
+            SMACS::instance()->push(new SimpleBehavior());
+    }
 }
+
+double SonarHandler::getSonarLeft(){return sonarLeft.range;}
+double SonarHandler::getSonarCenter(){return sonarCenter.range;}
+double SonarHandler::getSonarRight(){return sonarRight.range;}
 
 //==============================================================================//
 //==============================================================================//
@@ -34,6 +61,14 @@ void SonarHandler::handleRight(const sensor_msgs::Range::ConstPtr& sonarRight){
 //                          Odom handler methods                                //
 //==============================================================================//
 OdometryHandler *OdometryHandler::s_instance = 0;
+
+OdometryHandler::OdometryHandler(){}
+
+OdometryHandler* OdometryHandler::instance(){
+    if(!s_instance)
+        s_instance = new OdometryHandler;
+    return s_instance;
+}
 
 void OdometryHandler::handle(const nav_msgs::Odometry::ConstPtr &message){
     this->currentLocation.x = message->pose.pose.position.x;
@@ -49,6 +84,10 @@ void OdometryHandler::handle(const nav_msgs::Odometry::ConstPtr &message){
     m.getRPY(roll, pitch, yaw);
     currentLocation.theta = yaw;
 }
+
+float OdometryHandler::getTheta(){return currentLocation.theta;}
+float OdometryHandler::getX(){return currentLocation.x;}
+float OdometryHandler::getY(){return currentLocation.y;}
 //==============================================================================//
 //==============================================================================//
 
@@ -57,6 +96,14 @@ void OdometryHandler::handle(const nav_msgs::Odometry::ConstPtr &message){
 //                          Targets handler methods                             //
 //==============================================================================//
 TargetHandler *TargetHandler::s_instance = 0;
+
+TargetHandler::TargetHandler(){}
+
+TargetHandler* TargetHandler::instance() {
+    if(!s_instance)
+        s_instance = new TargetHandler;
+    return s_instance;
+}
 
 void TargetHandler::handle(const apriltags_ros::AprilTagDetectionArray::ConstPtr& message)
 {
@@ -85,5 +132,7 @@ void TargetHandler::handle(const apriltags_ros::AprilTagDetectionArray::ConstPtr
         tagList.clear();
     }
 }
+
+int TargetHandler::numberOfTagsSeen(){return tagList.size();}
 //==============================================================================//
 //==============================================================================//

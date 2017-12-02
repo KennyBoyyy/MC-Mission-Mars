@@ -3,6 +3,39 @@
 
 DriveController* DriveController::s_instance = 0;
 
+DriveController::DriveController(){
+    rotateOnlyAngleTolerance = 0.15;
+    finalRotationTolerance = 0.15;
+    waypointTolerance = M_PI_2; //15 cm tolerance.
+    searchVelocity = 0.5; // meters/second
+
+    isInitThetaCalculated = false;
+    initTheta = 0;
+
+    isInitTime = false;
+    isInitLocation = false;
+
+    fastVelPID.SetConfiguration(fastVelConfig());
+    fastYawPID.SetConfiguration(fastYawConfig());
+
+    slowVelPID.SetConfiguration(slowVelConfig());
+    slowYawPID.SetConfiguration(slowYawConfig());
+
+    constVelPID.SetConfiguration(constVelConfig());
+    constYawPID.SetConfiguration(constYawConfig());
+}
+
+DriveController* DriveController::instance(){
+    if (!s_instance)
+      s_instance = new DriveController;
+    return s_instance;
+}
+
+void DriveController::registerDrivePublisher(ros::Publisher& drivePublisher){
+    this->drivePublisher = drivePublisher;
+}
+
+
 bool DriveController::goToLocation(float x, float y){
     //If the requested coords are the same as before
     //Means we are still driving to the same location as requested before
