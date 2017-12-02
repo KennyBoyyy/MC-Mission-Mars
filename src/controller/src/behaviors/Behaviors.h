@@ -15,36 +15,31 @@
 #include "std_msgs/Float32.h"
 
 
-
-
-
 /**
  * @brief The SimpleBehavior class - Simple testing behavior that probably wont work
  */
-class SimpleBehavior: public Behavior{
+//class SimpleBehavior: public Behavior{
 
-    public:
-        SimpleBehavior();
-        bool tick();
+//    public:
+//        SimpleBehavior() : Behavior(TestBehaviorType){}
+//        bool tick();
 
-};
+//};
 
-class SquarePathBehavior: public Behavior
-{
+//class SquarePathBehavior: public Behavior{
 
-    public:
-        SquarePathBehavior();
-        bool tick();
+//    public:
+//        SquarePathBehavior(): Behavior(TestBehaviorType){}
+//        bool tick();
 
-};
+//};
 
-class PickUpBehavior: public Behavior
-{
+//class PickUpBehavior: public Behavior{
 
-    public:
-        PickUpBehavior();
-        bool tick();
-};
+//    public:
+//        PickUpBehavior(): Behavior(TestBehaviorType){}
+//        bool tick();
+//};
 
 
 #endif

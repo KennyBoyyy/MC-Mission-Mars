@@ -14,8 +14,6 @@
 
 #include "../Point.h"
 #include "Tag.h"
-#include "../behaviors/Behaviors.h"
-#include "../SMACS.h"
 
 
 /**

@@ -27,26 +27,14 @@ bool const &SonarHandler::isEnabled(){
 
 void SonarHandler::handleLeft(const sensor_msgs::Range::ConstPtr& sonarLeft){
     this->sonarLeft.range = sonarLeft->range;
-    if(sonarLeft->range <= minDistance && isAvoidEnabled){
-        if(SMACS::instance()->top()->getType() != AvoidBehaviorType)
-            SMACS::instance()->push(new SimpleBehavior());
-    }
 }
 
 void SonarHandler::handleCenter(const sensor_msgs::Range::ConstPtr& sonarCenter){
     this->sonarCenter.range = sonarCenter->range;
-    if(sonarCenter->range <= minDistance && isAvoidEnabled){
-        if(SMACS::instance()->top()->getType() != AvoidBehaviorType)
-            SMACS::instance()->push(new SimpleBehavior());
-    }
 }
 
 void SonarHandler::handleRight(const sensor_msgs::Range::ConstPtr& sonarRight){
     this->sonarRight.range = sonarRight->range;
-    if(sonarRight->range <= minDistance && isAvoidEnabled){
-        if(SMACS::instance()->top()->getType() != AvoidBehaviorType)
-            SMACS::instance()->push(new SimpleBehavior());
-    }
 }
 
 double SonarHandler::getSonarLeft(){return sonarLeft.range;}

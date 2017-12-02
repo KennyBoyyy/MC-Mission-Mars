@@ -15,6 +15,7 @@ class SearchBehavior: public Behavior{
 
     int iterCount = 0;
     public:
+        SearchBehavior() : Behavior(SearchBehaviorType){}
         bool tick();
         void nextPoint();
 };

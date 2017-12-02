@@ -135,7 +135,7 @@ int main(int argc, char **argv) {
     ClawController::instance()->registerPublishers(fingerAnglePublish, wristAnglePublish);
 
     //for testing
-    behaviorStack.push(new SearchBehavior());
+    SMACS::instance()->push(new SearchBehavior());
 
     ros::spin();
 
