@@ -6,16 +6,26 @@
 #include "PID.h"
 #include "../handlers/Handlers.h"
 #include "../Point.h"
-
+#include <thread>
 
 
 class DriveController{
     static DriveController *s_instance; //static instance of class
 
-    float rotateOnlyAngleTolerance;
-    float finalRotationTolerance;
-    float waypointTolerance;
-    float searchVelocity;
+    // state machine states
+    enum StateMachineStates {
+      STATE_MACHINE_ROTATE = 0,
+      STATE_MACHINE_SKID_STEER,
+    };
+
+    StateMachineStates stateMachineState;
+    float rotateOnlyAngleTolerance = 0.174533;  //5 deg
+    float finalRotationTolerance = 0.1;
+    const float waypointTolerance = 0.15; //15 cm tolerance.
+
+    float searchVelocity = 0.65; // meters/second  //0.65 MAX value
+    float yawVelocity = 0.65;
+
 
     ros::Publisher drivePublisher;
     geometry_msgs::Twist velocity;
@@ -42,20 +52,40 @@ class DriveController{
 
     float left;
     float right;
+    float linear;
+    float angular;
 
-    bool isInitThetaCalculated;
-    float initTheta;
+    // for storing current drive command
+    // We will use to see if drive changed before current was completed
+    Point currentDrive;
+    // For updating the current location of the robot
+    // So taht we do not get from handler each time. Get it only once per tick for faster processing
+    Point currentLocation;
 
-    //for timings
-    int initTime;
-    bool isInitTime;
+    // Used to store the current distance eand dirrection
+    // We will use to see if drive changed before current was completed
+    float direction;
+    float distance;
 
-    // for storing initial location
-    Point initLocation;
-    bool isInitLocation;
-    static int spinCounter;
+    DriveController(){
+        stateMachineState = STATE_MACHINE_ROTATE;
+        fastVelPID.SetConfiguration(fastVelConfig());
+        fastYawPID.SetConfiguration(fastYawConfig());
+        
+        slowVelPID.SetConfiguration(slowVelConfig());
+        slowYawPID.SetConfiguration(slowYawConfig());
 
-    DriveController();
+        constVelPID.SetConfiguration(constVelConfig());
+        constYawPID.SetConfiguration(constYawConfig());
+
+        left = 0;
+        right = 0;
+        linear = 0;
+        angular = 0;
+
+        direction = 0;
+        distance = 0;
+    }
 
 
     public:
@@ -68,10 +98,10 @@ class DriveController{
         void registerDrivePublisher(ros::Publisher& drivePublisher);
 
         bool goToLocation(float x, float y);
-        bool spinInCircle(float spinVel, int spinTimes);
         bool goToDistance(float distance, float direction);
         bool stop();
         void sendDriveCommand(double left, double right);
+        void resetDriveController(float x, float y);
 
 };
 

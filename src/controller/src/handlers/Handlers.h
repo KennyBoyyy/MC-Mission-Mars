@@ -60,6 +60,8 @@ public:
 
 class OdometryHandler{
     Point currentLocation;
+    float linearVelocity;
+    float angularVelocity;
     static OdometryHandler* s_instance;
 
     OdometryHandler();
@@ -68,9 +70,12 @@ public:
     static OdometryHandler* instance();
 
     void handle(const nav_msgs::Odometry::ConstPtr& message);
-    float getTheta();
-    float getX();
-    float getY();
+    float getTheta(){return currentLocation.theta;}
+    float getX(){return currentLocation.x;}
+    float getY(){return currentLocation.y;}
+    float getLinear(){return linearVelocity;}
+    float getAngular(){return angularVelocity;}
+
 };
 
 
