@@ -4,6 +4,7 @@
 #ifndef BEHAVIORS_H
 #define BEHAVIORS_H
 
+#include "BehaviorInterface.h"
 
 //include SearchController
 #include "SearchBehavior.h"
@@ -13,7 +14,7 @@
 #include "../controllers/ClawController.h"
 #include "std_msgs/Float32.h"
 
-enum Type{ SearchBehaviorType, AvoidBehaviorType, PickUpBehaviorType, TestBehaviorType };
+
 
 
 

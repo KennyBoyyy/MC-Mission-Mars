@@ -85,9 +85,6 @@ void OdometryHandler::handle(const nav_msgs::Odometry::ConstPtr &message){
     currentLocation.theta = yaw;
 }
 
-float OdometryHandler::getTheta(){return currentLocation.theta;}
-float OdometryHandler::getX(){return currentLocation.x;}
-float OdometryHandler::getY(){return currentLocation.y;}
 //==============================================================================//
 //==============================================================================//
 
