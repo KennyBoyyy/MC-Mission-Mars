@@ -109,6 +109,8 @@ add_executable(
   src/handlers/Handlers.cpp
   src/handlers/Tag.cpp
   src/behaviors/Behaviors.cpp
+  src/behaviors/SearchBehavior.cpp
+  src/behaviors/PickUpBehavior.cpp
   src/controllers/DriveController.cpp
   src/controllers/PID.cpp
   src/controllers/ClawController.cpp

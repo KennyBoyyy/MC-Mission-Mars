@@ -64,6 +64,8 @@ public:
 
 class OdometryHandler{
     Point currentLocation;
+    float linearVelocity;
+    float angularVelocity;
     static OdometryHandler* s_instance;
 
     OdometryHandler(){}
@@ -79,6 +81,8 @@ public:
     float getTheta(){return currentLocation.theta;}
     float getX(){return currentLocation.x;}
     float getY(){return currentLocation.y;}
+    float getLinear(){return linearVelocity;}
+    float getAngular(){return angularVelocity;}
 };
 
 
