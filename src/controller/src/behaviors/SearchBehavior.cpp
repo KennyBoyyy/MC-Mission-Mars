@@ -23,11 +23,11 @@ void SearchBehavior::nextPoint(){
         first = false;
     } else if(second){
         theta = OdometryHandler::instance()->getTheta() + M_PI_2;
-        distance = 2;
+        distance = 1;
         second = false;
     } else if(third){
         theta = OdometryHandler::instance()->getTheta() + M_PI_2;
-        distance = 4;
+        distance = 2;
         third = false;
         iterCount ++;
     } else {

@@ -38,7 +38,7 @@ bool DriveController::goToLocation(float x, float y){
 
                 // If angle > rotateOnlyAngleTolerance radians rotate but dont drive forward.
                 if (abs_error > rotateOnlyAngleTolerance){
-                    fastPID(0.0, errorYaw, 0.0, currentLocation.theta);
+                    slowPID(0.0, errorYaw, 0.0, currentLocation.theta);
                     break;
                 } else {
                 //move to differential drive step
@@ -109,7 +109,7 @@ bool DriveController::goToDistance(float distance, float direction){
 
                 // If angle > rotateOnlyAngleTolerance radians rotate but dont drive forward.
                 if (abs_error > rotateOnlyAngleTolerance){
-                    fastPID(0.0, errorYaw, 0.0, currentLocation.theta);
+                    fastPID(0.0, errorYaw, 0.0, currentDrive.theta);
                     break;
                 } else {
                 //move to differential drive step
@@ -132,7 +132,7 @@ bool DriveController::goToDistance(float distance, float direction){
                 // goal not yet reached drive while maintaining proper heading.
                 if (fabs(errorYaw) < M_PI_2 &&  distance > waypointTolerance){
                     //cout << "linear velocity:  " << linearVelocity << endl;
-                    fastPID((searchVelocity-linear) ,errorYaw, searchVelocity, currentLocation.theta);
+                    fastPID((searchVelocity-linear) ,errorYaw, searchVelocity, currentDrive.theta);
                 } else {
                     // stopno change
                     stop();
@@ -179,7 +179,15 @@ bool DriveController::stop(){
 }
 
 void DriveController::sendDriveCommand(double left, double right){
-    velocity.linear.x = left;
+if(fabs(left) < leftRightMin){
+        left = left*(leftRightMin/fabs(left));
+}
+
+if(fabs(right) < leftRightMin){
+        right = right*(leftRightMin/fabs(right));
+}
+    
+velocity.linear.x = left;
     velocity.angular.z = right;
 
     // publish the drive commands
@@ -288,7 +296,7 @@ PIDConfig DriveController::fastYawConfig() {
   PIDConfig config;
 
   config.Kp = 60;
-  config.Ki = 15;
+  config.Ki = 50;
   config.Kd = 5;
   config.satUpper = 255;
   config.satLower = -255;

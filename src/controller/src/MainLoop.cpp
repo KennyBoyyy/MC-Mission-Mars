@@ -86,6 +86,7 @@ const float heartbeat_publish_interval = 2;
 //global variables that we are constantly use
 //They are used a lot so they are global
 geometry_msgs::Twist velocity;
+bool stopped = true;
 
 
 
@@ -150,8 +151,12 @@ void tick(const ros::TimerEvent&) {
         std_msgs::Int16 msg;
         msg.data = TargetHandler::instance()->numberOfTagsSeen();
         nodeTest.publish(msg);
+	stopped = false;
     } else {    //manual
-        DriveController::instance()->stop();
+	if(!stopped){
+        	DriveController::instance()->stop();
+		stopped = true;
+}
     }
 }
 

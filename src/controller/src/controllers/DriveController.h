@@ -19,13 +19,15 @@ class DriveController{
     };
 
     StateMachineStates stateMachineState;
-    float rotateOnlyAngleTolerance = 0.174533;  //5 deg
+    float rotateOnlyAngleTolerance = 0.175;  //5 deg
     float finalRotationTolerance = 0.1;
     const float waypointTolerance = 0.15; //15 cm tolerance.
 
+    float scaler = 0.5;
     float searchVelocity = 0.65; // meters/second  //0.65 MAX value
     float yawVelocity = 0.65;
-
+   
+    int leftRightMin = 50;
 
     ros::Publisher drivePublisher;
     geometry_msgs::Twist velocity;
