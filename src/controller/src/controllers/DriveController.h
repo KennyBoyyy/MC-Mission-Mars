@@ -40,8 +40,10 @@ class DriveController{
     void slowPID(float errorVel,float errorYaw, float setPointVel, float setPointYaw);
     void constPID(float erroVel,float constAngularError, float setPointVel, float setPointYaw);
 
-    float left;
-    float right;
+    //Max PWM is 255
+    //abridge currently limits MAX to 120 to prevent overcurrent draw
+    float left; //left wheels PWM value
+    float right; //right wheel PWM value
 
     bool isInitThetaCalculated = false;
     float initTheta = 0;
