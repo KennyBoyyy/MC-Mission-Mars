@@ -6,8 +6,7 @@ PID::PID() {
 
 PID::PID(PIDConfig config){
   this->config = config;
-  //sets the integral error matrix(array) to have nothing inside 
-  integralErrorHistArray.resize(config.integralErrorHistoryLength, 0.0); 
+  integralErrorHistArray.resize(config.integralErrorHistoryLength, 0.0);
 }
 
 float PID::PIDOut(float calculatedError, float setPoint) {
@@ -29,33 +28,7 @@ float PID::PIDOut(float calculatedError, float setPoint) {
     integralErrorHistArray.resize(config.integralErrorHistoryLength, 0.0);
   }
   //feed forward
-  //float FF = config.feedForwardMultiplier * setPoint;
-  float FF = (pow(setPoint, 3) * config.feedForwardMultiplier) + (setPoint * (config.feedForwardMultiplier / 4.6));
-
-  if (!config.alwaysIntegral && Error.size() > 1)
-  {
-    //check the change of sign to see if the rover overshot its goal
-    float sign_change = Error[0] / Error[1];
-    //if the sign has changed between the previous error and the current error
-    if(sign_change < 0)
-    {
-      //reset the integral history and values
-      integralErrorHistArray.clear();
-      integralErrorHistArray.resize(config.integralErrorHistoryLength, 0.0);
-      I = 0;
-      step = 0;
-   
-   
-      //Store error zero into temp variable
-      float error_zero = Error[0];
-   
-      //clear the error history in order to prevent movement in the incorrect direction because of the sign change
-      Error.clear();
-   
-      //put back into vector
-      Error.push_back(error_zero);
-    }
-  }
+  float FF = config.feedForwardMultiplier * setPoint;
 
   //error averager
   float avgError = 0;
@@ -129,7 +102,7 @@ float PID::PIDOut(float calculatedError, float setPoint) {
   }
 
   //Derivative
-  if (Error.size() < 4)
+  if (fabs(P) < config.antiWindup)
   {
     float avgPrevError = 0;
     for (int i = 1; i < Error.size(); i++)
@@ -145,7 +118,7 @@ float PID::PIDOut(float calculatedError, float setPoint) {
       avgPrevError = Error[0];
     }
 
-    D = config.Kd * ((Error[0]+Error[1])/2 - (Error[2]+Error[3])/2) * hz;
+    D = config.Kd * (Error[0] - Error[1]) * hz;
   }
 
   float PIDOut = P + I + D + FF;
