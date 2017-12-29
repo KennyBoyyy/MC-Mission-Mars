@@ -6,12 +6,23 @@
 //declare and init the instance to null
 SonarHandler *SonarHandler::s_instance = 0;
 
-void SonarHandler::setDisableAvoid(bool &isDisable){
-    isAvoidDisabled = isDisable;
+SonarHandler::SonarHandler(){
+    minDistance = 1; //min distance to call an avoid.
+    isAvoidEnabled = true;
 }
 
-bool const &SonarHandler::isDisabled(){
-    return isAvoidDisabled;
+SonarHandler* SonarHandler::instance(){
+    if (!s_instance)
+      s_instance = new SonarHandler;
+    return s_instance;
+}
+
+void SonarHandler::setEnable(const bool &isEnabled){
+    isAvoidEnabled = isEnabled;
+}
+
+bool const &SonarHandler::isEnabled(){
+    return isAvoidEnabled;
 }
 
 void SonarHandler::handleLeft(const sensor_msgs::Range::ConstPtr& sonarLeft){
@@ -26,6 +37,10 @@ void SonarHandler::handleRight(const sensor_msgs::Range::ConstPtr& sonarRight){
     this->sonarRight.range = sonarRight->range;
 }
 
+double SonarHandler::getSonarLeft(){return sonarLeft.range;}
+double SonarHandler::getSonarCenter(){return sonarCenter.range;}
+double SonarHandler::getSonarRight(){return sonarRight.range;}
+
 //==============================================================================//
 //==============================================================================//
 
@@ -35,9 +50,20 @@ void SonarHandler::handleRight(const sensor_msgs::Range::ConstPtr& sonarRight){
 //==============================================================================//
 OdometryHandler *OdometryHandler::s_instance = 0;
 
+OdometryHandler::OdometryHandler(){}
+
+OdometryHandler* OdometryHandler::instance(){
+    if(!s_instance)
+        s_instance = new OdometryHandler;
+    return s_instance;
+}
+
 void OdometryHandler::handle(const nav_msgs::Odometry::ConstPtr &message){
     this->currentLocation.x = message->pose.pose.position.x;
     this->currentLocation.y = message->pose.pose.position.y;
+
+    linearVelocity = message->twist.twist.linear.x;
+    angularVelocity = message->twist.twist.angular.z;
 
     //Get theta rotation by converting quaternion orientation to pitch/roll/yaw
     tf::Quaternion q(message->pose.pose.orientation.x, message->pose.pose.orientation.y, message->pose.pose.orientation.z, message->pose.pose.orientation.w);
@@ -46,6 +72,7 @@ void OdometryHandler::handle(const nav_msgs::Odometry::ConstPtr &message){
     m.getRPY(roll, pitch, yaw);
     currentLocation.theta = yaw;
 }
+
 //==============================================================================//
 //==============================================================================//
 
@@ -54,6 +81,14 @@ void OdometryHandler::handle(const nav_msgs::Odometry::ConstPtr &message){
 //                          Targets handler methods                             //
 //==============================================================================//
 TargetHandler *TargetHandler::s_instance = 0;
+
+TargetHandler::TargetHandler(){}
+
+TargetHandler* TargetHandler::instance() {
+    if(!s_instance)
+        s_instance = new TargetHandler;
+    return s_instance;
+}
 
 void TargetHandler::handle(const apriltags_ros::AprilTagDetectionArray::ConstPtr& message)
 {
@@ -82,5 +117,7 @@ void TargetHandler::handle(const apriltags_ros::AprilTagDetectionArray::ConstPtr
         tagList.clear();
     }
 }
+
+int TargetHandler::numberOfTagsSeen(){return tagList.size();}
 //==============================================================================//
 //==============================================================================//
