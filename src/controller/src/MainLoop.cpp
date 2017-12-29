@@ -27,10 +27,11 @@
 #include <signal.h>
 
 //using stack for the stack of behaviors
-#include<stack>
+#include "SMACS.h"
 //include this to init the handlers
 #include "handlers/Handlers.h"
 #include "behaviors/Behaviors.h"
+
 #include "controllers/DriveController.h"
 #include "controllers/ClawController.h"
 
@@ -85,9 +86,9 @@ const float heartbeat_publish_interval = 2;
 //global variables that we are constantly use
 //They are used a lot so they are global
 geometry_msgs::Twist velocity;
+bool stopped = true;
 
-//stack of behaviors that will be ticked every tick
-stack <Behavior*> behaviorStack;
+
 
 int main(int argc, char **argv) {
 
@@ -135,8 +136,7 @@ int main(int argc, char **argv) {
     ClawController::instance()->registerPublishers(fingerAnglePublish, wristAnglePublish);
 
     //for testing
-    //behaviorStack.push(new SimpleBehavior());
-    behaviorStack.push(new SearchBehavior());
+    SMACS::instance()->push(new SearchBehavior());
 
     ros::spin();
 
@@ -145,18 +145,18 @@ int main(int argc, char **argv) {
 
 void tick(const ros::TimerEvent&) {
     if (currentMode == 2 || currentMode == 3) { //auto
-        if(!behaviorStack.empty()){
-          //tick the stack
-              if(behaviorStack.top()->tick() == true){
-                 behaviorStack.pop();
-               }
-        }
+        SMACS::instance()->tick();
+
       
         std_msgs::Int16 msg;
         msg.data = TargetHandler::instance()->numberOfTagsSeen();
         nodeTest.publish(msg);
+	stopped = false;
     } else {    //manual
-        DriveController::instance()->stop();
+	if(!stopped){
+        	DriveController::instance()->stop();
+		stopped = true;
+}
     }
 }
 

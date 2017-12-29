@@ -15,6 +15,7 @@
 #include "../Point.h"
 #include "Tag.h"
 
+
 /**
  * This executable file will contain all the handlers and their functionality
  */
@@ -25,7 +26,7 @@
  */
 class SonarHandler{
     double minDistance; //if sonar is this distance from obstacle then put avoid behavior on stack
-    bool isAvoidDisabled; //if obstacle avoid is off we will not do anything about obstacles. We will ignore
+    bool isAvoidEnabled; //if obstacle avoid is off we will not do anything about obstacles. We will ignore
     static SonarHandler *s_instance; //static instance of class
 
     //values to hold sonar callbacks
@@ -34,19 +35,12 @@ class SonarHandler{
     sensor_msgs::Range sonarRight;
 
     //private by default
-    SonarHandler(){
-        minDistance = 0.5; //min distance to call an avoid.
-        isAvoidDisabled = false;
-    }
+    SonarHandler();
 
 public:
-    static SonarHandler* instance(){
-        if (!s_instance)
-          s_instance = new SonarHandler;
-        return s_instance;
-    }
-    void setDisableAvoid(bool &isDisable);
-    bool const &isDisabled();
+    static SonarHandler* instance();
+    void setEnable(const bool &isEnabled);
+    bool const &isEnabled();
 
     //handlers
     void handleLeft(const sensor_msgs::Range::ConstPtr& sonarLeft);
@@ -54,9 +48,9 @@ public:
     void handleRight(const sensor_msgs::Range::ConstPtr& sonarRight);
 
 
-    double getSonarLeft(){return sonarLeft.range;}
-    double getSonarCenter(){return sonarCenter.range;}
-    double getSonarRight(){return sonarRight.range;}
+    double getSonarLeft();
+    double getSonarCenter();
+    double getSonarRight();
 };
 
 
@@ -64,21 +58,22 @@ public:
 
 class OdometryHandler{
     Point currentLocation;
+    float linearVelocity;
+    float angularVelocity;
     static OdometryHandler* s_instance;
 
-    OdometryHandler(){}
+    OdometryHandler();
 
 public:
-    static OdometryHandler* instance(){
-        if(!s_instance)
-            s_instance = new OdometryHandler;
-        return s_instance;
-    }
+    static OdometryHandler* instance();
 
     void handle(const nav_msgs::Odometry::ConstPtr& message);
     float getTheta(){return currentLocation.theta;}
     float getX(){return currentLocation.x;}
     float getY(){return currentLocation.y;}
+    float getLinear(){return linearVelocity;}
+    float getAngular(){return angularVelocity;}
+
 };
 
 
@@ -86,19 +81,16 @@ class TargetHandler{
     static TargetHandler* s_instance;
     std::vector<Tag> tagList;
 
-    TargetHandler(){}
+    TargetHandler();
 
 public:
-    static TargetHandler* instance() {
-        if(!s_instance)
-            s_instance = new TargetHandler;
-        return s_instance;
-    }
+    static TargetHandler* instance();
 
     void handle(const apriltags_ros::AprilTagDetectionArray::ConstPtr& message);
-    int numberOfTagsSeen(){return tagList.size();}
+    int numberOfTagsSeen();
 
 };
+
 
 
 
