@@ -178,15 +178,7 @@ bool DriveController::stop(){
     sendDriveCommand(left, right);
 }
 
-void DriveController::sendDriveCommand(double left, double right){
-if(fabs(left) < leftRightMin){
-        left = left*(leftRightMin/fabs(left));
-}
-
-if(fabs(right) < leftRightMin){
-        right = right*(leftRightMin/fabs(right));
-}
-    
+void DriveController::sendDriveCommand(double left, double right){    
 velocity.linear.x = left;
     velocity.angular.z = right;
 
