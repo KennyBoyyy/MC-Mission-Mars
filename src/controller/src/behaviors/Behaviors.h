@@ -8,6 +8,7 @@
 
 //include SearchController
 #include "SearchBehavior.h"
+#include "CalibrateBehavior.h"
 
 #include "ros/ros.h"
 #include "../controllers/DriveController.h"

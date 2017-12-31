@@ -19,6 +19,14 @@ void SMACS::pop(){
     behaviorStack.pop();
 }
 
+void SMACS::pushNext(Behavior *b){
+    Behavior *hold = behaviorStack.top();
+    behaviorStack.pop();
+    push(b);
+    push(hold);
+}
+
+
 bool SMACS::isEmpty(){return behaviorStack.empty();}
 
 bool SMACS::tick(){

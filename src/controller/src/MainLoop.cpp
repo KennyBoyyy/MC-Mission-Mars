@@ -136,7 +136,7 @@ int main(int argc, char **argv) {
     ClawController::instance()->registerPublishers(fingerAnglePublish, wristAnglePublish);
 
     //for testing
-    SMACS::instance()->push(new SearchBehavior());
+    SMACS::instance()->push(new CalibrateBehavior());
 
     ros::spin();
 
@@ -144,19 +144,16 @@ int main(int argc, char **argv) {
 }
 
 void tick(const ros::TimerEvent&) {
+    // To print log "tail -f path/"name of log file".txt | grep "TAG""
     if (currentMode == 2 || currentMode == 3) { //auto
         SMACS::instance()->tick();
 
-      
-        std_msgs::Int16 msg;
-        msg.data = TargetHandler::instance()->numberOfTagsSeen();
-        nodeTest.publish(msg);
-	stopped = false;
+        stopped = false;
     } else {    //manual
-	if(!stopped){
-        	DriveController::instance()->stop();
-		stopped = true;
-}
+        if(!stopped){
+            DriveController::instance()->stop();
+            stopped = true;
+        }
     }
 }
 

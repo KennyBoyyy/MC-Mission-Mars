@@ -14,8 +14,9 @@ class SearchBehavior: public Behavior{
     float y;
 
     int iterCount = 0;
+
     public:
-        SearchBehavior() : Behavior(SearchBehaviorType){}
+        SearchBehavior() : Behavior(SEARCH_BEHAVIOR_TYPE){}
         bool tick();
         void nextPoint();
 };
