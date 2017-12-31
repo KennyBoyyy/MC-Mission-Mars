@@ -112,6 +112,7 @@ add_executable(
   src/behaviors/Behaviors.cpp
   src/behaviors/SearchBehavior.cpp
   src/behaviors/PickUpBehavior.cpp
+  src/behaviors/CalibrateBehavior.cpp
   src/controllers/DriveController.cpp
   src/controllers/PID.cpp
   src/controllers/ClawController.cpp

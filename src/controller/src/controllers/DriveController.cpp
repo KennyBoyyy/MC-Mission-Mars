@@ -161,6 +161,43 @@ bool DriveController::goToDistance(float distance, float direction){
 
 }
 
+bool DriveController::turnToTheta(float theta){
+    // Calculate angle between currentLocation.theta and waypoints.front().theta
+    // Rotate left or right depending on sign of angle
+    // Stay in this state until angle is minimized
+    float currentTheta = OdometryHandler::instance()->getTheta();
+
+    // Calculate the diffrence between current and desired heading in radians.
+    float errorYaw = angles::shortest_angular_distance(currentTheta, theta);
+
+    //Calculate absolute value of angle
+    float abs_error = fabs(errorYaw);
+
+    // If angle > rotateOnlyAngleTolerance radians rotate but dont drive forward.
+    if (abs_error > rotateOnlyAngleTolerance){
+        slowPID(0.0, errorYaw, 0.0, theta);
+    } else {
+        //stop
+        stop();
+        return true;
+    }
+    return false;
+}
+
+
+bool DriveController::stop(){
+    left = 0;
+    right = 0;
+    sendDriveCommand(left, right);
+}
+
+
+
+void DriveController::setLeftRightMin(double leftMin, double rightMin){
+    this->leftMin = leftMin;
+    this->rightMin = rightMin;
+}
+
 void DriveController::resetDriveController(float x, float y){
     left = 0;
     right = 0;
@@ -171,15 +208,16 @@ void DriveController::resetDriveController(float x, float y){
     sendDriveCommand(left, right);
 }
 
+void DriveController::sendDriveCommand(double left, double right){
+    if(left != 0 && fabs(left) < left){
+        left = left*(leftMin/fabs(left));
+    }
 
-bool DriveController::stop(){
-    left = 0;
-    right = 0;
-    sendDriveCommand(left, right);
-}
+    if(right !=0 && fabs(right) < rightMin){
+        right = right*(rightMin/fabs(right));
+    }
 
-void DriveController::sendDriveCommand(double left, double right){    
-velocity.linear.x = left;
+    velocity.linear.x = left;
     velocity.angular.z = right;
 
     // publish the drive commands
