@@ -96,6 +96,7 @@ bool CalibrateBehavior::tick(){
             DriveController::instance()->setLeftRightMin(leftWheelMin, rightWheelMin);
 
             SMACS::instance()->pushNext(new SearchBehavior());
+            SMACS::instance()->pushNext(new SearchBehavior());
             return true;
         }
 
