@@ -95,6 +95,17 @@ ros::Timer publish_heartbeat_timer;
 void publishHeartBeatTimerEventHandler(const ros::TimerEvent& event);
 void modeHandler(const std_msgs::UInt8::ConstPtr& message);
 
+float _left;
+float _right;
+bool _calcError = false;
+float _initRoll = 0;
+float _initPitch = 0;
+float _initYaw = 0;
+
+float _rollError = 0;
+float _pitchError = 0;
+float _yawError = 0;
+
 int main(int argc, char **argv) {
     
     gethostname(host, sizeof (host));
@@ -166,6 +177,8 @@ void driveCommandHandler(const geometry_msgs::Twist::ConstPtr& message) {
   float left = (message->linear.x); //target linear velocity in meters per second
   float right = (message->angular.z); //angular error in radians
 
+  _left = left;
+  _right = right;
   // Cap motor commands at 120. Experimentally determined that high values (tested 180 and 255) can cause 
   // the hardware to fail when the robot moves itself too violently.
   int max_motor_cmd = 120;
@@ -277,13 +290,28 @@ void parseData(string str) {
 			}
 			else if (dataSet.at(0) == "IMU") {
 				imu.header.stamp = ros::Time::now();
+				if(_left == _right && left != 0){
+					if(!_calcError){
+						_initRoll = atof(dataSet.at(8).c_str());
+						_initPitch = atof(dataSet.at(9).c_str());
+						_initYaw = atof(dataSet.at(10).c_str()) - _yawError;	
+						_calcError = true;
+					}
+					_rollError = atof(dataSet.at(8).c_str()) - _initRoll;
+					_pitchError = atof(dataSet.at(9).c_str()) - _initPitch;
+					_yawError = atof(dataSet.at(10).c_str()) - _initYaw;
+				} else{
+					_calcError = false;
+				}
 				imu.linear_acceleration.x = atof(dataSet.at(2).c_str());
 				imu.linear_acceleration.y = 0; //atof(dataSet.at(3).c_str());
 				imu.linear_acceleration.z = atof(dataSet.at(4).c_str());
 				imu.angular_velocity.x = atof(dataSet.at(5).c_str());
 				imu.angular_velocity.y = atof(dataSet.at(6).c_str());
 				imu.angular_velocity.z = atof(dataSet.at(7).c_str());
-				imu.orientation = tf::createQuaternionMsgFromRollPitchYaw(atof(dataSet.at(8).c_str()), atof(dataSet.at(9).c_str()), atof(dataSet.at(10).c_str()));
+				imu.orientation = tf::createQuaternionMsgFromRollPitchYaw(atof(dataSet.at(8).c_str()), 
+							atof(dataSet.at(9).c_str()), 
+							atof(dataSet.at(10).c_str())- _yawError);
 			}
 			else if (dataSet.at(0) == "ODOM") {
 				odom.header.stamp = ros::Time::now();

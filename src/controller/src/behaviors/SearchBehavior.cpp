@@ -7,6 +7,7 @@ bool SearchBehavior::tick(){
         nextPoint();
     } else {
         if(DriveController::instance()->goToDistance(distance, theta)){
+            cout<<"TAG: Hello Searchin"<<endl;
             nextPoint();
         }
     }

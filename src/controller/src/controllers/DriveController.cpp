@@ -38,7 +38,7 @@ bool DriveController::goToLocation(float x, float y){
 
                 // If angle > rotateOnlyAngleTolerance radians rotate but dont drive forward.
                 if (abs_error > rotateOnlyAngleTolerance){
-                    fastPID(0.0, errorYaw, 0.0, currentLocation.theta);
+                    slowPID(0.0, errorYaw, 0.0, currentLocation.theta);
                     break;
                 } else {
                 //move to differential drive step
@@ -109,7 +109,7 @@ bool DriveController::goToDistance(float distance, float direction){
 
                 // If angle > rotateOnlyAngleTolerance radians rotate but dont drive forward.
                 if (abs_error > rotateOnlyAngleTolerance){
-                    fastPID(0.0, errorYaw, 0.0, currentLocation.theta);
+                    fastPID(0.0, errorYaw, 0.0, currentDrive.theta);
                     break;
                 } else {
                 //move to differential drive step
@@ -132,7 +132,7 @@ bool DriveController::goToDistance(float distance, float direction){
                 // goal not yet reached drive while maintaining proper heading.
                 if (fabs(errorYaw) < M_PI_2 &&  distance > waypointTolerance){
                     //cout << "linear velocity:  " << linearVelocity << endl;
-                    fastPID((searchVelocity-linear) ,errorYaw, searchVelocity, currentLocation.theta);
+                    fastPID((searchVelocity-linear) ,errorYaw, searchVelocity, currentDrive.theta);
                 } else {
                     // stopno change
                     stop();
@@ -161,6 +161,43 @@ bool DriveController::goToDistance(float distance, float direction){
 
 }
 
+bool DriveController::turnToTheta(float theta){
+    // Calculate angle between currentLocation.theta and waypoints.front().theta
+    // Rotate left or right depending on sign of angle
+    // Stay in this state until angle is minimized
+    float currentTheta = OdometryHandler::instance()->getTheta();
+
+    // Calculate the diffrence between current and desired heading in radians.
+    float errorYaw = angles::shortest_angular_distance(currentTheta, theta);
+
+    //Calculate absolute value of angle
+    float abs_error = fabs(errorYaw);
+
+    // If angle > rotateOnlyAngleTolerance radians rotate but dont drive forward.
+    if (abs_error > rotateOnlyAngleTolerance){
+        slowPID(0.0, errorYaw, 0.0, theta);
+    } else {
+        //stop
+        stop();
+        return true;
+    }
+    return false;
+}
+
+
+bool DriveController::stop(){
+    left = 0;
+    right = 0;
+    sendDriveCommand(left, right);
+}
+
+
+
+void DriveController::setLeftRightMin(double leftMin, double rightMin){
+    this->leftMin = leftMin;
+    this->rightMin = rightMin;
+}
+
 void DriveController::resetDriveController(float x, float y){
     left = 0;
     right = 0;
@@ -171,14 +208,15 @@ void DriveController::resetDriveController(float x, float y){
     sendDriveCommand(left, right);
 }
 
-
-bool DriveController::stop(){
-    left = 0;
-    right = 0;
-    sendDriveCommand(left, right);
-}
-
 void DriveController::sendDriveCommand(double left, double right){
+    if(left != 0 && fabs(left) < left){
+        left = left*(leftMin/fabs(left));
+    }
+
+    if(right !=0 && fabs(right) < rightMin){
+        right = right*(rightMin/fabs(right));
+    }
+
     velocity.linear.x = left;
     velocity.angular.z = right;
 
@@ -288,7 +326,7 @@ PIDConfig DriveController::fastYawConfig() {
   PIDConfig config;
 
   config.Kp = 60;
-  config.Ki = 15;
+  config.Ki = 50;
   config.Kd = 5;
   config.satUpper = 255;
   config.satLower = -255;

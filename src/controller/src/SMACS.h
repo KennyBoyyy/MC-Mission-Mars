@@ -1,7 +1,7 @@
 #ifndef SMACS_STACK_H
 #define SMACS_STACK_H
 
-#include "behaviors/Behaviors.h"
+#include "behaviors/BehaviorInterface.h"
 #include<stack>
 //using namespace std;
 
@@ -17,6 +17,7 @@ public:
 
     void push(Behavior* b);
     void pop();
+    void pushNext(Behavior *b);
     bool isEmpty();
     bool tick();
     Behavior* top()const {return behaviorStack.top();}
