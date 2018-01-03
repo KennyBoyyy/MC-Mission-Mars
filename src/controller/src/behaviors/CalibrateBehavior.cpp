@@ -8,9 +8,6 @@ bool CalibrateBehavior::tick(){
         isRetunrSet = true;
     }
 
-    //retrun error. Used later
-    float error = 0;
-
     switch (currentStage) {
         // Calibration steps
         case FIND_MIN_LEFT_WHEELS:
