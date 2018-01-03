@@ -57,8 +57,8 @@ class CalibrateBehavior: public Behavior{
 
             angleTolerance = 0.175;
 
-            rightWheelMin = 20;
-            leftWheelMin = 20;
+            rightWheelMin = 30;
+            leftWheelMin = 30;
 
             iterationInctrease =5;
 

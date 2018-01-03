@@ -8,6 +8,9 @@ bool CalibrateBehavior::tick(){
         isRetunrSet = true;
     }
 
+    //retrun error. Used later
+    float error = 0;
+
     switch (currentStage) {
         // Calibration steps
         case FIND_MIN_LEFT_WHEELS:
@@ -81,6 +84,10 @@ bool CalibrateBehavior::tick(){
                         isTimeInit = false;
                         currentStage = RUTURN_TO_POSITION;
 
+                        //figure out if we need to tun left to return or right
+                        float currentTheta = OdometryHandler::instance()->getTheta();
+                        error = angles::shortest_angular_distance(currentTheta, returnTheta);
+
                     } else {
                         DriveController::instance()->sendDriveCommand(0 ,0);
                         //else we did not complete the turn. Need to increase the reatio
@@ -98,11 +105,9 @@ bool CalibrateBehavior::tick(){
         }
         case RUTURN_TO_POSITION:
         {
-            //figure out if we need to tun left to return or right
             float currentTheta = OdometryHandler::instance()->getTheta();
-            float error = angles::shortest_angular_distance(currentTheta, returnTheta);
 
-            if (error > 0){
+            if (error < 0){
                 DriveController::instance()->sendDriveCommand(rightWheelMin, -rightWheelMin);
 
                 float abs_error = fabs(angles::shortest_angular_distance(currentTheta, initTheta));
