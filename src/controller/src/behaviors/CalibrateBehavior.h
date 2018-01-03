@@ -42,6 +42,8 @@ class CalibrateBehavior: public Behavior{
 
     bool isRetunrSet;
     float returnTheta;
+    float error = 0;
+
 
 
     public:
