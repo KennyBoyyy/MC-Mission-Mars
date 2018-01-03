@@ -2,6 +2,12 @@
 
 
 bool CalibrateBehavior::tick(){
+
+    if(!isRetunrSet){
+        returnTheta = OdometryHandler::instance()->getTheta();
+        isRetunrSet = true;
+    }
+
     switch (currentStage) {
         // Calibration steps
         case FIND_MIN_LEFT_WHEELS:
@@ -73,7 +79,7 @@ bool CalibrateBehavior::tick(){
                     if(abs_error >= angleTolerance){
                         DriveController::instance()->sendDriveCommand(0 ,0);
                         isTimeInit = false;
-                        currentStage = FIND_RATIO;
+                        currentStage = RUTURN_TO_POSITION;
 
                     } else {
                         DriveController::instance()->sendDriveCommand(0 ,0);
@@ -90,13 +96,43 @@ bool CalibrateBehavior::tick(){
 
             break;
         }
+        case RUTURN_TO_POSITION:
+        {
+            //figure out if we need to tun left to return or right
+            float currentTheta = OdometryHandler::instance()->getTheta();
+            float error = angles::shortest_angular_distance(currentTheta, returnTheta);
+
+            if (error > 0){
+                DriveController::instance()->sendDriveCommand(rightWheelMin, -rightWheelMin);
+
+                float abs_error = fabs(angles::shortest_angular_distance(currentTheta, initTheta));
+                if(abs_error >= angleTolerance){
+                    DriveController::instance()->sendDriveCommand(0 ,0);
+                    isTimeInit = false;
+                    currentStage = FIND_RATIO;
+                }
+            } else {
+                DriveController::instance()->sendDriveCommand(-leftWheelMin, leftWheelMin);
+
+                float abs_error = fabs(angles::shortest_angular_distance(currentTheta, initTheta));
+                if(abs_error >= angleTolerance){
+                    DriveController::instance()->sendDriveCommand(0 ,0);
+                    isTimeInit = false;
+                    currentStage = FIND_RATIO;
+                }
+            }
+
+            cout << "CALIBRATION: " << "Error is :"<< error << endl;
+
+            break;
+        }
+
         case FIND_RATIO:
         {
             cout <<"CALIBRATION: left: " <<leftWheelMin<<" right: "<<rightWheelMin<<endl;
             DriveController::instance()->stop();
             DriveController::instance()->setLeftRightMin(leftWheelMin, rightWheelMin);
 
-            SMACS::instance()->pushNext(new SearchBehavior());
             SMACS::instance()->pushNext(new SearchBehavior());
             return true;
         }

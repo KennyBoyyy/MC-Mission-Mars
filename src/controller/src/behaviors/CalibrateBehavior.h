@@ -21,10 +21,13 @@ class CalibrateBehavior: public Behavior{
     enum Stages {
         FIND_MIN_LEFT_WHEELS = 0,
         FIND_MIN_RIGHT_WHEELS,
+        RUTURN_TO_POSITION,
         FIND_RATIO
 
     };
     Stages currentStage;
+
+    float initialAngle;
 
     int leftWheelMin;
     int rightWheelMin;
@@ -36,6 +39,8 @@ class CalibrateBehavior: public Behavior{
     int secTillNextSpeedIter;
     float angleTolerance;
     float initTheta;
+
+    bool isRetunrSet;
     float returnTheta;
 
 
@@ -46,7 +51,10 @@ class CalibrateBehavior: public Behavior{
             isTimeInit = false;
             secTillNextSpeedIter = 3;
             initTheta = OdometryHandler::instance()->getTheta();
+
+            isRetunrSet = false;
             returnTheta = initTheta;
+
             angleTolerance = 0.175;
 
             rightWheelMin = 20;

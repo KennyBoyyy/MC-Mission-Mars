@@ -103,10 +103,15 @@ bool SMACS::isEmpty(){return behaviorStack.empty();}
 
 bool SMACS::tick(){
     if(!behaviorStack.empty())
+    	//lock stack
+	    std::lock_guard<std::mutex> guard(stackMutex);
+	    cout << "STACK: " << "Stack locked for tick"<< endl;
         if(behaviorStack.top()->tick()){
             pop();
+            cout << "STACK: " << "Stack unlocked for tick"<< endl;
             return true;
         }
+        cout << "STACK: " << "Stack unlocked for tick"<< endl;
     return false;
 }
 

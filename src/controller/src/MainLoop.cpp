@@ -137,6 +137,7 @@ int main(int argc, char **argv) {
 
     //for testing
     SMACS::instance()->push(new CalibrateBehavior());
+    SonarHandler::instance()-> setEnable(false);
 
     ros::spin();
 
