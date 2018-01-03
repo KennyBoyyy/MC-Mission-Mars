@@ -2,6 +2,7 @@
 #define SEARCH_BEHAVIOR_H
 
 #include "BehaviorInterface.h"
+#include "../controllers/DriveController.h"
 
 class SearchBehavior: public Behavior{
     bool first = true;

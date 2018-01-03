@@ -1,11 +1,6 @@
 #ifndef BEHAVIOR_INTERFACE_H
 #define BEHAVIOR_INTERFACE_H
 
-#include "../controllers/DriveController.h"
-#include "../controllers/ClawController.h"
-#include "../handlers/Handlers.h"
-#include "../SMACS.h"
-
 
 
 //Enum specifies the type of the behavior. Needed to make sure that same type behavior is not put on the stack if not allowed

@@ -208,6 +208,10 @@ namespace rqt_rover_gui {
     // to the main widget so keyboard manual control is handled properly
     void refocusKeyboardEventHandler();
 
+    void on_drive_test_clicked();
+    void on_reset_pid_clicked();
+    void on_turn_test_clicked();
+
   private:
 
     void checkAndRepositionRover(QString rover_name, float x, float y);
@@ -217,6 +221,19 @@ namespace rqt_rover_gui {
     map<string,ros::Publisher> control_mode_publishers;
     map<string,ros::Publisher> waypoint_cmd_publishers;
     ros::Publisher joystick_publisher;
+
+    ros::Publisher PIDResetButton;
+    ros::Publisher PIDDriveMeter;
+    ros::Publisher PIDTurnAngle;
+
+
+
+
+
+
+
+
+
 
     // ROS Subscribers
     ros::Subscriber joystick_subscriber;

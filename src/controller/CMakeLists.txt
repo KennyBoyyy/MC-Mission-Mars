@@ -111,6 +111,7 @@ add_executable(
   src/handlers/Tag.cpp
   src/behaviors/Behaviors.cpp
   src/behaviors/SearchBehavior.cpp
+  src/behaviors/AvoidBehavior.cpp
   src/behaviors/PickUpBehavior.cpp
   src/behaviors/CalibrateBehavior.cpp
   src/controllers/DriveController.cpp

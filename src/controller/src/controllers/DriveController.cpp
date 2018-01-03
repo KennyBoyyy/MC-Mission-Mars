@@ -96,6 +96,7 @@ bool DriveController::goToDistance(float distance, float direction){
         switch(stateMachineState){
             case STATE_MACHINE_ROTATE:
             {
+
                 // Calculate angle between currentLocation.theta and waypoints.front().theta
                 // Rotate left or right depending on sign of angle
                 // Stay in this state until angle is minimized
@@ -103,6 +104,8 @@ bool DriveController::goToDistance(float distance, float direction){
 
                 // Calculate the diffrence between current and desired heading in radians.
                 float errorYaw = angles::shortest_angular_distance(currentLocation.theta, currentDrive.theta);
+
+                cout << "DRIVE: Rotating, Error:  "<< errorYaw << endl;
 
                 //Calculate absolute value of angle
                 float abs_error = fabs(angles::shortest_angular_distance(currentLocation.theta, currentDrive.theta));
@@ -126,12 +129,12 @@ bool DriveController::goToDistance(float distance, float direction){
                 // calculate the distance between current and desired heading in radians
                 currentDrive.theta = atan2(currentDrive.y - currentLocation.y, currentDrive.x - currentLocation.x);
                 float errorYaw = angles::shortest_angular_distance(currentLocation.theta, currentDrive.theta);
-                float distance = hypot(currentDrive.x - currentLocation.x, currentDrive.y - currentLocation.y);
+                float distanceToDrive = hypot(currentDrive.x - currentLocation.x, currentDrive.y - currentLocation.y);
 
-
+                cout << "DRIVE: Distance: " << distanceToDrive << endl;
                 // goal not yet reached drive while maintaining proper heading.
-                if (fabs(errorYaw) < M_PI_2 &&  distance > waypointTolerance){
-                    //cout << "linear velocity:  " << linearVelocity << endl;
+                if (fabs(errorYaw) < M_PI_2 &&  distanceToDrive > waypointTolerance){
+
                     fastPID((searchVelocity-linear) ,errorYaw, searchVelocity, currentDrive.theta);
                 } else {
                     // stopno change
@@ -149,6 +152,7 @@ bool DriveController::goToDistance(float distance, float direction){
         }
         sendDriveCommand(left, right);
     } else {
+        cout << "DRIVE: diff dist reset: "<<this->distance << "  " << distance<<endl;
         //values are different from last time, so change to new values
         this->distance = distance;
         this->direction = direction;
@@ -204,7 +208,6 @@ void DriveController::resetDriveController(float x, float y){
     stateMachineState = STATE_MACHINE_ROTATE;
     currentDrive.x = x;
     currentDrive.y = y;
-    currentDrive.theta = atan2(y - OdometryHandler::instance()->getY(), x - OdometryHandler::instance()->getX());
     sendDriveCommand(left, right);
 }
 
@@ -223,7 +226,6 @@ void DriveController::sendDriveCommand(double left, double right){
     // publish the drive commands
     drivePublisher.publish(velocity);
 }
-
 
 
 

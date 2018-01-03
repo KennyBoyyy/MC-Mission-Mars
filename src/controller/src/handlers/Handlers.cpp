@@ -7,7 +7,7 @@
 SonarHandler *SonarHandler::s_instance = 0;
 
 SonarHandler::SonarHandler(){
-    minDistance = 1; //min distance to call an avoid.
+    minDistance = 0.5; //min distance to call an avoid.
     isAvoidEnabled = true;
 }
 
@@ -26,20 +26,35 @@ bool const &SonarHandler::isEnabled(){
 }
 
 void SonarHandler::handleLeft(const sensor_msgs::Range::ConstPtr& sonarLeft){
+    //If avoid is on and sonar is too close
+    float currentRange = sonarLeft->range;
+    if(isAvoidEnabled && currentRange <= minDistance) {
+        SMACS::instance()->push(new AvoidBehavior());
+    }
     this->sonarLeft.range = sonarLeft->range;
 }
 
 void SonarHandler::handleCenter(const sensor_msgs::Range::ConstPtr& sonarCenter){
+    float currentRange = sonarCenter->range;
+    if(isAvoidEnabled && currentRange <= minDistance) {
+        SMACS::instance()->push(new AvoidBehavior());
+    }
     this->sonarCenter.range = sonarCenter->range;
 }
 
 void SonarHandler::handleRight(const sensor_msgs::Range::ConstPtr& sonarRight){
+    float currentRange = sonarRight->range;
+    if(isAvoidEnabled && currentRange <= minDistance) {
+        SMACS::instance()->push(new AvoidBehavior());
+    }
     this->sonarRight.range = sonarRight->range;
 }
 
-double SonarHandler::getSonarLeft(){return sonarLeft.range;}
-double SonarHandler::getSonarCenter(){return sonarCenter.range;}
-double SonarHandler::getSonarRight(){return sonarRight.range;}
+float SonarHandler::getSonarLeft(){return sonarLeft.range;}
+float SonarHandler::getSonarCenter(){return sonarCenter.range;}
+float SonarHandler::getSonarRight(){return sonarRight.range;}
+
+float SonarHandler::getMinDistance(){return minDistance;}
 
 //==============================================================================//
 //==============================================================================//

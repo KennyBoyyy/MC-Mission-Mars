@@ -106,11 +106,22 @@ class DriveController{
         bool goToLocation(float x, float y);
         bool goToDistance(float distance, float direction);
         bool turnToTheta(float theta);
+        bool driveStraight(float distance);
         bool stop();
+
 
         void setLeftRightMin(double leftMin, double rightMin);
         void resetDriveController(float x, float y);
         void sendDriveCommand(double left, double right);
+
+        void turnRight(double speed){sendDriveCommand(speed, -speed);}
+        void turnLeft(double speed){sendDriveCommand(-speed, speed);}
+
+
+        double getLeftMin(){return leftMin;}
+        double getRightMin(){return rightMin;}
+
+
 
 };
 

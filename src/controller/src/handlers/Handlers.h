@@ -15,6 +15,11 @@
 #include "../Point.h"
 #include "Tag.h"
 
+//#include "../behaviors/Behaviors.h"
+#include "../SMACS.h"
+#include "../behaviors/AvoidBehavior.h"
+
+
 
 /**
  * This executable file will contain all the handlers and their functionality
@@ -25,7 +30,7 @@
  * handling the sonar events
  */
 class SonarHandler{
-    double minDistance; //if sonar is this distance from obstacle then put avoid behavior on stack
+    float minDistance; //if sonar is this distance from obstacle then put avoid behavior on stack
     bool isAvoidEnabled; //if obstacle avoid is off we will not do anything about obstacles. We will ignore
     static SonarHandler *s_instance; //static instance of class
 
@@ -48,9 +53,12 @@ public:
     void handleRight(const sensor_msgs::Range::ConstPtr& sonarRight);
 
 
-    double getSonarLeft();
-    double getSonarCenter();
-    double getSonarRight();
+    float getSonarLeft();
+    float getSonarCenter();
+    float getSonarRight();
+
+    float getMinDistance();
+
 };
 
 

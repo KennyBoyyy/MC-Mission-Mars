@@ -658,6 +658,8 @@ void RoverGUIPlugin::currentRoverChangedEventHandler(QListWidgetItem *current, Q
     us_left_subscriber = nh.subscribe("/"+selected_rover_name+"/sonarLeft", 10, &RoverGUIPlugin::leftUSEventHandler, this);
     us_right_subscriber = nh.subscribe("/"+selected_rover_name+"/sonarRight", 10, &RoverGUIPlugin::rightUSEventHandler, this);
 
+
+
     emit sendInfoLogMessage(QString("Displaying map for ")+QString::fromStdString(selected_rover_name));
 
     // Add to the rover map.
@@ -2978,3 +2980,34 @@ RoverGUIPlugin::~RoverGUIPlugin()
 
 PLUGINLIB_EXPORT_CLASS(rqt_rover_gui::RoverGUIPlugin, rqt_gui_cpp::Plugin)
 
+
+void rqt_rover_gui::RoverGUIPlugin::on_drive_test_clicked()
+{
+    std::set<std::string>::iterator it = rover_names.find(selected_rover_name);
+    if(it == rover_names.end())
+    {
+      emit sendInfoLogMessage("A valid rover is not selected!");
+      return;
+    }
+}
+
+
+void rqt_rover_gui::RoverGUIPlugin::on_reset_pid_clicked()
+{
+    std::set<std::string>::iterator it = rover_names.find(selected_rover_name);
+    if(it == rover_names.end())
+    {
+      emit sendInfoLogMessage("A valid rover is not selected!");
+      return;
+    }
+}
+
+void rqt_rover_gui::RoverGUIPlugin::on_turn_test_clicked()
+{
+    std::set<std::string>::iterator it = rover_names.find(selected_rover_name);
+    if(it == rover_names.end())
+    {
+      emit sendInfoLogMessage("A valid rover is not selected!");
+      return;
+    }
+}

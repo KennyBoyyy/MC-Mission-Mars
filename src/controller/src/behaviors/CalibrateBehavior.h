@@ -1,10 +1,23 @@
 #ifndef CALIBRATE_BEHAVIOR_H
 #define CALIBRATE_BEHAVIOR_H
 
-#include "Behaviors.h"
-#include "time.h"
+#include "../handlers/Handlers.h"
+#include "../SMACS.h"
+
+
+#include "BehaviorInterface.h"
+
+#include "SearchBehavior.h"
+
+
+
+
+
+#include <time.h>
+
 
 class CalibrateBehavior: public Behavior{
+
     enum Stages {
         FIND_MIN_LEFT_WHEELS = 0,
         FIND_MIN_RIGHT_WHEELS,
@@ -36,8 +49,8 @@ class CalibrateBehavior: public Behavior{
             returnTheta = initTheta;
             angleTolerance = 0.175;
 
-            rightWheelMin = 5;
-            leftWheelMin = 5;
+            rightWheelMin = 20;
+            leftWheelMin = 20;
 
             iterationInctrease =5;
 
