@@ -19,6 +19,7 @@ class PickUpBehavior : public Behavior{
         TURN_TO_FACE_TARGET,
         DRIVE_TO_PICK_UP,
         PICK_UP,
+        RETRY,
         DONE
     };
     Stages currentStage;
@@ -34,6 +35,8 @@ class PickUpBehavior : public Behavior{
     float initX = 0;
     float initY = 0;
     float angleTolerance = 0.0175;
+
+    float driveBackDist = 0.2;
 
 
 

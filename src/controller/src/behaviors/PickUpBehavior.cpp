@@ -131,6 +131,7 @@ bool PickUpBehavior::tick(){
             if(blockDistance - distance <= 0){
                 currentStage = PICK_UP;
                 DriveController::instance()->stop();
+                //get x and y
             }else{
                 DriveController::instance()->sendDriveCommand(40, 40);
             }
@@ -142,7 +143,40 @@ bool PickUpBehavior::tick(){
             ClawController::instance()->fingerClose();
             sleep(1);
             ClawController::instance()->wristUp();
+            sleep(5);
+            // check if picked up
+            float sonarCenter = SonarHandler::instance()->getSonarCenter();
+
+            if(sonarCenter < 0.12){
+                //target was picked up
+                ClawController::instance()->wristDown();
+                return true;
+            } else {
+                initX = OdometryHandler::instance()->getX();
+                initY = OdometryHandler::instance()->getY();
+                currentStage = RETRY;
+            }
+
             break;
+        }
+        case RETRY:
+        {
+            ClawController::instance()->wristDown();
+            ClawController::instance()->fingerOpen();
+
+            float currX = OdometryHandler::instance()->getX();
+            float currY = OdometryHandler::instance()->getY();
+            // target was not seen. Drive back and pick up
+            //Drive and count how far we have driven
+            float distance = hypot(initX - currX, initY - currY);
+            cout << "PICKUP: distance drove back " << (distance) << " out of : "<<driveBackDist<< endl;
+
+            if(distance >= driveBackDist){
+                currentStage = LOCK_TARGET;
+                DriveController::instance()->stop();
+            }else{
+                DriveController::instance()->sendDriveCommand(-40, -40);
+            }
         }
 
 
