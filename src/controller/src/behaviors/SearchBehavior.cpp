@@ -6,7 +6,7 @@ bool SearchBehavior::tick(){
     if(first){
         nextPoint();
     } else {
-        if(DriveController::instance()->goToDistance(distance, theta)){
+        if(DriveController::instance()->goToLocation(x, y)){
             cout<<"TAG: Hello Searchin"<<endl;
             nextPoint();
         }
@@ -21,14 +21,20 @@ void SearchBehavior::nextPoint(){
     if(first){
         theta = OdometryHandler::instance()->getTheta() + M_PI;
         distance = 1;
+        x = OdometryHandler::instance()->getX() + ((distance) * cos(theta));
+        y = OdometryHandler::instance()->getY() + ((distance) * sin(theta));
         first = false;
     } else if(second){
         theta = OdometryHandler::instance()->getTheta() + M_PI_2;
         distance = 2;
+        x = OdometryHandler::instance()->getX() + ((distance) * cos(theta));
+        y = OdometryHandler::instance()->getY() + ((distance) * sin(theta));
         second = false;
     } else if(third){
         theta = OdometryHandler::instance()->getTheta() + M_PI_2;
         distance = 4;
+        x = OdometryHandler::instance()->getX() + ((distance) * cos(theta));
+        y = OdometryHandler::instance()->getY() + ((distance) * sin(theta));
         third = false;
         iterCount ++;
     } else {
@@ -38,6 +44,8 @@ void SearchBehavior::nextPoint(){
         }
         iterCount ++;
         theta = OdometryHandler::instance()->getTheta() + M_PI_2;
+        x = OdometryHandler::instance()->getX() + ((distance) * cos(theta));
+        y = OdometryHandler::instance()->getY() + ((distance) * sin(theta));
     }
 
 

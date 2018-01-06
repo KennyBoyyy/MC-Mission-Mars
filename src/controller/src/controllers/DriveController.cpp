@@ -38,12 +38,27 @@ bool DriveController::goToLocation(float x, float y){
 
                 // If angle > rotateOnlyAngleTolerance radians rotate but dont drive forward.
                 if (abs_error > rotateOnlyAngleTolerance){
-                    slowPID(0.0, errorYaw, 0.0, currentLocation.theta);
+                    fastPID(0.0, errorYaw, 0.0, currentDrive.theta);
                     break;
                 } else {
-                //move to differential drive step
-                stateMachineState = STATE_MACHINE_SKID_STEER;
-                //fall through on purpose.
+                    //if we need to rotate a bit more to face the correct direction
+                    if(abs_error >= finalRotationTolerance){
+                        cout << "DCONTR: correction angle: " << abs_error<<endl;
+                        //find out if left or right
+                        //if need to turn right
+                        if (errorYaw < 0){
+                            sendDriveCommand(rightMin, -rightMin);
+                        } else {
+                            sendDriveCommand(-leftMin, leftMin);
+                        }
+
+                        break;
+                    } else {
+                        stop();
+                        //move to differential drive step
+                        stateMachineState = STATE_MACHINE_SKID_STEER;
+                        //fall through on purpose.
+                    }
                 }
             }
             case STATE_MACHINE_SKID_STEER:
@@ -115,9 +130,24 @@ bool DriveController::goToDistance(float distance, float direction){
                     fastPID(0.0, errorYaw, 0.0, currentDrive.theta);
                     break;
                 } else {
-                //move to differential drive step
-                stateMachineState = STATE_MACHINE_SKID_STEER;
-                //fall through on purpose.
+                    //if we need to rotate a bit more to face the correct direction
+                    if(abs_error >= finalRotationTolerance){
+                        cout << "DCONTR: correction angle: " << abs_error<<endl;
+                        //find out if left or right
+                        //if need to turn right
+                        if (errorYaw < 0){
+                            sendDriveCommand(rightMin, -rightMin);
+                        } else {
+                            sendDriveCommand(-leftMin, leftMin);
+                        }
+
+                        break;
+                    } else {
+                        stop();
+                        //move to differential drive step
+                        stateMachineState = STATE_MACHINE_SKID_STEER;
+                        //fall through on purpose.
+                    }
                 }
             }
             case STATE_MACHINE_SKID_STEER:
@@ -134,9 +164,8 @@ bool DriveController::goToDistance(float distance, float direction){
                 cout << "DRIVE: Distance: " << distanceToDrive << endl;
                 // goal not yet reached drive while maintaining proper heading.
                 if (fabs(errorYaw) < M_PI_2 &&  distanceToDrive > waypointTolerance){
-
                     fastPID((searchVelocity-linear) ,errorYaw, searchVelocity, currentDrive.theta);
-                } else {
+                } else {                   
                     // stopno change
                     stop();
                     // move back to transform step

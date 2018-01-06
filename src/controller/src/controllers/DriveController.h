@@ -20,7 +20,7 @@ class DriveController{
 
     StateMachineStates stateMachineState;
     float rotateOnlyAngleTolerance = 0.262;  //5 deg
-    float finalRotationTolerance = 0.1;
+    float finalRotationTolerance = 0.0349;
     const float waypointTolerance = 0.15; //15 cm tolerance.
 
     float scaler = 0.5;
