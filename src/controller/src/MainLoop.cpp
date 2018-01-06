@@ -88,6 +88,8 @@ const float heartbeat_publish_interval = 2;
 geometry_msgs::Twist velocity;
 bool stopped = true;
 
+bool collisionEnabled = false;
+
 
 
 int main(int argc, char **argv) {
@@ -147,6 +149,10 @@ int main(int argc, char **argv) {
 void tick(const ros::TimerEvent&) {
     // To print log "tail -f path/"name of log file".txt | grep "TAG""
     if (currentMode == 2 || currentMode == 3) { //auto
+        if(!collisionEnabled){
+            SonarHandler::instance()->setEnable(true);
+            collisionEnabled = true;
+        }
         SMACS::instance()->tick();
 
         stopped = false;

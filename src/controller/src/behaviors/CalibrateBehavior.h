@@ -38,6 +38,7 @@ class CalibrateBehavior: public Behavior{
     int secSince;
     int secTillNextSpeedIter;
     float angleTolerance;
+    float finalAngleTolerance;
     float initTheta;
 
     bool isRetunrSet;
@@ -58,9 +59,10 @@ class CalibrateBehavior: public Behavior{
             returnTheta = initTheta;
 
             angleTolerance = 0.175;
+            finalAngleTolerance = 0.0175;
 
-            rightWheelMin = 30;
-            leftWheelMin = 30;
+            rightWheelMin = 10;
+            leftWheelMin = 10;
 
             iterationInctrease =5;
 

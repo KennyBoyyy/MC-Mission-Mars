@@ -103,25 +103,18 @@ bool CalibrateBehavior::tick(){
         case RUTURN_TO_POSITION:
         {
             float currentTheta = OdometryHandler::instance()->getTheta();
+            float abs_error = fabs(angles::shortest_angular_distance(currentTheta, initTheta));
+
+            if(abs_error >= finalAngleTolerance){
+                DriveController::instance()->sendDriveCommand(0 ,0);
+                isTimeInit = false;
+                currentStage = FIND_RATIO;
+            }
 
             if (error < 0){
                 DriveController::instance()->sendDriveCommand(rightWheelMin, -rightWheelMin);
-
-                float abs_error = fabs(angles::shortest_angular_distance(currentTheta, initTheta));
-                if(abs_error >= angleTolerance){
-                    DriveController::instance()->sendDriveCommand(0 ,0);
-                    isTimeInit = false;
-                    currentStage = FIND_RATIO;
-                }
             } else {
                 DriveController::instance()->sendDriveCommand(-leftWheelMin, leftWheelMin);
-
-                float abs_error = fabs(angles::shortest_angular_distance(currentTheta, initTheta));
-                if(abs_error >= angleTolerance){
-                    DriveController::instance()->sendDriveCommand(0 ,0);
-                    isTimeInit = false;
-                    currentStage = FIND_RATIO;
-                }
             }
 
             cout << "CALIBRATION: " << "Error is :"<< error << endl;
