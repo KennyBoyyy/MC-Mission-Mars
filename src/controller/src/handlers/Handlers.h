@@ -19,6 +19,8 @@
 #include "../SMACS.h"
 #include "../behaviors/AvoidBehavior.h"
 
+#include <mutex>
+
 
 
 /**
@@ -85,9 +87,16 @@ public:
 };
 
 
+
+
+
 class TargetHandler{
     static TargetHandler* s_instance;
-    std::vector<Tag> tagList;
+    std::vector<Tag> centerTagsList;
+    std::vector<Tag> cubeTagsList;
+
+    // This is needed to make handler thread safe
+    std::mutex instanceMutex;
 
     TargetHandler();
 
@@ -95,7 +104,12 @@ public:
     static TargetHandler* instance();
 
     void handle(const apriltags_ros::AprilTagDetectionArray::ConstPtr& message);
-    int numberOfTagsSeen();
+
+    int getNumberOfCubeTags();
+    int getNumberOfCenterTagsSeen();
+
+    std::vector<Tag> getCubeTags();
+    std::vector<Tag> getCenterTags();
 
 };
 

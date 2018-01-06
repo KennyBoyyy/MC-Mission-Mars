@@ -107,9 +107,11 @@ TargetHandler* TargetHandler::instance() {
 
 void TargetHandler::handle(const apriltags_ros::AprilTagDetectionArray::ConstPtr& message)
 {
+    std::lock_guard<std::mutex> guard(instanceMutex);
     if (message->detections.size() > 0) {
-        std::vector<Tag> tags;
-    
+        std::vector<Tag> cubeTags;
+        std::vector<Tag> centerTags;
+
         for (int i = 0; i < message->detections.size(); i++) {
     
           // Package up the ROS AprilTag data into our own type that does not rely on ROS.
@@ -125,14 +127,64 @@ void TargetHandler::handle(const apriltags_ros::AprilTagDetectionArray::ConstPtr
                                     tagPose.pose.orientation.y,
                                     tagPose.pose.orientation.z,
                                     tagPose.pose.orientation.w ) );
-          tags.push_back(loc);
+
+          //if cube
+          if(message->detections[i].id == 0) {
+              cubeTags.push_back(loc);
+          } else {
+              centerTags.push_back(loc);
+          }
         }
-        tagList = tags;
+        cubeTagsList = cubeTags;
+        centerTagsList = centerTags;
     } else {
-        tagList.clear();
+        cubeTagsList.clear();
+        centerTagsList.clear();
     }
 }
 
-int TargetHandler::numberOfTagsSeen(){return tagList.size();}
+int TargetHandler::getNumberOfCubeTags(){
+    std::lock_guard<std::mutex> guard(instanceMutex);
+    return cubeTagsList.size();
+}
+int TargetHandler::getNumberOfCenterTagsSeen(){
+    std::lock_guard<std::mutex> guard(instanceMutex);
+    return centerTagsList.size();
+}
+
+std::vector<Tag> TargetHandler::getCubeTags(){
+    std::lock_guard<std::mutex> guard(instanceMutex);
+    return cubeTagsList;
+}
+std::vector<Tag> TargetHandler::getCenterTags(){
+    std::lock_guard<std::mutex> guard(instanceMutex);
+    return centerTagsList;
+}
 //==============================================================================//
 //==============================================================================//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

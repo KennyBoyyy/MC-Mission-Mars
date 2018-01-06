@@ -6,6 +6,7 @@
 #include "SearchBehavior.h"
 #include "CalibrateBehavior.h"
 #include "AvoidBehavior.h"
+#include "PickUpBehavior.h"
 
 #include "ros/ros.h"
 #include "../controllers/DriveController.h"
