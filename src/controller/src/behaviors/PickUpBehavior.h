@@ -38,6 +38,8 @@ class PickUpBehavior : public Behavior{
 
     float driveBackDist = 0.2;
 
+    int driveSpeed = 40;
+
 
 
     public:

@@ -27,8 +27,8 @@ class DriveController{
     float searchVelocity = 0.65; // meters/second  //0.65 MAX value
     float yawVelocity = 0.65;
    
-    double leftMin = 0;
-    double rightMin = 0;
+    double leftMin = 45;
+    double rightMin = 45;
 
     ros::Publisher drivePublisher;
     geometry_msgs::Twist velocity;
