@@ -142,6 +142,7 @@ bool PickUpBehavior::tick(){
         case PICK_UP:
         {
             ClawController::instance()->fingerClose();
+            sleep(1);
             ClawController::instance()->wristUp();
 
 

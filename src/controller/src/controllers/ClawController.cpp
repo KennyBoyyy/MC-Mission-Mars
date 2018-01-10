@@ -25,6 +25,11 @@ bool ClawController::wristDown(){
     return true;
 }
 
+bool ClawController::wristDownWithCube(){
+    wristPublisher.publish(wristDownAngle- 0.15);
+    return true;
+}
+
 bool ClawController::wristUp(){
     wristPublisher.publish(wristUpAngle);
     return true;

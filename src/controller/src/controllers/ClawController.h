@@ -24,6 +24,7 @@ public:
     void registerPublishers(ros::Publisher& fingerPublisher, ros::Publisher wristPublisher);
 
     bool wristDown();
+    bool wristDownWithCube();
     bool wristUp();
     bool fingerClose();
     bool fingerOpen();
