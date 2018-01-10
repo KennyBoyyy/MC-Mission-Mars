@@ -7,6 +7,9 @@ ClawController::ClawController() {
     fingerCloseAngle.data = 0.0;
     wristDownAngle.data = M_PI_2;
     wristUpAngle.data = 0.0;
+
+    wristDownAngleWithCube.data = M_PI_2 - 0.15;
+
 }
 
 ClawController* ClawController::instance(){
@@ -26,7 +29,7 @@ bool ClawController::wristDown(){
 }
 
 bool ClawController::wristDownWithCube(){
-    wristPublisher.publish(wristDownAngle- 0.15);
+    wristPublisher.publish(wristDownAngle);
     return true;
 }
 
