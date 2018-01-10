@@ -142,21 +142,26 @@ bool PickUpBehavior::tick(){
         case PICK_UP:
         {
             ClawController::instance()->fingerClose();
-            sleep(1);
             ClawController::instance()->wristUp();
-            sleep(5);
-            // check if picked up
-            float sonarCenter = SonarHandler::instance()->getSonarCenter();
 
-            if(sonarCenter < 0.12){
-                //target was picked up
-                ClawController::instance()->wristDown();
-                return true;
-            } else {
-                initX = OdometryHandler::instance()->getX();
-                initY = OdometryHandler::instance()->getY();
-                currentStage = RETRY;
+
+            if(!wait(3)){
+                // check if picked up
+                float sonarCenter = SonarHandler::instance()->getSonarCenter();
+                cout << "PICKUP: Center sonar: " <<sonarCenter<< endl;
+
+                if(sonarCenter < 0.12){
+                    //target was picked up
+                    ClawController::instance()->wristDown();
+                    return true;
+                } else {
+                    initX = OdometryHandler::instance()->getX();
+                    initY = OdometryHandler::instance()->getY();
+                    currentStage = RETRY;
+                }
             }
+
+
 
             break;
         }
@@ -201,18 +206,54 @@ bool PickUpBehavior::tick(){
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
+
+
+
+bool PickUpBehavior::wait(int sec){
+    if(!waiting){
+        waiting = true;
+        time(&initTime);
+        return true;
+    } else {
+        time(&currTime);
+        int secSince = difftime(currTime, initTime);
+        cout << "PICKUP: Waiting: "<<secSince<<" out of "<<sec<<endl;
+        if(difftime(currTime, initTime) >= sec){
+            waiting = false;
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

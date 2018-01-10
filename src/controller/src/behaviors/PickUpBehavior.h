@@ -40,6 +40,9 @@ class PickUpBehavior : public Behavior{
 
     int driveSpeed = 40;
 
+    bool waiting;
+    time_t initTime;
+    time_t currTime;
 
 
     public:
@@ -50,6 +53,8 @@ class PickUpBehavior : public Behavior{
         }
 
         bool tick();
+
+        bool wait(int sec);
 };
 
 
