@@ -7,6 +7,9 @@ ClawController::ClawController() {
     fingerCloseAngle.data = 0.0;
     wristDownAngle.data = M_PI_2;
     wristUpAngle.data = 0.0;
+
+    wristDownAngleWithCube.data = M_PI_2 - 0.15;
+
 }
 
 ClawController* ClawController::instance(){
@@ -21,6 +24,11 @@ void ClawController::registerPublishers(ros::Publisher& fingerPublisher, ros::Pu
 }
 
 bool ClawController::wristDown(){
+    wristPublisher.publish(wristDownAngle);
+    return true;
+}
+
+bool ClawController::wristDownWithCube(){
     wristPublisher.publish(wristDownAngle);
     return true;
 }

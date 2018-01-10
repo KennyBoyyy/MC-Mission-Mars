@@ -138,7 +138,7 @@ int main(int argc, char **argv) {
     ClawController::instance()->registerPublishers(fingerAnglePublish, wristAnglePublish);
 
     //for testing
-    SMACS::instance()->push(new PickUpBehavior());
+    SMACS::instance()->push(new CalibrateBehavior());
     SonarHandler::instance()-> setEnable(false);
 
     ros::spin();
@@ -150,7 +150,7 @@ void tick(const ros::TimerEvent&) {
     // To print log "tail -f path/"name of log file".txt | grep "TAG""
     if (currentMode == 2 || currentMode == 3) { //auto
         if(!collisionEnabled){
-            SonarHandler::instance()->setEnable(true);
+            //SonarHandler::instance()->setEnable(true);
             collisionEnabled = true;
         }
         SMACS::instance()->tick();

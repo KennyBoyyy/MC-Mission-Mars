@@ -38,6 +38,11 @@ class PickUpBehavior : public Behavior{
 
     float driveBackDist = 0.2;
 
+    int driveSpeed = 40;
+
+    bool waiting;
+    time_t initTime;
+    time_t currTime;
 
 
     public:
@@ -48,6 +53,8 @@ class PickUpBehavior : public Behavior{
         }
 
         bool tick();
+
+        bool wait(int sec);
 };
 
 

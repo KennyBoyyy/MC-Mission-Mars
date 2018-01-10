@@ -18,6 +18,7 @@
 //#include "../behaviors/Behaviors.h"
 #include "../SMACS.h"
 #include "../behaviors/AvoidBehavior.h"
+#include "../behaviors/PickUpBehavior.h"
 
 #include <mutex>
 

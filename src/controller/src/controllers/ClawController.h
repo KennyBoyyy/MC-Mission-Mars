@@ -13,6 +13,8 @@ class ClawController
     std_msgs::Float32 wristDownAngle;
     std_msgs::Float32 wristUpAngle;
 
+    std_msgs::Float32 wristDownAngleWithCube;
+
     ros::Publisher fingerPublisher;
     ros::Publisher wristPublisher;
 
@@ -24,6 +26,7 @@ public:
     void registerPublishers(ros::Publisher& fingerPublisher, ros::Publisher wristPublisher);
 
     bool wristDown();
+    bool wristDownWithCube();
     bool wristUp();
     bool fingerClose();
     bool fingerOpen();

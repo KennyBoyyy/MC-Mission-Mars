@@ -62,6 +62,8 @@ bool PickUpBehavior::tick(){
                     initTheta = OdometryHandler::instance()->getTheta();
                 }
 
+            } else {
+                //return true;
             }
             break;
 
@@ -107,13 +109,13 @@ bool PickUpBehavior::tick(){
                     }
                 }
 
-                //decide whick way to turn
+                //decide which way to turn
                 if(!leftTurn){
                     //turn right
-                    DriveController::instance()->sendDriveCommand(20, -20);
+                    DriveController::instance()->sendDriveCommand(rightWheelMin, -rightWheelMin);
                 } else {
                     // turn left
-                    DriveController::instance()->sendDriveCommand(-20, 20);
+                    DriveController::instance()->sendDriveCommand(-leftWheelMin, leftWheelMin);
                 }
             }
             break;
@@ -128,12 +130,11 @@ bool PickUpBehavior::tick(){
             float distance = hypot(initX - currX, initY - currY);
             cout << "PICKUP: distance left " << (blockDistance - distance) << " Curr dist: "<<distance<< endl;
 
-            if(blockDistance - distance <= 0){
+            if(blockDistance - distance <= 0.05){
                 currentStage = PICK_UP;
                 DriveController::instance()->stop();
-                //get x and y
             }else{
-                DriveController::instance()->sendDriveCommand(40, 40);
+                DriveController::instance()->sendDriveCommand(driveSpeed, driveSpeed);
             }
 
             break;
@@ -143,19 +144,25 @@ bool PickUpBehavior::tick(){
             ClawController::instance()->fingerClose();
             sleep(1);
             ClawController::instance()->wristUp();
-            sleep(5);
-            // check if picked up
-            float sonarCenter = SonarHandler::instance()->getSonarCenter();
 
-            if(sonarCenter < 0.12){
-                //target was picked up
-                ClawController::instance()->wristDown();
-                return true;
-            } else {
-                initX = OdometryHandler::instance()->getX();
-                initY = OdometryHandler::instance()->getY();
-                currentStage = RETRY;
+
+            if(!wait(3)){
+                // check if picked up
+                float sonarCenter = SonarHandler::instance()->getSonarCenter();
+                cout << "PICKUP: Center sonar: " <<sonarCenter<< endl;
+
+                if(sonarCenter < 0.12){
+                    //target was picked up
+                    ClawController::instance()->wristDown();
+                    return true;
+                } else {
+                    initX = OdometryHandler::instance()->getX();
+                    initY = OdometryHandler::instance()->getY();
+                    currentStage = RETRY;
+                }
             }
+
+
 
             break;
         }
@@ -175,7 +182,7 @@ bool PickUpBehavior::tick(){
                 currentStage = LOCK_TARGET;
                 DriveController::instance()->stop();
             }else{
-                DriveController::instance()->sendDriveCommand(-40, -40);
+                DriveController::instance()->sendDriveCommand(-driveSpeed, -driveSpeed);
             }
         }
 
@@ -200,18 +207,54 @@ bool PickUpBehavior::tick(){
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
+
+
+
+bool PickUpBehavior::wait(int sec){
+    if(!waiting){
+        waiting = true;
+        time(&initTime);
+        return true;
+    } else {
+        time(&currTime);
+        int secSince = difftime(currTime, initTime);
+        cout << "PICKUP: Waiting: "<<secSince<<" out of "<<sec<<endl;
+        if(difftime(currTime, initTime) >= sec){
+            waiting = false;
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
