@@ -181,7 +181,7 @@ bool PickUpBehavior::tick(){
                 float leftWheelMin = DriveController::instance()->getLeftMin();
 
                 // Figure out what direction to turn
-                if(abs_blockYaw - abs_error > 0.0375){
+                if(abs_blockYaw - abs_error > 0){
                     if(blockYawError > 0){
                         leftTurn = false;
                     } else {
@@ -237,7 +237,7 @@ bool PickUpBehavior::tick(){
             ClawController::instance()->wristUp();
 
 
-            if(!wait(5)){
+            if(!wait(3)){
                 // check if picked up
                 float sonarCenter = SonarHandler::instance()->getSonarCenter();
                 cout << "PICKUP: Center sonar: " <<sonarCenter<< endl;
