@@ -4,6 +4,7 @@ bool PickUpBehavior::tick(){
     switch (currentStage){
         case LOCK_TARGET:
         {
+            SonarHandler::instance()->setEnable(true);
             ClawController::instance()->fingerOpen();
             ClawController::instance()->wristDown();
 
@@ -69,6 +70,7 @@ bool PickUpBehavior::tick(){
 
             } else {
                 return true;
+                SonarHandler::instance()->setEnable(true);
             }
             break;
 
@@ -139,6 +141,7 @@ bool PickUpBehavior::tick(){
                 currentStage = LOCK_TARGET;
                 precisionDrive = true;
                 DriveController::instance()->stop();
+
             }else{
                 DriveController::instance()->sendDriveCommand(driveSpeed, driveSpeed);
             }
@@ -235,6 +238,7 @@ bool PickUpBehavior::tick(){
                     //target was picked up
                     ClawController::instance()->wristDownWithCube();
                     TargetHandler::instance()->setIsHandlerOn(false);
+                    SonarHandler::instance()->setEnable(true);
                     return true;
                 } else {
                     initX = OdometryHandler::instance()->getX();
