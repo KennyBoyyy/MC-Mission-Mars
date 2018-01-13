@@ -165,6 +165,63 @@ std::vector<Tag> TargetHandler::getCenterTags(){
     std::lock_guard<std::mutex> guard(instanceMutex);
     return centerTagsList;
 }
+
+//float TargetHandler::getDistanceToClosestCube(){
+
+//    std::vector<Tag> tags = cubeTagsList;
+
+//    bool targetLocked = false;
+//    float blockDistance = 0;
+
+//    // Find closest tag and lock it
+//    double closest = std::numeric_limits<double>::max();
+//    int target  = 0;
+
+//    //this loop selects the closest visible block to makes goals for it
+//    for (int i = 0; i < tags.size(); i++)
+//    {
+
+//      if (tags[i].getID() == 0)
+//      {
+
+//        targetLocked = true;
+
+//        //absolute distance to block from camera lens
+//        double test = hypot(hypot(tags[i].getPositionX(), tags[i].getPositionY()), tags[i].getPositionZ());
+
+//        if (closest > test)
+//        {
+//          target = i;
+//          closest = test;
+//        }
+//      }
+//    }
+
+//    if(targetLocked){
+//        ///TODO: Explain the trig going on here- blockDistance is c, 0.195 is b; find a
+//        float blockDistanceFromCamera = hypot(hypot(tags[target].getPositionX(), tags[target].getPositionY()), tags[target].getPositionZ());
+
+//        if ( (blockDistanceFromCamera*blockDistanceFromCamera - 0.195*0.195) > 0 )
+//        {
+//            blockDistance = sqrt(blockDistanceFromCamera*blockDistanceFromCamera - 0.195*0.195);
+//        }
+//        else
+//        {
+//            float epsilon = 0.00001; // A small non-zero positive number
+//            blockDistance = epsilon;
+//        }
+//    }
+
+//    cout << "TARGET: Distance to closest: " << blockDistance << endl;
+//}
+
+//float TargetHandler::getYawToClosestCube(){
+//    //angle to block from bottom center of chassis on the horizontal.
+//    blockYawError = atan((tags[target].getPositionX() + cameraOffsetCorrection)/blockDistance)*1.05;
+
+//    cout << "TARGET: Angle to closest:  " << blockYawError << endl;
+//}
+
 //==============================================================================//
 //==============================================================================//
 

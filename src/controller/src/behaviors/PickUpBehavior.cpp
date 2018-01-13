@@ -6,6 +6,7 @@ bool PickUpBehavior::tick(){
         {
             ClawController::instance()->fingerOpen();
             ClawController::instance()->wristDown();
+
             targetLocked = false;
             if(TargetHandler::instance()->getNumberOfCubeTags() > 0){
                 //get all the tags
@@ -26,11 +27,12 @@ bool PickUpBehavior::tick(){
 
                     //absolute distance to block from camera lens
                     double test = hypot(hypot(tags[i].getPositionX(), tags[i].getPositionY()), tags[i].getPositionZ());
+                    double testDist = sqrt(test*test- 0.195*0.195);
 
-                    if (closest > test)
+                    if (closest > testDist)
                     {
                       target = i;
-                      closest = test;
+                      closest = testDist;
                     }
                   }
                 }
@@ -56,7 +58,10 @@ bool PickUpBehavior::tick(){
 
                     cout << "TARGET: Angle to closest:  " << blockYawError << endl;
 
-                    currentStage = TURN_TO_FACE_TARGET;
+                    if(!precisionDrive)
+                        currentStage = TURN_TO_FACE_TARGET;
+                    else
+                        currentStage = PRECISION_TURN;
 
                     //get the current theta to start counting the turn
                     initTheta = OdometryHandler::instance()->getTheta();
@@ -130,8 +135,83 @@ bool PickUpBehavior::tick(){
             float distance = hypot(initX - currX, initY - currY);
             cout << "PICKUP: distance left " << (blockDistance - distance) << " Curr dist: "<<distance<< endl;
 
-            if(blockDistance - distance <= 0.05){
+            if(blockDistance - distance <= 0.2){
+                currentStage = LOCK_TARGET;
+                precisionDrive = true;
+                DriveController::instance()->stop();
+            }else{
+                DriveController::instance()->sendDriveCommand(driveSpeed, driveSpeed);
+            }
+
+            break;
+        }
+        case PRECISION_TURN:
+        {
+            //turn again once closer to the cube
+            bool leftTurn = true;
+            //get current angle
+            float currentTheta = OdometryHandler::instance()->getTheta();
+
+            // Check if we have turned to face the cube
+            float abs_error = fabs(angles::shortest_angular_distance(currentTheta, initTheta));
+
+            // If angle turned is not within the tolerance
+            float abs_blockYaw = fabs(blockYawError);
+
+            if(abs_blockYaw - abs_error <= angleTolerance && abs_blockYaw - abs_error >= -angleTolerance){
+                //if within the angle tolerance
+                currentStage = PRECISION_DRIVE;
+                DriveController::instance()->stop();
+
+                //get x and y
+                initX = OdometryHandler::instance()->getX();
+                initY = OdometryHandler::instance()->getY();
+
+
+            } else {
+                float rightWheelMin = DriveController::instance()->getRightMin();
+                float leftWheelMin = DriveController::instance()->getLeftMin();
+
+                // Figure out what direction to turn
+                if(abs_blockYaw - abs_error > 0){
+                    if(blockYawError > 0){
+                        leftTurn = false;
+                    } else {
+                        leftTurn = true;
+                    }
+                } else {
+                    if(blockYawError > 0){
+                        leftTurn = true;
+                    } else {
+                        leftTurn = false;
+                    }
+                }
+
+                //decide which way to turn
+                if(!leftTurn){
+                    //turn right
+                    DriveController::instance()->sendDriveCommand(rightWheelMin, -rightWheelMin);
+                } else {
+                    // turn left
+                    DriveController::instance()->sendDriveCommand(-leftWheelMin, leftWheelMin);
+                }
+            }
+
+
+            break;
+        }
+        case PRECISION_DRIVE:
+        {
+            float currX = OdometryHandler::instance()->getX();
+            float currY = OdometryHandler::instance()->getY();
+
+            //Drive and count how far we have driven
+            float distance = hypot(initX - currX, initY - currY);
+            cout << "PICKUP: distance left " << (blockDistance - distance) << " Curr dist: "<<distance<< endl;
+
+            if(blockDistance - distance <= 0.02){
                 currentStage = PICK_UP;
+
                 DriveController::instance()->stop();
             }else{
                 DriveController::instance()->sendDriveCommand(driveSpeed, driveSpeed);
@@ -146,7 +226,7 @@ bool PickUpBehavior::tick(){
             ClawController::instance()->wristUp();
 
 
-            if(!wait(3)){
+            if(!wait(5)){
                 // check if picked up
                 float sonarCenter = SonarHandler::instance()->getSonarCenter();
                 cout << "PICKUP: Center sonar: " <<sonarCenter<< endl;
@@ -179,6 +259,7 @@ bool PickUpBehavior::tick(){
             cout << "PICKUP: distance drove back " << (distance) << " out of : "<<driveBackDist<< endl;
 
             if(distance >= driveBackDist){
+                precisionDrive = false;
                 currentStage = LOCK_TARGET;
                 DriveController::instance()->stop();
             }else{

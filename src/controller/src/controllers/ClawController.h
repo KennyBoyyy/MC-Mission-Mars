@@ -20,6 +20,9 @@ class ClawController
 
     ClawController();
 
+    bool isDown = false;
+    bool isClosed = true;
+
 public:
     static ClawController* instance();
 

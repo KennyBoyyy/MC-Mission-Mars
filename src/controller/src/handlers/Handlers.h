@@ -112,6 +112,9 @@ public:
     std::vector<Tag> getCubeTags();
     std::vector<Tag> getCenterTags();
 
+    float getDistanceToClosestCube();
+    float getYawToClosestCube();
+
 };
 
 
