@@ -158,9 +158,10 @@ bool AvoidBehavior::tick(){
         case DRIVE:
         {
             // Check if we can drive forward
-            if(left <= emergencyStop || right <= emergencyStop || center < minColisionDistanse){
+            if(left <= minColisionDistanse || right <= minColisionDistanse || center <= minColisionDistanse){
                 DriveController::instance()->stop();
                 stage = TURN;
+                break;
             }
 
             // Drive forvard and if finished return true

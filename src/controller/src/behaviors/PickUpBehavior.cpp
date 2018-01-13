@@ -69,10 +69,16 @@ bool PickUpBehavior::tick(){
                 }
 
             } else {
-                SonarHandler::instance()->setEnable(true);
-                ClawController::instance()->fingerClose();
-                ClawController::instance()->wristUp();
-                return true;
+                if(wait(2))
+                    DriveController::instance()->sendDriveCommand(-40, -40);
+                else{
+                     if(TargetHandler::instance()->getNumberOfCubeTags() < 0){
+                         SonarHandler::instance()->setEnable(true);
+                         ClawController::instance()->fingerClose();
+                         ClawController::instance()->wristUp();
+                         return true;
+                     }
+                }
             }
             break;
 
