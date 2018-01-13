@@ -138,7 +138,7 @@ int main(int argc, char **argv) {
     ClawController::instance()->registerPublishers(fingerAnglePublish, wristAnglePublish);
 
     //for testing
-    SMACS::instance()->push(new CalibrateBehavior());
+    SMACS::instance()->push(new SearchBehavior());
     SonarHandler::instance()-> setEnable(false);
 
     ClawController::instance()->fingerClose();

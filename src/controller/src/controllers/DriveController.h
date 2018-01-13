@@ -50,6 +50,11 @@ class DriveController{
     PIDConfig constVelConfig();
     PIDConfig constYawConfig();
 
+    bool isDistanceTurnedInit = false;
+    float prevDistanceTurned;
+    float distanceTurned;
+    float initDirection;
+
     void fastPID(float errorVel, float errorYaw , float setPointVel, float setPointYaw);
     void slowPID(float errorVel,float errorYaw, float setPointVel, float setPointYaw);
     void constPID(float erroVel,float constAngularError, float setPointVel, float setPointYaw);

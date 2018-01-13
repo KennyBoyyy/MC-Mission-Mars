@@ -33,19 +33,40 @@ bool DriveController::goToLocation(float x, float y){
                 // Calculate the diffrence between current and desired heading in radians.
                 float errorYaw = angles::shortest_angular_distance(currentLocation.theta, currentDrive.theta);
 
-                //Calculate absolute value of angle
-                float abs_error = fabs(angles::shortest_angular_distance(currentLocation.theta, currentDrive.theta));
+                //check if prev error was initialized
+                if(!isDistanceTurnedInit){
+                    //init prev error
+                    isDistanceTurnedInit = true;
+                    initDirection = currentLocation.theta;
+                    prevDistanceTurned = fabs(angles::shortest_angular_distance(currentLocation.theta, initDirection));
+                }
 
-                // If angle > rotateOnlyAngleTolerance radians rotate but dont drive forward.
-                if (abs_error > rotateOnlyAngleTolerance){
-                    fastPID(0.0, errorYaw, 0.0, currentDrive.theta);
-                    break;
-                } else {
+
+                float currDistanceTurned = fabs(angles::shortest_angular_distance(currentLocation.theta, initDirection));
+                if((prevDistanceTurned > currDistanceTurned) && (prevDistanceTurned - currDistanceTurned) > 0.0349){
+                    cout << "DRIVE:Going into final rotate because PID is crap! Curr d: "<<currDistanceTurned<<" prev_d: "<< prevDistanceTurned<<endl;
                     stop();
                     //move to differential drive step
                     stateMachineState = FINAL_ROTATE;
                     //fall through on purpose.
+                    isDistanceTurnedInit = false;
+                } else {
+                    cout << "DRIVE: Using Pid to turn! Curr d:"<< currDistanceTurned <<" prev d: "<<prevDistanceTurned <<endl;
+                    prevDistanceTurned = currDistanceTurned;
+                    //Calculate absolute value of angle
+                    float abs_error = fabs(angles::shortest_angular_distance(currentLocation.theta, currentDrive.theta));
 
+                    // If angle > rotateOnlyAngleTolerance radians rotate but dont drive forward.
+                    if (abs_error > rotateOnlyAngleTolerance){
+                        fastPID(0.0, errorYaw, 0.0, currentDrive.theta);
+                        break;
+                    } else {
+                        stop();
+                        //move to differential drive step
+                        stateMachineState = FINAL_ROTATE;
+                        //fall through on purpose.
+
+                    }
                 }
             }
             case FINAL_ROTATE:
@@ -103,6 +124,7 @@ bool DriveController::goToLocation(float x, float y){
                     stop();
                     // move back to transform step
                     stateMachineState = STATE_MACHINE_ROTATE;
+                    isDistanceTurnedInit = false;
                     return true;
                 }
                 break;
@@ -117,6 +139,9 @@ bool DriveController::goToLocation(float x, float y){
     } else {
         //reset the drive controller and drive to new location
         resetDriveController(x, y);
+
+        // Reset the previous yaw error
+        isDistanceTurnedInit = false;
     }
 
     return false;
