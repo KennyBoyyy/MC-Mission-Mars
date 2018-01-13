@@ -27,12 +27,12 @@ bool PickUpBehavior::tick(){
 
                     //absolute distance to block from camera lens
                     double test = hypot(hypot(tags[i].getPositionX(), tags[i].getPositionY()), tags[i].getPositionZ());
-                    double testDist = sqrt(test*test- 0.195*0.195);
 
-                    if (closest > testDist)
+
+                    if (closest > test)
                     {
                       target = i;
-                      closest = testDist;
+                      closest = test;
                     }
                   }
                 }
@@ -135,7 +135,7 @@ bool PickUpBehavior::tick(){
             float distance = hypot(initX - currX, initY - currY);
             cout << "PICKUP: distance left " << (blockDistance - distance) << " Curr dist: "<<distance<< endl;
 
-            if(blockDistance - distance <= 0.2){
+            if(blockDistance - distance <= 0.40){
                 currentStage = LOCK_TARGET;
                 precisionDrive = true;
                 DriveController::instance()->stop();
@@ -209,7 +209,7 @@ bool PickUpBehavior::tick(){
             float distance = hypot(initX - currX, initY - currY);
             cout << "PICKUP: distance left " << (blockDistance - distance) << " Curr dist: "<<distance<< endl;
 
-            if(blockDistance - distance <= 0.02){
+            if(blockDistance - distance <= 0.1){
                 currentStage = PICK_UP;
 
                 DriveController::instance()->stop();
