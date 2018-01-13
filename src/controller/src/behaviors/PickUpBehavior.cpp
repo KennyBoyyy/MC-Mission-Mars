@@ -234,6 +234,7 @@ bool PickUpBehavior::tick(){
                 if(sonarCenter < 0.12){
                     //target was picked up
                     ClawController::instance()->wristDownWithCube();
+                    TargetHandler::instance()->setIsHandlerOn(false);
                     return true;
                 } else {
                     initX = OdometryHandler::instance()->getX();

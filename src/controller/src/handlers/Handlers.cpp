@@ -138,8 +138,8 @@ void TargetHandler::handle(const apriltags_ros::AprilTagDetectionArray::ConstPtr
         cubeTagsList = cubeTags;
         centerTagsList = centerTags;
 
-
-        SMACS::instance()->push(new PickUpBehavior());
+        if(isHandlerOn)
+            SMACS::instance()->push(new PickUpBehavior());
 
 
     } else {

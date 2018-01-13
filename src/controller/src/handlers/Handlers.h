@@ -101,6 +101,8 @@ class TargetHandler{
 
     TargetHandler();
 
+    bool isHandlerOn = true;
+
 public:
     static TargetHandler* instance();
 
@@ -112,8 +114,12 @@ public:
     std::vector<Tag> getCubeTags();
     std::vector<Tag> getCenterTags();
 
-    float getDistanceToClosestCube();
-    float getYawToClosestCube();
+    void setIsHandlerOn(bool isHandlerOn){
+        this->isHandlerOn = isHandlerOn;
+    }
+
+//    float getDistanceToClosestCube();
+//    float getYawToClosestCube();
 
 };
 
