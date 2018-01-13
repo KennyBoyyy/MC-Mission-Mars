@@ -165,8 +165,6 @@ void tick(const ros::TimerEvent&) {
             ClawController::instance()->fingerClose();
             ClawController::instance()->wristUp();
         }
-        ClawController::instance()->fingerClose();
-        ClawController::instance()->wristUp();
     }
 }
 
