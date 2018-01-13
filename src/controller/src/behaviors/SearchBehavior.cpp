@@ -33,7 +33,7 @@ void SearchBehavior::nextPoint(){
         second = false;
     } else if(third){
         theta = OdometryHandler::instance()->getTheta() + M_PI_2;
-        distance = 4;
+        distance = 2;
         x = OdometryHandler::instance()->getX() + ((distance) * cos(theta));
         y = OdometryHandler::instance()->getY() + ((distance) * sin(theta));
         third = false;
