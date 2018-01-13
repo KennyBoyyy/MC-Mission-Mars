@@ -69,16 +69,12 @@ bool PickUpBehavior::tick(){
                 }
 
             } else {
-                if(wait(2))
-                    DriveController::instance()->sendDriveCommand(-40, -40);
-                else{
-                     if(TargetHandler::instance()->getNumberOfCubeTags() < 0){
-                         SonarHandler::instance()->setEnable(true);
-                         ClawController::instance()->fingerClose();
-                         ClawController::instance()->wristUp();
-                         return true;
-                     }
-                }
+
+                 SonarHandler::instance()->setEnable(true);
+                 ClawController::instance()->fingerClose();
+                 ClawController::instance()->wristUp();
+                 return true;
+
             }
             break;
 
@@ -148,7 +144,7 @@ bool PickUpBehavior::tick(){
             float distance = hypot(initX - currX, initY - currY);
             cout << "PICKUP: distance left " << (blockDistance - distance) << " Curr dist: "<<distance<< endl;
 
-            if(blockDistance - distance <= 0.45){
+            if(blockDistance - distance <= 0.30){
                 currentStage = LOCK_TARGET;
                 precisionDrive = true;
                 DriveController::instance()->stop();
@@ -286,6 +282,8 @@ bool PickUpBehavior::tick(){
             }else{
                 DriveController::instance()->sendDriveCommand(-driveSpeed, -driveSpeed);
             }
+
+            break;
         }
         case DROP:
         {
