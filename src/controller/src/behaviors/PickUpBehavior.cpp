@@ -68,7 +68,7 @@ bool PickUpBehavior::tick(){
                 }
 
             } else {
-                //return true;
+                return true;
             }
             break;
 
@@ -135,7 +135,7 @@ bool PickUpBehavior::tick(){
             float distance = hypot(initX - currX, initY - currY);
             cout << "PICKUP: distance left " << (blockDistance - distance) << " Curr dist: "<<distance<< endl;
 
-            if(blockDistance - distance <= 0.40){
+            if(blockDistance - distance <= 0.45){
                 currentStage = LOCK_TARGET;
                 precisionDrive = true;
                 DriveController::instance()->stop();
@@ -173,7 +173,7 @@ bool PickUpBehavior::tick(){
                 float leftWheelMin = DriveController::instance()->getLeftMin();
 
                 // Figure out what direction to turn
-                if(abs_blockYaw - abs_error > 0){
+                if(abs_blockYaw - abs_error > 0.0375){
                     if(blockYawError > 0){
                         leftTurn = false;
                     } else {
@@ -233,7 +233,7 @@ bool PickUpBehavior::tick(){
 
                 if(sonarCenter < 0.12){
                     //target was picked up
-                    ClawController::instance()->wristDown();
+                    ClawController::instance()->wristDownWithCube();
                     return true;
                 } else {
                     initX = OdometryHandler::instance()->getX();
