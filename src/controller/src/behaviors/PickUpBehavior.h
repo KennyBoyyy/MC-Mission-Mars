@@ -22,7 +22,8 @@ class PickUpBehavior : public Behavior{
         PRECISION_DRIVE,
         PICK_UP,
         RETRY,
-        DONE
+        DONE,
+        DROP
     };
     Stages currentStage;
 

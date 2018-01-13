@@ -69,10 +69,10 @@ bool PickUpBehavior::tick(){
                 }
 
             } else {
-                return true;
                 SonarHandler::instance()->setEnable(true);
                 ClawController::instance()->fingerClose();
                 ClawController::instance()->wristUp();
+                return true;
             }
             break;
 
@@ -247,7 +247,7 @@ bool PickUpBehavior::tick(){
                     ClawController::instance()->wristDownWithCube();
                     TargetHandler::instance()->setIsHandlerOn(false);
                     SonarHandler::instance()->setEnable(true);
-                    return true;
+                    currentStage = DROP;
                 } else {
                     initX = OdometryHandler::instance()->getX();
                     initY = OdometryHandler::instance()->getY();
@@ -280,6 +280,21 @@ bool PickUpBehavior::tick(){
             }else{
                 DriveController::instance()->sendDriveCommand(-driveSpeed, -driveSpeed);
             }
+        }
+        case DROP:
+        {
+           if(DriveController::instance()->goToLocation(0, 0)){
+
+               ClawController::instance()->fingerOpen();
+               ClawController::instance()->wristUp();
+               DriveController::instance()->sendDriveCommand(-50, -50);
+
+               sleep(3);
+               ClawController::instance()->fingerClose();
+               return true;
+
+           }
+            return false;
         }
 
 
