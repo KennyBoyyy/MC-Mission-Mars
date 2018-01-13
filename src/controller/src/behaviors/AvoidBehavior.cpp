@@ -42,58 +42,116 @@ bool AvoidBehavior::tick(){
         case TURN:
         {
 
-            //See what direction is better to turn to
-            //if left is blocked more than right
-            if(left < right){
-                //turn right until center and right are clear
+            if(!turnLock){
+                if(left < right){
+                    isLeftTurn = false;
+                } else {
+                    isLeftTurn = true;
+                }
+                turnLock = true;
+            }
 
-                //if right is blocked but it is not too bad keep turning
-                float minTurnRight = DriveController::instance()->getRightMin();
+            if(switchTurnCount < 3){
+                if(isLeftTurn){
+                    // if left turn and left is super blocked switch to right
+                    if(left <= emergencyStop){
+                        isLeftTurn = false;
+                        switchTurnCount++;
+                    }
 
-                //if we are not in the emergency stop point
-                //and if obstacle on center is less than meter away
-                if(right < minColisionDistanse || center <= clearDistance || left <= emergencyStop){
-                    DriveController::instance()->turnRight(minTurnRight + 20);
-                }else{
-                    //else center is 1 meter clear. we can drive forward
-                    DriveController::instance()->stop();
-                    stage = DRIVE;
+                } else {
+                    // if right turn and right is super blocked switch to left
+                    if(right <= emergencyStop){
+                        isLeftTurn = true;
+                        switchTurnCount++;
+                    }
                 }
 
 
-                //if right is super blocked, stop and do wait again.
-                if(right <= emergencyStop){
-                    //maybe drive backwards
-                    break;
+                //See what direction is better to turn to
+                //if left is blocked more than right
+                if(!isLeftTurn){
+                    //turn right until center and right are clear
+
+                    //if right is blocked but it is not too bad keep turning
+                    float minTurnRight = DriveController::instance()->getRightMin();
+
+                    //if we are not in the emergency stop point
+                    //and if obstacle on center is less than meter away
+                    if(right < minColisionDistanse || center <= clearDistance || left <= emergencyStop){
+                        DriveController::instance()->turnRight(minTurnRight + 20);
+                    }else{
+                        //else center is 1 meter clear. we can drive forward
+                        DriveController::instance()->stop();
+                        stage = DRIVE;
+                        turnLock = false;
+                        switchTurnCount = 0;
+                        isTimeInit = false;
+                    }
+
+
+//                    //if right is super blocked, stop and do wait again.
+//                    if(right <= emergencyStop){
+//                        //maybe drive backwards
+//                        break;
+//                    }
+
+
+
+                } else {
+                    // else left is more clear so have to turn left
+                    //turn left until center and left are clear
+
+                    //if left is blocked but it is not too bad keep turning
+                    float minTurnleft = DriveController::instance()->getLeftMin();
+
+                    //if we are not in the emergency stop point
+                    //and if obstacle on center is less than meter away
+                    if(right <= emergencyStop || center <= clearDistance || left < minColisionDistanse){
+                        DriveController::instance()->turnLeft(minTurnleft + 10);
+                    }else{
+                        //else center is 1 meter clear. we can drive forward
+                        DriveController::instance()->stop();
+                        directionToDrive = OdometryHandler::instance()->getTheta();
+                        stage = DRIVE;
+                        turnLock = false;
+                        switchTurnCount = 0;
+                        isTimeInit = false;
+                    }
+
+
+//                    //if left is super blocked, stop and do wait again.
+//                    if(left <= emergencyStop){
+//                        //Maybe drive backwards
+//                        break;
+//                    }
                 }
-
-
 
             } else {
-                // else left is more clear so have to turn left
-                //turn left until center and left are clear
+                //if we haven't started counting the time, start
+                if(!isTimeInit){
+                    time(&initTime);
+                    isTimeInit = true;
+                } else {
+                    float minTurnleft = DriveController::instance()->getLeftMin();
 
-                //if left is blocked but it is not too bad keep turning
-                float minTurnleft = DriveController::instance()->getLeftMin();
+                    // Find how many seconds passed
+                    int secSince = difftime(time(NULL), initTime);
+                    DriveController::instance()->sendDriveCommand(-minTurnleft, -minTurnleft);
+                    //If enough time passed
+                    if(secSince >= 2){
 
-                //if we are not in the emergency stop point
-                //and if obstacle on center is less than meter away
-                if(right <= emergencyStop || center <= clearDistance || left < minColisionDistanse){
-                    DriveController::instance()->turnLeft(minTurnleft + 10);
-                }else{
-                    //else center is 1 meter clear. we can drive forward
-                    DriveController::instance()->stop();
-                    directionToDrive = OdometryHandler::instance()->getTheta();
-                    stage = DRIVE;
+                        turnLock = false;
+                        switchTurnCount = 0;
+                        //Path is not clear. Have to move
+                        isTimeInit = false;
+
+                    }
                 }
-
-
-                //if left is super blocked, stop and do wait again.
-                if(left <= emergencyStop){
-                    //Maybe drive backwards
-                    break;
-                }
+                break;
             }
+
+
 
             break;
         }
@@ -124,3 +182,10 @@ bool AvoidBehavior::tick(){
 
     return false;
 }
+
+
+
+
+
+
+

@@ -71,6 +71,8 @@ bool PickUpBehavior::tick(){
             } else {
                 return true;
                 SonarHandler::instance()->setEnable(true);
+                ClawController::instance()->fingerClose();
+                ClawController::instance()->wristUp();
             }
             break;
 
@@ -132,6 +134,9 @@ bool PickUpBehavior::tick(){
         {
             float currX = OdometryHandler::instance()->getX();
             float currY = OdometryHandler::instance()->getY();
+
+            ClawController::instance()->fingerOpen();
+            ClawController::instance()->wristDown();
 
             //Drive and count how far we have driven
             float distance = hypot(initX - currX, initY - currY);
@@ -207,6 +212,9 @@ bool PickUpBehavior::tick(){
         {
             float currX = OdometryHandler::instance()->getX();
             float currY = OdometryHandler::instance()->getY();
+
+            ClawController::instance()->fingerOpen();
+            ClawController::instance()->wristDown();
 
             //Drive and count how far we have driven
             float distance = hypot(initX - currX, initY - currY);

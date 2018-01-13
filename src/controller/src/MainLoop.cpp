@@ -162,6 +162,8 @@ void tick(const ros::TimerEvent&) {
         if(!stopped){
             DriveController::instance()->stop();
             stopped = true;
+            ClawController::instance()->fingerClose();
+            ClawController::instance()->wristUp();
         }
     }
 }
