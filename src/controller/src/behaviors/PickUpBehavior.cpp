@@ -4,7 +4,7 @@ bool PickUpBehavior::tick(){
     switch (currentStage){
         case LOCK_TARGET:
         {
-            SonarHandler::instance()->setEnable(true);
+            SonarHandler::instance()->setEnable(false);
             ClawController::instance()->fingerOpen();
             ClawController::instance()->wristDown();
 
