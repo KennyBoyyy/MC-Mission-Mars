@@ -220,7 +220,7 @@ bool PickUpBehavior::tick(){
             float distance = hypot(initX - currX, initY - currY);
             cout << "PICKUP: distance left " << (blockDistance - distance) << " Curr dist: "<<distance<< endl;
 
-            if(blockDistance - distance <= 0.1){
+            if(blockDistance - distance <= 0.035){
                 currentStage = PICK_UP;
 
                 DriveController::instance()->stop();
@@ -272,6 +272,8 @@ bool PickUpBehavior::tick(){
             cout << "PICKUP: distance drove back " << (distance) << " out of : "<<driveBackDist<< endl;
 
             if(distance >= driveBackDist){
+                ClawController::instance()->wristUp();
+                ClawController::instance()->fingerClose();
                 precisionDrive = false;
                 currentStage = LOCK_TARGET;
                 DriveController::instance()->stop();
