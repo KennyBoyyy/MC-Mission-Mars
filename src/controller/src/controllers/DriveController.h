@@ -15,11 +15,12 @@ class DriveController{
     // state machine states
     enum StateMachineStates {
       STATE_MACHINE_ROTATE = 0,
-      STATE_MACHINE_SKID_STEER,
+      FINAL_ROTATE,
+      STATE_MACHINE_SKID_STEER
     };
 
     StateMachineStates stateMachineState;
-    float rotateOnlyAngleTolerance = 0.262;  //5 deg
+    float rotateOnlyAngleTolerance = 0.262;
     float finalRotationTolerance = 0.0349;
     const float waypointTolerance = 0.15; //15 cm tolerance.
 

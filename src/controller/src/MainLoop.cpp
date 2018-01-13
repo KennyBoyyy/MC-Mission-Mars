@@ -138,8 +138,11 @@ int main(int argc, char **argv) {
     ClawController::instance()->registerPublishers(fingerAnglePublish, wristAnglePublish);
 
     //for testing
-    SMACS::instance()->push(new PickUpBehavior());
+    SMACS::instance()->push(new CalibrateBehavior());
     SonarHandler::instance()-> setEnable(false);
+
+    ClawController::instance()->fingerClose();
+    ClawController::instance()->wristUp();
 
     ros::spin();
 
@@ -154,7 +157,6 @@ void tick(const ros::TimerEvent&) {
             collisionEnabled = true;
         }
         SMACS::instance()->tick();
-
         stopped = false;
     } else {    //manual
         if(!stopped){

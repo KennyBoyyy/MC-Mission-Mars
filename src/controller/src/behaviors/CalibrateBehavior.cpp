@@ -19,7 +19,7 @@ bool CalibrateBehavior::tick(){
                 isTimeInit = true;
                 //start turning left with current calibration speed
                 initTheta = OdometryHandler::instance()->getTheta();
-                DriveController::instance()->sendDriveCommand(-leftWheelMin, leftWheelMin);
+                DriveController::instance()->sendDriveCommand(leftWheelMin, 0);
                 cout<<"CALIBRATION: left: "<<leftWheelMin<<endl;
 
             } else {    //else time is init
@@ -62,7 +62,7 @@ bool CalibrateBehavior::tick(){
                 isTimeInit = true;
                 //start turning left with current calibration speed
                 initTheta = OdometryHandler::instance()->getTheta();
-                DriveController::instance()->sendDriveCommand(rightWheelMin, -rightWheelMin);
+                DriveController::instance()->sendDriveCommand(0, rightWheelMin);
                 cout<<"CALIBRATION: right: "<<rightWheelMin<<endl;
             } else {    //else time is init
                 //calculate how many seconds passed

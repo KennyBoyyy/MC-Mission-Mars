@@ -6,8 +6,9 @@ bool SearchBehavior::tick(){
     if(first){
         nextPoint();
     } else {
+        cout<<"SEARCH: Drive"<<endl;
         if(DriveController::instance()->goToLocation(x, y)){
-            cout<<"TAG: Hello Searchin"<<endl;
+            cout<<"SEARCH: NEW Point"<<endl;
             nextPoint();
         }
     }

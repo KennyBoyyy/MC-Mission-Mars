@@ -41,26 +41,47 @@ bool DriveController::goToLocation(float x, float y){
                     fastPID(0.0, errorYaw, 0.0, currentDrive.theta);
                     break;
                 } else {
-                    //if we need to rotate a bit more to face the correct direction
-                    if(abs_error >= finalRotationTolerance){
-                        cout << "DCONTR: correction angle: " << abs_error<<endl;
-                        //find out if left or right
-                        //if need to turn right
-                        if (errorYaw < 0){
-                            sendDriveCommand(rightMin, -rightMin);
-                        } else {
-                            sendDriveCommand(-leftMin, leftMin);
-                        }
+                    stop();
+                    //move to differential drive step
+                    stateMachineState = FINAL_ROTATE;
+                    //fall through on purpose.
 
-                        break;
-                    } else {
-                        stop();
-                        //move to differential drive step
-                        stateMachineState = STATE_MACHINE_SKID_STEER;
-                        //fall through on purpose.
-                    }
                 }
             }
+            case FINAL_ROTATE:
+            {
+                // Calculate angle between currentLocation.theta and waypoints.front().theta
+                // Rotate left or right depending on sign of angle
+                // Stay in this state until angle is minimized
+                currentDrive.theta = atan2(currentDrive.y - currentLocation.y, currentDrive.x - currentLocation.x);
+
+                // Calculate the diffrence between current and desired heading in radians.
+                float errorYaw = angles::shortest_angular_distance(currentLocation.theta, currentDrive.theta);
+
+                //Calculate absolute value of angle
+                float abs_error = fabs(angles::shortest_angular_distance(currentLocation.theta, currentDrive.theta));
+
+
+                if(abs_error >= finalRotationTolerance){
+                    cout << "DRIVE: correction angle: " << abs_error<<endl;
+                    //find out if left or right
+                    //if need to turn right
+                    if (errorYaw < 0){
+                        cout << "DRIVE: RightMin: "<<rightMin<<endl;
+                        sendDriveCommand(rightMin, -rightMin);
+                    } else {
+                        cout << "DRIVE: LeftMin: " << leftMin <<endl;
+                        sendDriveCommand(-leftMin, leftMin);
+                    }
+
+                    return false;
+                } else {
+                     stop();
+                     stateMachineState = STATE_MACHINE_SKID_STEER;
+                }
+
+            }
+
             case STATE_MACHINE_SKID_STEER:
             {
                 // Calculate angle between currentLocation.y and currentDrive.Y
@@ -91,6 +112,7 @@ bool DriveController::goToLocation(float x, float y){
                 break;
             }
         }
+         cout << "DRIVE: Left: " << left << "; Right: "<<right<<endl;
         sendDriveCommand(left, right);
     } else {
         //reset the drive controller and drive to new location
@@ -129,26 +151,46 @@ bool DriveController::goToDistance(float distance, float direction){
                 if (abs_error > rotateOnlyAngleTolerance){
                     fastPID(0.0, errorYaw, 0.0, currentDrive.theta);
                     break;
-                } else {
-                    //if we need to rotate a bit more to face the correct direction
-                    if(abs_error >= finalRotationTolerance){
-                        cout << "DCONTR: correction angle: " << abs_error<<endl;
-                        //find out if left or right
-                        //if need to turn right
-                        if (errorYaw < 0){
-                            sendDriveCommand(rightMin, -rightMin);
-                        } else {
-                            sendDriveCommand(-leftMin, leftMin);
-                        }
 
-                        break;
-                    } else {
-                        stop();
-                        //move to differential drive step
-                        stateMachineState = STATE_MACHINE_SKID_STEER;
-                        //fall through on purpose.
-                    }
+                } else {
+                    stop();
+                    //move to differential drive step
+                    stateMachineState = STATE_MACHINE_SKID_STEER;
+                    //fall through on purpose.
                 }
+            }
+            case FINAL_ROTATE:
+            {
+                // Calculate angle between currentLocation.theta and waypoints.front().theta
+                // Rotate left or right depending on sign of angle
+                // Stay in this state until angle is minimized
+                currentDrive.theta = atan2(currentDrive.y - currentLocation.y, currentDrive.x - currentLocation.x);
+
+                // Calculate the diffrence between current and desired heading in radians.
+                float errorYaw = angles::shortest_angular_distance(currentLocation.theta, currentDrive.theta);
+
+                //Calculate absolute value of angle
+                float abs_error = fabs(angles::shortest_angular_distance(currentLocation.theta, currentDrive.theta));
+
+
+                if(abs_error >= finalRotationTolerance){
+                    cout << "DRIVE: correction angle: " << abs_error<<endl;
+                    //find out if left or right
+                    //if need to turn right
+                    if (errorYaw < 0){
+                        cout << "DRIVE: RightMin: "<<rightMin<<endl;
+                        sendDriveCommand(rightMin, -rightMin);
+                    } else {
+                        cout << "DRIVE: LeftMin: " << leftMin <<endl;
+                        sendDriveCommand(-leftMin, leftMin);
+                    }
+
+                    return false;
+                } else {
+                     stop();
+                     stateMachineState = STATE_MACHINE_SKID_STEER;
+                }
+
             }
             case STATE_MACHINE_SKID_STEER:
             {
