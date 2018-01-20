@@ -40,7 +40,7 @@ class PickUpBehavior : public Behavior{
     float initY = 0;
     float angleTolerance = 0.0175;
 
-    float driveBackDist = 0.2;
+    float driveBackDist = 0.25;
 
     int driveSpeed = 40;
 

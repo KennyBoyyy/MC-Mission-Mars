@@ -133,7 +133,7 @@ bool PickUpBehavior::tick(){
             float distance = hypot(initX - currX, initY - currY);
             cout << "PICKUP: distance left " << (blockDistance - distance) << " Curr dist: "<<distance<< endl;
 
-            if(blockDistance - distance <= 0.30){
+            if(blockDistance - distance <= 0.35){
                 currentStage = LOCK_TARGET;
                 precisionDrive = true;
                 DriveController::instance()->stop();
@@ -157,7 +157,7 @@ bool PickUpBehavior::tick(){
             // If angle turned is not within the tolerance
             float abs_blockYaw = fabs(blockYawError);
 
-            if(abs_blockYaw - abs_error <= angleTolerance){
+            if(abs_blockYaw - abs_error - 0.175 <= angleTolerance){
                 //if within the angle tolerance
                 currentStage = PRECISION_DRIVE;
                 DriveController::instance()->stop();
@@ -173,14 +173,14 @@ bool PickUpBehavior::tick(){
 
                 if (blockYawError < 0){
                     //turn left
-                    if(abs_blockYaw - abs_error > 0)
+                    if(abs_blockYaw - abs_error - 0.175 > 0)
                         DriveController::instance()->sendDriveCommand(-leftWheelMin, rightWheelMin);
                     else
                         DriveController::instance()->sendDriveCommand(leftWheelMin, -rightWheelMin);
 
                 } else {
                     //trun right
-                    if(abs_blockYaw - abs_error > 0)
+                    if(abs_blockYaw - abs_error - 0.175 > 0)
                         DriveController::instance()->sendDriveCommand(leftWheelMin, -rightWheelMin);
                     else
                         DriveController::instance()->sendDriveCommand(-leftWheelMin, rightWheelMin);
