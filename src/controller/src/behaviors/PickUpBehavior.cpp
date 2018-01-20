@@ -266,11 +266,11 @@ bool PickUpBehavior::tick(){
                     float lastYaw = TargetHandler::instance()->getLastSeenBlockError();
                     if(lastYaw < 0){
                         DriveController::instance()->sendDriveCommand(-driveSpeed, driveSpeed);
-                        sleep(1);
+                        sleep(0.5);
                         DriveController::instance()->stop();
                     } else {
                          DriveController::instance()->sendDriveCommand(driveSpeed, -driveSpeed);
-                         sleep(1);
+                         sleep(0.5);
                          DriveController::instance()->stop();
                     }
 
