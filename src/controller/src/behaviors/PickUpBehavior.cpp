@@ -93,44 +93,34 @@ bool PickUpBehavior::tick(){
             // If angle turned is not within the tolerance
             float abs_blockYaw = fabs(blockYawError);
 
-            if(abs_blockYaw - abs_error <= angleTolerance && abs_blockYaw - abs_error >= -angleTolerance){
-                //if within the angle tolerance
+            //if within the angle tolerance
+            if(abs_blockYaw - abs_error <= angleTolerance){
                 currentStage = DRIVE_TO_PICK_UP;
                 DriveController::instance()->stop();
 
                 //get x and y
                 initX = OdometryHandler::instance()->getX();
                 initY = OdometryHandler::instance()->getY();
-
-
             } else {
                 float rightWheelMin = DriveController::instance()->getRightMin();
                 float leftWheelMin = DriveController::instance()->getLeftMin();
 
-                // Figure out what direction to turn
-                if(abs_blockYaw - abs_error > 0){
-                    if(blockYawError > 0){
-                        leftTurn = false;
-                    } else {
-                        leftTurn = true;
-                    }
-                } else {
-                    if(blockYawError > 0){
-                        leftTurn = true;
-                    } else {
-                        leftTurn = false;
-                    }
-                }
+                if (blockYawError < 0){
+                    //turn left
+                    if(abs_blockYaw - abs_error > 0)
+                        DriveController::instance()->sendDriveCommand(-leftWheelMin, rightWheelMin);
+                    else
+                        DriveController::instance()->sendDriveCommand(leftWheelMin, -rightWheelMin);
 
-                //decide which way to turn
-                if(!leftTurn){
-                    //turn right
-                    DriveController::instance()->sendDriveCommand(rightWheelMin, -rightWheelMin);
                 } else {
-                    // turn left
-                    DriveController::instance()->sendDriveCommand(-leftWheelMin, leftWheelMin);
+                    //trun right
+                    if(abs_blockYaw - abs_error > 0)
+                        DriveController::instance()->sendDriveCommand(leftWheelMin, -rightWheelMin);
+                    else
+                        DriveController::instance()->sendDriveCommand(-leftWheelMin, rightWheelMin);
                 }
             }
+
             break;
 
         }
@@ -170,7 +160,7 @@ bool PickUpBehavior::tick(){
             // If angle turned is not within the tolerance
             float abs_blockYaw = fabs(blockYawError);
 
-            if(abs_blockYaw - abs_error <= angleTolerance && abs_blockYaw - abs_error >= -angleTolerance){
+            if(abs_blockYaw - abs_error <= angleTolerance){
                 //if within the angle tolerance
                 currentStage = PRECISION_DRIVE;
                 DriveController::instance()->stop();
@@ -184,31 +174,21 @@ bool PickUpBehavior::tick(){
                 float rightWheelMin = DriveController::instance()->getRightMin();
                 float leftWheelMin = DriveController::instance()->getLeftMin();
 
-                // Figure out what direction to turn
-                if(abs_blockYaw - abs_error > 0){
-                    if(blockYawError > 0){
-                        leftTurn = false;
-                    } else {
-                        leftTurn = true;
-                    }
-                } else {
-                    if(blockYawError > 0){
-                        leftTurn = true;
-                    } else {
-                        leftTurn = false;
-                    }
-                }
+                if (blockYawError < 0){
+                    //turn left
+                    if(abs_blockYaw - abs_error > 0)
+                        DriveController::instance()->sendDriveCommand(-leftWheelMin, rightWheelMin);
+                    else
+                        DriveController::instance()->sendDriveCommand(leftWheelMin, -rightWheelMin);
 
-                //decide which way to turn
-                if(!leftTurn){
-                    //turn right
-                    DriveController::instance()->sendDriveCommand(rightWheelMin, -rightWheelMin);
                 } else {
-                    // turn left
-                    DriveController::instance()->sendDriveCommand(-leftWheelMin, leftWheelMin);
+                    //trun right
+                    if(abs_blockYaw - abs_error > 0)
+                        DriveController::instance()->sendDriveCommand(leftWheelMin, -rightWheelMin);
+                    else
+                        DriveController::instance()->sendDriveCommand(-leftWheelMin, rightWheelMin);
                 }
             }
-
 
             break;
         }
