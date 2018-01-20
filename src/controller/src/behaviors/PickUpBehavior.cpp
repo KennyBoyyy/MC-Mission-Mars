@@ -69,14 +69,11 @@ bool PickUpBehavior::tick(){
                 }
 
             } else {
-                 // search for the cube code.
-
-
-                 SonarHandler::instance()->setEnable(true);
-                 ClawController::instance()->fingerClose();
-                 ClawController::instance()->wristUp();
-                 return true;
-
+                DriveController::instance()->stop();
+                SonarHandler::instance()->setEnable(true);
+                ClawController::instance()->fingerClose();
+                ClawController::instance()->wristUp();
+                return true;
             }
             break;
 
@@ -257,11 +254,32 @@ bool PickUpBehavior::tick(){
             cout << "PICKUP: distance drove back " << (distance) << " out of : "<<driveBackDist<< endl;
 
             if(distance >= driveBackDist){
-                ClawController::instance()->wristUp();
-                ClawController::instance()->fingerClose();
-                precisionDrive = false;
-                currentStage = LOCK_TARGET;
-                DriveController::instance()->stop();
+                int numberOftags = TargetHandler::instance()->getNumberOfCenterTagsSeen();
+                if(numberOftags > 0){
+                    ClawController::instance()->wristUp();
+                    ClawController::instance()->fingerClose();
+                    precisionDrive = false;
+                    currentStage = LOCK_TARGET;
+                    DriveController::instance()->stop();
+                } else {
+                    // no tragets are seen after drive back. try to turn.
+                    float lastYaw = TargetHandler::instance()->getLastSeenBlockError();
+                    if(lastYaw < 0){
+                        DriveController::instance()->sendDriveCommand(-driveSpeed, driveSpeed);
+                        sleep(1);
+                        DriveController::instance()->stop();
+                    } else {
+                         DriveController::instance()->sendDriveCommand(driveSpeed, -driveSpeed);
+                         sleep(1);
+                         DriveController::instance()->stop();
+                    }
+
+                    ClawController::instance()->wristUp();
+                    ClawController::instance()->fingerClose();
+                    precisionDrive = false;
+                    currentStage = LOCK_TARGET;
+                    DriveController::instance()->stop();
+                }
             }else{
                 DriveController::instance()->sendDriveCommand(-driveSpeed, -driveSpeed);
             }

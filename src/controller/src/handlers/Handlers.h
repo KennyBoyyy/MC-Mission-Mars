@@ -103,7 +103,7 @@ class TargetHandler{
 
     bool isHandlerOn = true;
 
-    float seenBlockErrorYaw = 0;
+    float lastSeenBlockErrorYaw = 0;
 
 public:
     static TargetHandler* instance();
@@ -112,6 +112,7 @@ public:
 
     int getNumberOfCubeTags();
     int getNumberOfCenterTagsSeen();
+    int getLastSeenBlockError();
 
     std::vector<Tag> getCubeTags();
     std::vector<Tag> getCenterTags();

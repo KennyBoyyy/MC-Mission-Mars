@@ -185,22 +185,22 @@ void TargetHandler::handle(const apriltags_ros::AprilTagDetectionArray::ConstPtr
             float blockYawError = atan((tags[target].getPositionX() + 0.023)/blockDistance)*1.05;
 
             cout << "TARGET: Angle to closest:  " << blockYawError << endl;
-            seenBlockErrorYaw  = blockYawError;
+            lastSeenBlockErrorYaw  = blockYawError;
 
             SMACS::instance()->push(new PickUpBehavior());
 
         }
 
-
-
-
     } else {
         cubeTagsList.clear();
         centerTagsList.clear();
-        seenBlockErrorYaw = 0.0;
     }
 
 
+}
+
+int TargetHandler::getLastSeenBlockError(){
+    return lastSeenBlockErrorYaw;
 }
 
 int TargetHandler::getNumberOfCubeTags(){
