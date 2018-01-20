@@ -138,14 +138,69 @@ void TargetHandler::handle(const apriltags_ros::AprilTagDetectionArray::ConstPtr
         cubeTagsList = cubeTags;
         centerTagsList = centerTags;
 
-        if(isHandlerOn)
+        if (isHandlerOn && centerTagsList.size() > 0){
+            // Avoid center behavior
+        } else if(isHandlerOn && cubeTagsList.size() > 0){
+            //get all the tags
+            std::vector<Tag> tags = cubeTagsList;
+
+            // Find closest tag and lock it
+            double closest = std::numeric_limits<double>::max();
+            int target  = 0;
+
+            //this loop selects the closest visible block to makes goals for it
+            for (int i = 0; i < tags.size(); i++)
+            {
+
+              if (tags[i].getID() == 0)
+              {
+                //absolute distance to block from camera lens
+                double test = hypot(hypot(tags[i].getPositionX(), tags[i].getPositionY()), tags[i].getPositionZ());
+
+
+                if (closest > test)
+                {
+                  target = i;
+                  closest = test;
+                }
+              }
+            }
+
+
+            float  blockDistanceFromCamera = hypot(hypot(tags[target].getPositionX(), tags[target].getPositionY()), tags[target].getPositionZ());
+            float blockDistance = 0;
+            if ( (blockDistanceFromCamera*blockDistanceFromCamera - 0.195*0.195) > 0 )
+            {
+                blockDistance = sqrt(blockDistanceFromCamera*blockDistanceFromCamera - 0.195*0.195);
+            }
+            else
+            {
+                float epsilon = 0.00001; // A small non-zero positive number
+                blockDistance = epsilon;
+            }
+
+            cout << "TARGET: Distance to closest: " << blockDistance << endl;
+
+            //angle to block from bottom center of chassis on the horizontal.
+            float blockYawError = atan((tags[target].getPositionX() + 0.023)/blockDistance)*1.05;
+
+            cout << "TARGET: Angle to closest:  " << blockYawError << endl;
+            seenBlockErrorYaw  = blockYawError;
+
             SMACS::instance()->push(new PickUpBehavior());
+
+        }
+
+
 
 
     } else {
         cubeTagsList.clear();
         centerTagsList.clear();
+        seenBlockErrorYaw = 0.0;
     }
+
+
 }
 
 int TargetHandler::getNumberOfCubeTags(){

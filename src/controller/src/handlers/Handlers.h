@@ -103,6 +103,8 @@ class TargetHandler{
 
     bool isHandlerOn = true;
 
+    float seenBlockErrorYaw = 0;
+
 public:
     static TargetHandler* instance();
 
