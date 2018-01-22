@@ -1,5 +1,5 @@
 #include "SMACS.h"
-
+// Initialize the instance
 SMACS* SMACS::s_instance = 0;
 
 SMACS::SMACS(){}
@@ -11,12 +11,13 @@ SMACS* SMACS::instance(){
 }
 
 void SMACS::push(Behavior* b){
+    // Check if behavior is null. If it is then do not put anything on stack
     if(b == NULL){
         cout << "STACK: " << "NULL pointer passed to stack" << endl;
         return;
     }
 
-    //lock the stack from being used
+    //lock the stack from being used while we are doing something with it
     std::lock_guard<std::mutex> guard(stackMutex);
     cout << "STACK: " << "Stack locked"<< endl;
 
@@ -53,7 +54,7 @@ void SMACS::pop(){
     cout << "STACK: " << "Stack locked"<< endl;
 
     DriveController::instance()->stop();
-    cout << "STACK: " << "Poped from stack"<< endl;
+    cout << "STACK: " << "Popped from stack"<< endl;
 
     //pop element
     behaviorStack.pop();
@@ -101,10 +102,13 @@ void SMACS::pushNext(Behavior *b){
 
 bool SMACS::isEmpty(){return behaviorStack.empty();}
 
+// This is a tick method
 bool SMACS::tick(){
-    if(!behaviorStack.empty())
-    	//lock stack
-	    std::lock_guard<std::mutex> guard(stackMutex);
+    // Lock stack
+    std::lock_guard<std::mutex> guard(stackMutex);
+
+    // If stack is not empty
+    if(!behaviorStack.empty()){
 	    cout << "STACK: " << "Stack locked for tick"<< endl;
         if(behaviorStack.top()->tick()){
             pop();
@@ -112,6 +116,7 @@ bool SMACS::tick(){
             return true;
         }
         cout << "STACK: " << "Stack unlocked for tick"<< endl;
+    }
     return false;
 }
 

@@ -107,11 +107,17 @@ TargetHandler* TargetHandler::instance() {
 
 void TargetHandler::handle(const apriltags_ros::AprilTagDetectionArray::ConstPtr& message)
 {
+    // Create a lock
     std::lock_guard<std::mutex> guard(instanceMutex);
+
+    // If message contains elements
     if (message->detections.size() > 0) {
+
+        // Create two collection vectors (lists) that will store the cobe info
         std::vector<Tag> cubeTags;
         std::vector<Tag> centerTags;
 
+        // Go through the message that we received
         for (int i = 0; i < message->detections.size(); i++) {
     
           // Package up the ROS AprilTag data into our own type that does not rely on ROS.
@@ -131,16 +137,24 @@ void TargetHandler::handle(const apriltags_ros::AprilTagDetectionArray::ConstPtr
           //if cube
           if(message->detections[i].id == 0) {
               cubeTags.push_back(loc);
-          } else {
+          } else { // if center tag
               centerTags.push_back(loc);
           }
         }
         cubeTagsList = cubeTags;
         centerTagsList = centerTags;
 
+        // if handler is on and we see a center tag
         if (isHandlerOn && centerTagsList.size() > 0){
             // Avoid center behavior
-        } else if(isHandlerOn && cubeTagsList.size() > 0){
+        } 
+        // if handler is on and we see a center tag
+        else if(isHandlerOn && cubeTagsList.size() > 0){
+            // Calculate the distance to the closest seen tag and store it
+            // This is done in case we loose the tag while breaking but since 
+            // stored the last known location we know where to turn to find it
+            // After we got the closest seen tag, put the PickUpBehavior on stack 
+
             //get all the tags
             std::vector<Tag> tags = cubeTagsList;
 
@@ -151,19 +165,17 @@ void TargetHandler::handle(const apriltags_ros::AprilTagDetectionArray::ConstPtr
             //this loop selects the closest visible block to makes goals for it
             for (int i = 0; i < tags.size(); i++)
             {
-
-              if (tags[i].getID() == 0)
-              {
-                //absolute distance to block from camera lens
-                double test = hypot(hypot(tags[i].getPositionX(), tags[i].getPositionY()), tags[i].getPositionZ());
-
-
-                if (closest > test)
+                if (tags[i].getID() == 0)
                 {
-                  target = i;
-                  closest = test;
+                    //absolute distance to block from camera lens
+                    double test = hypot(hypot(tags[i].getPositionX(), tags[i].getPositionY()), tags[i].getPositionZ());
+
+                    if (closest > test)
+                    {
+                      target = i;
+                      closest = test;
+                    }
                 }
-              }
             }
 
 
@@ -187,11 +199,13 @@ void TargetHandler::handle(const apriltags_ros::AprilTagDetectionArray::ConstPtr
             cout << "TARGET: Angle to closest:  " << blockYawError << endl;
             lastSeenBlockErrorYaw  = blockYawError;
 
+            // Push PickUpBehavior on stack
             SMACS::instance()->push(new PickUpBehavior());
 
         }
 
     } else {
+        // if no tags were seen clear the list so that we don't keep old tags
         cubeTagsList.clear();
         centerTagsList.clear();
     }
@@ -221,64 +235,7 @@ std::vector<Tag> TargetHandler::getCenterTags(){
     return centerTagsList;
 }
 
-//float TargetHandler::getDistanceToClosestCube(){
 
-//    std::vector<Tag> tags = cubeTagsList;
-
-//    bool targetLocked = false;
-//    float blockDistance = 0;
-
-//    // Find closest tag and lock it
-//    double closest = std::numeric_limits<double>::max();
-//    int target  = 0;
-
-//    //this loop selects the closest visible block to makes goals for it
-//    for (int i = 0; i < tags.size(); i++)
-//    {
-
-//      if (tags[i].getID() == 0)
-//      {
-
-//        targetLocked = true;
-
-//        //absolute distance to block from camera lens
-//        double test = hypot(hypot(tags[i].getPositionX(), tags[i].getPositionY()), tags[i].getPositionZ());
-
-//        if (closest > test)
-//        {
-//          target = i;
-//          closest = test;
-//        }
-//      }
-//    }
-
-//    if(targetLocked){
-//        ///TODO: Explain the trig going on here- blockDistance is c, 0.195 is b; find a
-//        float blockDistanceFromCamera = hypot(hypot(tags[target].getPositionX(), tags[target].getPositionY()), tags[target].getPositionZ());
-
-//        if ( (blockDistanceFromCamera*blockDistanceFromCamera - 0.195*0.195) > 0 )
-//        {
-//            blockDistance = sqrt(blockDistanceFromCamera*blockDistanceFromCamera - 0.195*0.195);
-//        }
-//        else
-//        {
-//            float epsilon = 0.00001; // A small non-zero positive number
-//            blockDistance = epsilon;
-//        }
-//    }
-
-//    cout << "TARGET: Distance to closest: " << blockDistance << endl;
-//}
-
-//float TargetHandler::getYawToClosestCube(){
-//    //angle to block from bottom center of chassis on the horizontal.
-//    blockYawError = atan((tags[target].getPositionX() + cameraOffsetCorrection)/blockDistance)*1.05;
-
-//    cout << "TARGET: Angle to closest:  " << blockYawError << endl;
-//}
-
-//==============================================================================//
-//==============================================================================//
 
 
 

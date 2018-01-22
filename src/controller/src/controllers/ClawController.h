@@ -4,6 +4,7 @@
 #include "ros/ros.h"
 #include <std_msgs/Float32.h>
 
+// Controls the robot claw
 class ClawController
 {
     static ClawController* s_instance;

@@ -117,12 +117,10 @@ public:
     std::vector<Tag> getCubeTags();
     std::vector<Tag> getCenterTags();
 
+    // set if camera handler is enabled
     void setIsHandlerOn(bool isHandlerOn){
         this->isHandlerOn = isHandlerOn;
     }
-
-//    float getDistanceToClosestCube();
-//    float getYawToClosestCube();
 
 };
 
