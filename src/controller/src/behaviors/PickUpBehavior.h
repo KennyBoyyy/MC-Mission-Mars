@@ -18,13 +18,17 @@ class PickUpBehavior : public Behavior{
         LOCK_TARGET = 0,
         TURN_TO_FACE_TARGET,
         DRIVE_TO_PICK_UP,
+        PRECISION_TURN,
+        PRECISION_DRIVE,
         PICK_UP,
         RETRY,
-        DONE
+        DONE,
+        DROP
     };
     Stages currentStage;
 
     bool targetLocked;
+    bool precisionDrive = false;
 
     float cameraOffsetCorrection = 0.023; //meters
     float blockDistanceFromCamera = 0;
@@ -36,7 +40,7 @@ class PickUpBehavior : public Behavior{
     float initY = 0;
     float angleTolerance = 0.0175;
 
-    float driveBackDist = 0.2;
+    float driveBackDist = 0.25;
 
     int driveSpeed = 40;
 

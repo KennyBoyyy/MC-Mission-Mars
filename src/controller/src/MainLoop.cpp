@@ -46,7 +46,7 @@ string publishedName;
 
 
 
-// Mothods that handle
+// Methods that handle
 void sigintEventHandler(int signal);
 void modeHandler(const std_msgs::UInt8::ConstPtr& message);
 void joyCmdHandler(const sensor_msgs::Joy::ConstPtr& message);
@@ -78,7 +78,7 @@ ros::Subscriber odometrySubscriber;
 ros::Timer stateMachineTimer;
 ros::Timer publish_status_timer;
 ros::Timer publish_heartbeat_timer;
-const float behaviourLoopTimeStep = 0.1; // time between the behaviour loop calls
+const float behaviourLoopTimeStep = 0.1; // time between the behavior loop calls
 const float status_publish_interval = 1;
 const float heartbeat_publish_interval = 2;
 
@@ -128,7 +128,7 @@ int main(int argc, char **argv) {
     odometrySubscriber = nh.subscribe((publishedName + "/odom/filtered"), 10, &OdometryHandler::handle, OdometryHandler::instance());
     targetSubscriber = nh.subscribe((publishedName + "/targets"), 10, &TargetHandler::handle, TargetHandler::instance());
 
-    //Timers to publish some stuff.
+    //Timers to publish something.
     stateMachineTimer = nh.createTimer(ros::Duration(behaviourLoopTimeStep), tick);
     publish_status_timer = nh.createTimer(ros::Duration(status_publish_interval), publishStatusTimerEventHandler);
     publish_heartbeat_timer = nh.createTimer(ros::Duration(heartbeat_publish_interval), publishHeartBeatTimerEventHandler);
@@ -137,10 +137,18 @@ int main(int argc, char **argv) {
     DriveController::instance()->registerDrivePublisher(driveControlPublish);
     ClawController::instance()->registerPublishers(fingerAnglePublish, wristAnglePublish);
 
-    //for testing
-    SMACS::instance()->push(new CalibrateBehavior());
+
+    // Put the first behavior on stack
+    SMACS::instance()->push(new PickUpBehavior());
+    // Disable the sonar because the robot is not doing anything yet
     SonarHandler::instance()-> setEnable(false);
 
+    // Close fingers
+    ClawController::instance()->fingerClose();
+    // Put wist up
+    ClawController::instance()->wristUp();
+
+    // Spin the node
     ros::spin();
 
     return EXIT_SUCCESS;
@@ -148,33 +156,47 @@ int main(int argc, char **argv) {
 
 void tick(const ros::TimerEvent&) {
     // To print log "tail -f path/"name of log file".txt | grep "TAG""
-    if (currentMode == 2 || currentMode == 3) { //auto
+
+    // If mode is auto
+    if (currentMode == 2 || currentMode == 3) {
+    	// If sonar handler is not enables
         if(!collisionEnabled){
-            //SonarHandler::instance()->setEnable(true);
+            SonarHandler::instance()->setEnable(true);
             collisionEnabled = true;
         }
+
+        // Tick the SMACS
         SMACS::instance()->tick();
 
+        //Flag that states that robot is in auto
         stopped = false;
     } else {    //manual
+
+   		// If robot is not stopped
         if(!stopped){
+        	// Stop robot
             DriveController::instance()->stop();
             stopped = true;
+            ClawController::instance()->fingerClose();
+            ClawController::instance()->wristUp();
         }
     }
 }
 
 
+// This publishes a message that the the robot is online
 void publishStatusTimerEventHandler(const ros::TimerEvent&) {
   std_msgs::String msg;
   msg.data = "online";
   status_publisher.publish(msg);
 }
 
+// This receives the current mode of the robot from the GUI
 void modeHandler(const std_msgs::UInt8::ConstPtr& message) {
   currentMode = message->data;
 }
 
+//This receives the messages from the GUI about the controller 
 void joyCmdHandler(const sensor_msgs::Joy::ConstPtr& message) {
   const int max_motor_cmd = 255;
   if (currentMode == 0 || currentMode == 1) {
@@ -202,11 +224,13 @@ void joyCmdHandler(const sensor_msgs::Joy::ConstPtr& message) {
   }
 }
 
+// I think this is used to shut down the robot if it is out of range
 void sigintEventHandler(int sig) {
   // All the default sigint handler does is call shutdown()
   ros::shutdown();
 }
 
+// This is currently not used but it could publish some message every 10th of a sec
 void publishHeartBeatTimerEventHandler(const ros::TimerEvent&) {
   std_msgs::String msg;
   msg.data = "";

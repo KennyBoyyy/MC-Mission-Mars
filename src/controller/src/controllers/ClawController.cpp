@@ -24,26 +24,37 @@ void ClawController::registerPublishers(ros::Publisher& fingerPublisher, ros::Pu
 }
 
 bool ClawController::wristDown(){
+
     wristPublisher.publish(wristDownAngle);
+
     return true;
 }
 
 bool ClawController::wristDownWithCube(){
-    wristPublisher.publish(wristDownAngle);
+
+    wristPublisher.publish(wristDownAngleWithCube);
+
     return true;
 }
 
 bool ClawController::wristUp(){
-    wristPublisher.publish(wristUpAngle);
+
+        wristPublisher.publish(wristUpAngle);
+
     return true;
 }
 
 bool ClawController::fingerOpen(){
-    fingerPublisher.publish(fingerOpenAngle);
+
+        fingerPublisher.publish(fingerOpenAngle);
+
     return true;
 }
 
 bool ClawController::fingerClose(){
-    fingerPublisher.publish(fingerCloseAngle);
+
+        fingerPublisher.publish(fingerCloseAngle);
+
     return true;
 }
+

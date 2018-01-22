@@ -18,10 +18,18 @@ class AvoidBehavior : public Behavior{
     int waitTime;
     time_t initTime;
 
+
+    float emergencyTurnStop = 0.3;
     float emergencyStop = 0.4;
     float clearDistance = 1; // 1 meter means clear
 
     float directionToDrive = 0;
+
+    bool turnLock = false;
+    bool isLeftTurn = false;
+
+    int switchTurnCount = 0;
+    bool isReverse = false;
 
 
 
@@ -31,6 +39,7 @@ class AvoidBehavior : public Behavior{
             stage = WAIT;
         }
         bool tick();
+
 
 };
 

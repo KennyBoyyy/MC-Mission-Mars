@@ -101,6 +101,10 @@ class TargetHandler{
 
     TargetHandler();
 
+    bool isHandlerOn = true;
+
+    float lastSeenBlockErrorYaw = 0;
+
 public:
     static TargetHandler* instance();
 
@@ -108,9 +112,15 @@ public:
 
     int getNumberOfCubeTags();
     int getNumberOfCenterTagsSeen();
+    int getLastSeenBlockError();
 
     std::vector<Tag> getCubeTags();
     std::vector<Tag> getCenterTags();
+
+    // set if camera handler is enabled
+    void setIsHandlerOn(bool isHandlerOn){
+        this->isHandlerOn = isHandlerOn;
+    }
 
 };
 

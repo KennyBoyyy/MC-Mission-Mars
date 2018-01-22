@@ -4,6 +4,7 @@
 #include "ros/ros.h"
 #include <std_msgs/Float32.h>
 
+// Controls the robot claw
 class ClawController
 {
     static ClawController* s_instance;
@@ -19,6 +20,9 @@ class ClawController
     ros::Publisher wristPublisher;
 
     ClawController();
+
+    bool isDown = false;
+    bool isClosed = true;
 
 public:
     static ClawController* instance();

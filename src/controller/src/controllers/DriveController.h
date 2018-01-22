@@ -15,11 +15,12 @@ class DriveController{
     // state machine states
     enum StateMachineStates {
       STATE_MACHINE_ROTATE = 0,
-      STATE_MACHINE_SKID_STEER,
+      FINAL_ROTATE,
+      STATE_MACHINE_SKID_STEER
     };
 
     StateMachineStates stateMachineState;
-    float rotateOnlyAngleTolerance = 0.262;  //5 deg
+    float rotateOnlyAngleTolerance = 0.262;
     float finalRotationTolerance = 0.0349;
     const float waypointTolerance = 0.15; //15 cm tolerance.
 
@@ -27,37 +28,24 @@ class DriveController{
     float searchVelocity = 0.65; // meters/second  //0.65 MAX value
     float yawVelocity = 0.65;
    
+    // The initial left min and right min values for the robot
+    // Used when the robot never ran the calibration 
     double leftMin = 45;
     double rightMin = 45;
 
     ros::Publisher drivePublisher;
     geometry_msgs::Twist velocity;
 
-    PID fastVelPID;
-    PID fastYawPID;
-
-    PID slowVelPID;
-    PID slowYawPID;
-
-    PID constVelPID;
-    PID constYawPID;
-
-    PIDConfig fastVelConfig();
-    PIDConfig fastYawConfig();
-    PIDConfig slowVelConfig();
-    PIDConfig slowYawConfig();
-    PIDConfig constVelConfig();
-    PIDConfig constYawConfig();
-
-    void fastPID(float errorVel, float errorYaw , float setPointVel, float setPointYaw);
-    void slowPID(float errorVel,float errorYaw, float setPointVel, float setPointYaw);
-    void constPID(float erroVel,float constAngularError, float setPointVel, float setPointYaw);
-
     float linear;
     float angular;
+
+    bool isDistanceTurnedInit = false;
+    float prevDistanceTurned;
+    float distanceTurned;
+    float initDirection;
   
     //Max PWM is 255
-    //abridge currently limits MAX to 120 to prevent overcurrent draw
+    //abridge currently limits MAX to 120 to prevent over-current draw
     float left; //left wheels PWM value
     float right; //right wheel PWM value
 
@@ -65,10 +53,10 @@ class DriveController{
     // We will use to see if drive changed before current was completed
     Point currentDrive;
     // For updating the current location of the robot
-    // So taht we do not get from handler each time. Get it only once per tick for faster processing
+    // So that we do not get from handler each time. Get it only once per tick for faster processing
     Point currentLocation;
 
-    // Used to store the current distance eand dirrection
+    // Used to store the current distance and direction
     // We will use to see if drive changed before current was completed
     float direction;
     float distance;
@@ -93,6 +81,28 @@ class DriveController{
         distance = 0;
     }
 
+    //===============PID==============================//
+    PID fastVelPID;
+    PID fastYawPID;
+
+    PID slowVelPID;
+    PID slowYawPID;
+
+    PID constVelPID;
+    PID constYawPID;
+
+    PIDConfig fastVelConfig();
+    PIDConfig fastYawConfig();
+    PIDConfig slowVelConfig();
+    PIDConfig slowYawConfig();
+    PIDConfig constVelConfig();
+    PIDConfig constYawConfig();
+
+    void fastPID(float errorVel, float errorYaw , float setPointVel, float setPointYaw);
+    void slowPID(float errorVel,float errorYaw, float setPointVel, float setPointYaw);
+    void constPID(float erroVel,float constAngularError, float setPointVel, float setPointYaw);
+    //================================================//
+
 
     public:
         static DriveController* instance();
@@ -103,22 +113,40 @@ class DriveController{
          */
         void registerDrivePublisher(ros::Publisher& drivePublisher);
 
+        // Got to X and Y point 
         bool goToLocation(float x, float y);
+
+        // Go a certain distance in a certain direction
         bool goToDistance(float distance, float direction);
+
+        // Just turn to face that direction
         bool turnToTheta(float theta);
+
+        // Drive straight a certain distance
         bool driveStraight(float distance);
+
+        // Stop rover
         bool stop();
 
-
-        void setLeftRightMin(double leftMin, double rightMin);
+        // Reset controller values
         void resetDriveController(float x, float y);
+
+        // send drive command to the publisher 
         void sendDriveCommand(double left, double right);
 
+        // Turn right with speed
         void turnRight(double speed){sendDriveCommand(speed, -speed);}
+
+        // Turn left with speed
         void turnLeft(double speed){sendDriveCommand(-speed, speed);}
 
+        // Set the left and right wheel min value 
+        void setLeftRightMin(double leftMin, double rightMin);
 
+        // Get the left wheel min 
         double getLeftMin(){return leftMin;}
+
+        // get right wheel min
         double getRightMin(){return rightMin;}
 
 
