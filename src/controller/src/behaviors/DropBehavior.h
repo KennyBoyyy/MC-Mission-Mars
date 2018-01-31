@@ -4,6 +4,7 @@
 #include "BehaviorInterface.h"
 
 #include "../controllers/DriveController.h"
+#include "DriveBehavior.h"
 
 class DropBehavior : public Behavior{
     enum Stages{
@@ -17,6 +18,8 @@ class DropBehavior : public Behavior{
         DropBehavior() : Behavior(DROP_BEHAVIOR_TYPE){
 
         }
+
+        bool tick();
 };
 
 

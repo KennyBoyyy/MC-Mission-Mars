@@ -192,7 +192,8 @@ void tick(const ros::TimerEvent&) {
 // This publishes a message that the the robot is online
 void publishStatusTimerEventHandler(const ros::TimerEvent&) {
   std_msgs::String msg;
-  msg.data = "online";
+  //Added + because we will use custom arduino code
+  msg.data = "online+";
   status_publisher.publish(msg);
 }
 
