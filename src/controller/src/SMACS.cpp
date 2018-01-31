@@ -10,7 +10,8 @@ SMACS* SMACS::instance(){
     return s_instance;
 }
 
-void SMACS::push(Behavior* b){
+
+void SMACS::pushWithMutex(Behavior* b){
     // Check if behavior is null. If it is then do not put anything on stack
     if(b == NULL){
         cout << "STACK: " << "NULL pointer passed to stack" << endl;
@@ -20,6 +21,39 @@ void SMACS::push(Behavior* b){
     //lock the stack from being used while we are doing something with it
     std::lock_guard<std::mutex> guard(stackMutex);
     cout << "STACK: " << "Stack locked"<< endl;
+
+    //if stack is not empty, check if behavior is stackable
+    if(!behaviorStack.empty()){
+        Behavior *top = behaviorStack.top();
+        cout << "STACK: " << "Got top"<< endl;
+        if(b->getType() == top->getType()){
+            if(!b->isStackable()){
+                cout << "STACK: " << "Behavior is not stackable. Was not pushed to stack"<< endl;
+                return;
+            }
+        }
+    }
+
+    //stop the robot
+    DriveController::instance()->stop();
+
+    //push new behavior
+    behaviorStack.push(b);
+    cout << "STACK: " << "Pushed to stack"<< endl;
+
+    cout << "STACK: " << "Stack unlocked"<< endl;
+}
+
+
+void SMACS::push(Behavior* b){
+    // Check if behavior is null. If it is then do not put anything on stack
+    if(b == NULL){
+        cout << "STACK: " << "NULL pointer passed to stack" << endl;
+        return;
+    }
+
+    //lock the stack from being used while we are doing something with it
+    cout << "STACK: " << "Pushing with no mutex"<< endl;
 
     //if stack is not empty, check if behavior is stackable
     if(!behaviorStack.empty()){
@@ -67,10 +101,7 @@ void SMACS::pushNext(Behavior *b){
         cout << "STACK: " << "NULL pointer passed to stack"<< endl;
         return;
     }
-
-    //lock stack
-    std::lock_guard<std::mutex> guard(stackMutex);
-    cout << "STACK: " << "Stack locked"<< endl;
+    cout << "STACK: " << "Stack not locked for push next"<< endl;
 
     // if stack is not empty, then save top element and pop it to get to the next element
     if(!behaviorStack.empty()){
@@ -96,7 +127,6 @@ void SMACS::pushNext(Behavior *b){
     }
 
     cout << "STACK: " << "Pushed next behavior to stack."<<endl;
-    cout << "STACK: " << "Stack unlocked"<< endl;
 }
 
 

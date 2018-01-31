@@ -29,7 +29,7 @@ void SonarHandler::handleLeft(const sensor_msgs::Range::ConstPtr& sonarLeft){
     //If avoid is on and sonar is too close
     float currentRange = sonarLeft->range;
     if(isAvoidEnabled && currentRange <= minDistance) {
-        SMACS::instance()->push(new AvoidBehavior());
+        SMACS::instance()->pushWithMutex(new AvoidBehavior());
     }
     this->sonarLeft.range = sonarLeft->range;
 }
@@ -37,7 +37,7 @@ void SonarHandler::handleLeft(const sensor_msgs::Range::ConstPtr& sonarLeft){
 void SonarHandler::handleCenter(const sensor_msgs::Range::ConstPtr& sonarCenter){
     float currentRange = sonarCenter->range;
     if(isAvoidEnabled && currentRange <= minDistance) {
-        SMACS::instance()->push(new AvoidBehavior());
+        SMACS::instance()->pushWithMutex(new AvoidBehavior());
     }
     this->sonarCenter.range = sonarCenter->range;
 }
@@ -45,7 +45,7 @@ void SonarHandler::handleCenter(const sensor_msgs::Range::ConstPtr& sonarCenter)
 void SonarHandler::handleRight(const sensor_msgs::Range::ConstPtr& sonarRight){
     float currentRange = sonarRight->range;
     if(isAvoidEnabled && currentRange <= minDistance) {
-        SMACS::instance()->push(new AvoidBehavior());
+        SMACS::instance()->pushWithMutex(new AvoidBehavior());
     }
     this->sonarRight.range = sonarRight->range;
 }
@@ -200,7 +200,7 @@ void TargetHandler::handle(const apriltags_ros::AprilTagDetectionArray::ConstPtr
             lastSeenBlockErrorYaw  = blockYawError;
 
             // Push PickUpBehavior on stack
-            SMACS::instance()->push(new PickUpBehavior());
+            SMACS::instance()->pushWithMutex(new PickUpBehavior());
 
         }
 
