@@ -4,7 +4,9 @@
 
 
 //Enum specifies the type of the behavior. Needed to make sure that same type behavior is not put on the stack if not allowed
-enum Type{ SEARCH_BEHAVIOR_TYPE, AVOID_BEHAVIOR_TYPE, PICKUP_BEHAVIOR_TYPE, DEFAULT_BEHAVIOR_TYPE, CALIBRATE_BEHAVIOR_TYPE };
+enum Type{ SEARCH_BEHAVIOR_TYPE, AVOID_BEHAVIOR_TYPE, PICKUP_BEHAVIOR_TYPE,
+           DROP_BEHAVIOR_TYPE, DEFAULT_BEHAVIOR_TYPE, CALIBRATE_BEHAVIOR_TYPE,
+           DRIVE_BEHAVIOR_TYPE};
 
 /**
  * @brief The Behavor class - abstract class that represents a behavior.

@@ -139,7 +139,11 @@ int main(int argc, char **argv) {
 
 
     // Put the first behavior on stack
-    SMACS::instance()->push(new PickUpBehavior());
+
+    SMACS::instance()->push(new DriveBehavior(0, 0));
+    SMACS::instance()->push(new DriveBehavior(2.0, 2.0));
+    SMACS::instance()->push(new DriveBehavior(1, 0));
+
     // Disable the sonar because the robot is not doing anything yet
     SonarHandler::instance()-> setEnable(false);
 
@@ -167,6 +171,7 @@ void tick(const ros::TimerEvent&) {
 
         // Tick the SMACS
         SMACS::instance()->tick();
+
 
         //Flag that states that robot is in auto
         stopped = false;

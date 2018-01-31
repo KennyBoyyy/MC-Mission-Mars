@@ -7,6 +7,7 @@
 #include "CalibrateBehavior.h"
 #include "AvoidBehavior.h"
 #include "PickUpBehavior.h"
+#include "DriveBehavior.h"
 
 #include "ros/ros.h"
 #include "../controllers/DriveController.h"
