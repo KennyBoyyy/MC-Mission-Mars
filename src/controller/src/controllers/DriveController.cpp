@@ -97,22 +97,29 @@ bool DriveController::goToLocation(float x, float y){
                     //if need to turn right
                     if (errorYaw < 0){
                         cout << "DRIVE: RightMin: "<<rightMin<<endl;
-                        sendDriveCommand(leftMin, -rightMin);
+                        //sendDriveCommand(leftMin, -rightMin);
+                        left = leftMin;
+                        right = -rightMin;
                     } else {
                         cout << "DRIVE: LeftMin: " << leftMin <<endl;
-                        sendDriveCommand(-leftMin, rightMin);
+                        //sendDriveCommand(-leftMin, rightMin);
+                        left = -leftMin;
+                        right = rightMin;
                     }
 
                     break;
                 } else {
                      stop();
                      stateMachineState = STATE_MACHINE_SKID_STEER;
+                     cout << "DRIVE: Switching to skid"<<endl;
                 }
 
             }
 
             case STATE_MACHINE_SKID_STEER:
             {
+
+                cout << "DRIVE: Skiding"<<endl;
 
                 // calculate the angle between the current x and y and the desired to find out if we need to turn a little
                 currentDrive.theta = atan2(currentDrive.y - currentLocation.y, currentDrive.x - currentLocation.x);

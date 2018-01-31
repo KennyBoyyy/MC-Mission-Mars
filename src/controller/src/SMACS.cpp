@@ -111,8 +111,11 @@ bool SMACS::tick(){
     if(!behaviorStack.empty()){
 	    cout << "STACK: " << "Stack locked for tick"<< endl;
         if(behaviorStack.top()->tick()){
-            pop();
-            cout << "STACK: " << "Stack unlocked for tick"<< endl;
+            DriveController::instance()->stop();
+            cout << "STACK: " << "Popped from stack"<< endl;
+            //pop element
+            behaviorStack.pop();
+            cout << "STACK: " << "Stack popped from tick"<< endl;
             return true;
         }
         cout << "STACK: " << "Stack unlocked for tick"<< endl;

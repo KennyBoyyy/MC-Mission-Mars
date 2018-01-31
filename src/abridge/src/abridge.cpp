@@ -180,9 +180,9 @@ void driveCommandHandler(const geometry_msgs::Twist::ConstPtr& message) {
   float left = (message->linear.x); //target linear velocity in meters per second
   float right = (message->angular.z); //angular error in radians
 
-  if((e_left - e_right > 20) && e_left > 0 && e_right > 0 ){
-      right = right + ((e_left - e_right) * 0.15);
-  }
+//  if((e_left - e_right > 20) && e_left > 0 && e_right > 0 ){
+//      right = right + ((e_left - e_right) * 0.15);
+//  }
 
   _left = left;
   _right = right;
@@ -192,7 +192,7 @@ void driveCommandHandler(const geometry_msgs::Twist::ConstPtr& message) {
 
   // Cap motor commands at 120. Experimentally determined that high values (tested 180 and 255) can cause 
   // the hardware to fail when the robot moves itself too violently.
-  int max_motor_cmd = 180;
+  int max_motor_cmd = 160;
 
   // Check that the resulting motor commands do not exceed the specified safe maximum value
   if (left > max_motor_cmd)
@@ -334,8 +334,8 @@ void parseData(string str) {
 				odom.twist.twist.linear.y = atof(dataSet.at(6).c_str()) / 100.0;
 				odom.twist.twist.angular.z = atof(dataSet.at(7).c_str());
 
-                e_left = atof(dataSet.at(8).c_str());
-                e_right = atof(dataSet.at(9).c_str());
+//                e_left = atof(dataSet.at(8).c_str());
+//                e_right = atof(dataSet.at(9).c_str());
 			}
 			else if (dataSet.at(0) == "USL") {
 				sonarLeft.header.stamp = ros::Time::now();
