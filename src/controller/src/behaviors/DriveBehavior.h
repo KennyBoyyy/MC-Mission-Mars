@@ -33,11 +33,11 @@ class DriveBehavior : public Behavior{
  * Note: IT WILL NOT TURN ON THE CENTER AVOID. THAT IS THE JOB OF DROP BEHAVIOR. SO DROP AND THIS SHOUD
  * BE USED TOGETHER.
  */
-class CenteDriveBehavior : public Behavior{
+class CenterDriveBehavior : public Behavior{
     float x=0, y=0;
 
     public:
-        CenteDriveBehavior(float x, float y) : Behavior(DRIVE_BEHAVIOR_TYPE, true){
+        CenterDriveBehavior(float x, float y) : Behavior(DRIVE_BEHAVIOR_TYPE, true){
             this->x = x;
             this->y = y;
         }

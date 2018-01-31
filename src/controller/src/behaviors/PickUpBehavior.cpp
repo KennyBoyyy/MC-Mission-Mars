@@ -227,7 +227,7 @@ bool PickUpBehavior::tick(){
                     //TODO: maybe add a camera block seen chack by checking how far is the picked up block from camera
                     //target was picked up
                     ClawController::instance()->wristDownWithCube();
-                    TargetHandler::instance()->setIsHandlerOn(false);
+                    TargetHandler::instance()->setEnabled(false);
                     SonarHandler::instance()->setEnable(true);
                     currentStage = DROP;
                 } else {

@@ -8,9 +8,9 @@ bool DriveBehavior::tick(){
     return false;
 }
 
-bool CenteDriveBehavior::tick(){
+bool CenterDriveBehavior::tick(){
     // Turn off center avoid
-    TargetHandler::instance()->setIsHandlerOn(false);
+    TargetHandler::instance()->setEnabled(false);
 
     // If have not seen the center tags
     if(TargetHandler::instance()->getNumberOfCenterTagsSeen() == 0){
