@@ -144,16 +144,11 @@ void TargetHandler::handle(const apriltags_ros::AprilTagDetectionArray::ConstPtr
         cubeTagsList = cubeTags;
         centerTagsList = centerTags;
 
-        // if handler is on and we see a center tag
-        if (isHandlerOn && centerTagsList.size() > 0){
-            // Avoid center behavior
-        } 
-        // if handler is on and we see a center tag
-        else if(isHandlerOn && cubeTagsList.size() > 0){
+        if (centerTagsList.size() > 0) {
             // Calculate the distance to the closest seen tag and store it
-            // This is done in case we loose the tag while breaking but since 
+            // This is done in case we loose the tag while breaking but since
             // stored the last known location we know where to turn to find it
-            // After we got the closest seen tag, put the PickUpBehavior on stack 
+            // After we got the closest seen tag, put the PickUpBehavior on stack
 
             //get all the tags
             std::vector<Tag> tags = cubeTagsList;
@@ -198,7 +193,14 @@ void TargetHandler::handle(const apriltags_ros::AprilTagDetectionArray::ConstPtr
 
             cout << "TARGET: Angle to closest:  " << blockYawError << endl;
             lastSeenBlockErrorYaw  = blockYawError;
+        }
 
+        // if handler is on and we see a center tag
+        if (isHandlerOn && centerTagsList.size() > 0){
+            // Avoid center behavior
+        } 
+        // if handler is on and we see a center tag
+        else if(isHandlerOn && cubeTagsList.size() > 0){
             // Push PickUpBehavior on stack
             SMACS::instance()->pushWithMutex(new PickUpBehavior());
 
