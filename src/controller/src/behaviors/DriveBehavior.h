@@ -7,13 +7,12 @@
 #include "../controllers/DriveController.h"
 
 class DriveBehavior : public Behavior{
-    double x, y;
+    float x=0, y=0;
 
     public:
-        DriveBehavior(double driveX, double driveY) : Behavior(DRIVE_BEHAVIOR_TYPE, true){
-            cout << "DRIVEBEHAVIOR: "<< "Setting x:"<<x<<" y:"<<y<<endl;
-            x = driveX;
-            y = driveY;
+        DriveBehavior(double x, double y) : Behavior(DRIVE_BEHAVIOR_TYPE, true){
+            this->x = x;
+            this->y = y;
         }
         bool tick();
 };
