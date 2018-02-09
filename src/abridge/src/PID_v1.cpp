@@ -217,5 +217,8 @@ int PID::GetMode(){ return  inAuto ? AUTOMATIC : MANUAL;}
 int PID::GetDirection(){ return controllerDirection;}
 
 long PID::millis(){
-    return ros::Time::now().toNSec();
+    struct timeval tp;
+    gettimeofday(&tp, 0);
+    long int ms = tp.tv_sec * 1000 + tp.tv_usec / 1000;
+    return ms;
 }
