@@ -1,3 +1,4 @@
+#include "PID_v1.h"
 #include <ros/ros.h>
 
 //ROS libraries
@@ -16,6 +17,8 @@
 
 //Package include
 #include <usbSerial.h>
+
+
 
 using namespace std;
 
@@ -109,6 +112,31 @@ float _yawError = 0;
 float e_left = 0;
 float e_right = 0;
 
+//==========================================================================//
+//PID
+double LInput = 0;
+double LOutput = 0;
+double LSetpoint = 0;
+
+double LKP = 1;
+double LKI = 1;
+double LKD = 1;
+
+PID leftPID(&LInput, &LOutput, &LSetpoint, LKP, LKI, LKD, P_ON_E, DIRECT);
+
+double RInput = 0;
+double ROutput = 0;
+double RSetpoint = 0;
+
+double RKP = 1;
+double RKI = 1;
+double RKD = 1;
+
+PID rightPID(&RInput, &ROutput, &RSetpoint, RKP, RKI, RKD, P_ON_E, DIRECT);
+
+
+
+
 int main(int argc, char **argv) {
     
     gethostname(host, sizeof (host));
@@ -165,6 +193,12 @@ int main(int argc, char **argv) {
     
     prevDriveCommandUpdateTime = ros::Time::now();
 
+    leftPID.SetMode(AUTOMATIC);
+    rightPID.SetMode(AUTOMATIC);
+
+    leftPID.SetOutputLimits(0, 180);
+    rightPID.SetOutputLimits(0,180);
+
     ros::spin();
     
     return EXIT_SUCCESS;
@@ -180,19 +214,37 @@ void driveCommandHandler(const geometry_msgs::Twist::ConstPtr& message) {
   float left = (message->linear.x); //target linear velocity in meters per second
   float right = (message->angular.z); //angular error in radians
 
-//  if((e_left - e_right > 20) && e_left > 0 && e_right > 0 ){
-//      right = right + ((e_left - e_right) * 0.15);
-//  }
-
   _left = left;
   _right = right;
+
+  if(left == 160){
+      LSetpoint = 1000;
+  }else{
+      LSetpoint = 0;
+  }
+
+  if(right == 160){
+      RSetpoint = 1000;
+  } else {
+      RSetpoint = 0;
+  }
+
+  LInput = e_left;
+  RInput = e_right;
+
+  leftPID.Compute();
+  rightPID.Compute();
+
+  left = LOutput;
+  right = ROutput;
+
 
   cout<<"DRIVEFIX: e_left = "<<e_left << " e_right = " << e_right << endl;
   cout<<"DRIVEFIX: left = "<<left << " right = " << right << endl;
 
   // Cap motor commands at 120. Experimentally determined that high values (tested 180 and 255) can cause 
   // the hardware to fail when the robot moves itself too violently.
-  int max_motor_cmd = 160;
+  int max_motor_cmd = 180;
 
   // Check that the resulting motor commands do not exceed the specified safe maximum value
   if (left > max_motor_cmd)
