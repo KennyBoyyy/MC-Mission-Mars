@@ -1,4 +1,3 @@
-#include "PID_v1.h"
 #include <ros/ros.h>
 
 //ROS libraries
@@ -17,6 +16,9 @@
 
 //Package include
 #include <usbSerial.h>
+
+#include "PID_v1.h"
+#include "PID_AutoTune.h"
 
 
 
@@ -134,7 +136,16 @@ double RKD = 0.01;
 
 PID rightPID(&RInput, &ROutput, &RSetpoint, RKP, RKI, RKD, P_ON_E, DIRECT);
 
+//=========================================================================//
+//Tune
+double aTuneStep=50, aTuneNoise=1, aTuneStartValue=100;
+unsigned int aTuneLookBack=20;
 
+PID_ATune leftTune(&LInput, &LOutput);
+PID_ATune rightTune(&LInput, &LOutput);
+
+bool leftTuning = true;
+bool rightTuning = true;
 
 
 int main(int argc, char **argv) {
@@ -209,10 +220,47 @@ int main(int argc, char **argv) {
 //See the following paper for description of PID controllers.
 //Bennett, Stuart (November 1984). "Nicholas Minorsky and the automatic steering of ships". IEEE Control Systems Magazine. 4 (4): 10–15. doi:10.1109/MCS.1984.1104827. ISSN 0272-1708.
 void driveCommandHandler(const geometry_msgs::Twist::ConstPtr& message) {
-   
-
   float left = (message->linear.x); //target linear velocity in meters per second
   float right = (message->angular.z); //angular error in radians
+
+  // if we are tuning the vals
+  if(leftTuning){
+      leftTune.SetNoiseBand(aTuneNoise);
+      leftTune.SetOutputStep(aTuneStep);
+      leftTune.SetLookbackSec((int)aTuneLookBack);
+      int val = (leftTune.Runtime());
+      if (val!=0)
+      {
+        leftTuning = false;
+      }
+      if(!leftTuning)
+      { //we're done, set the tuning parameters
+        LKP = leftTune.GetKp();
+        LKI = leftTune.GetKi();
+        LKD = leftTune.GetKd();
+        leftPID.SetTunings(LKP,LKI,LKD);
+      }
+  }
+
+  if(rightTuning){
+      rightTune.SetNoiseBand(aTuneNoise);
+      rightTune.SetOutputStep(aTuneStep);
+      rightTune.SetLookbackSec((int)aTuneLookBack);
+      int val = (rightTune.Runtime());
+      if (val!=0)
+      {
+        rightTuning = false;
+      }
+      if(!rightTuning)
+      { //we're done, set the tuning parameters
+        RKP = rightTune.GetKp();
+        RKI = rightTune.GetKi();
+        RKD = rightTune.GetKd();
+        rightPID.SetTunings(RKP,RKI,RKD);
+      }
+  }
+
+
 
   _left = left;
   _right = right;

@@ -19,7 +19,7 @@ include_directories(
 )
 
 add_executable(
-  abridge src/abridge.cpp src/usbSerial.cpp src/PID_v1.cpp
+  abridge src/abridge.cpp src/usbSerial.cpp src/PID_v1.cpp src/PID_AutoTune.cpp
 )
 
 target_link_libraries(
