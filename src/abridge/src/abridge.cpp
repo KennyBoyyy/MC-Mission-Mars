@@ -118,9 +118,9 @@ double LInput = 0;
 double LOutput = 0;
 double LSetpoint = 0;
 
-double LKP = 1;
-double LKI = 1;
-double LKD = 1;
+double LKP = 0.05;
+double LKI = 0.01;
+double LKD = 0.01;
 
 PID leftPID(&LInput, &LOutput, &LSetpoint, LKP, LKI, LKD, P_ON_E, DIRECT);
 
@@ -128,9 +128,9 @@ double RInput = 0;
 double ROutput = 0;
 double RSetpoint = 0;
 
-double RKP = 1;
-double RKI = 1;
-double RKD = 1;
+double RKP = 0.05;
+double RKI = 0.01;
+double RKD = 0.01;
 
 PID rightPID(&RInput, &ROutput, &RSetpoint, RKP, RKI, RKD, P_ON_E, DIRECT);
 
@@ -196,8 +196,8 @@ int main(int argc, char **argv) {
     leftPID.SetMode(AUTOMATIC);
     rightPID.SetMode(AUTOMATIC);
 
-    leftPID.SetOutputLimits(0, 180);
-    rightPID.SetOutputLimits(0,180);
+    leftPID.SetOutputLimits(0, 160);
+    rightPID.SetOutputLimits(0,160);
 
     ros::spin();
     
@@ -217,14 +217,14 @@ void driveCommandHandler(const geometry_msgs::Twist::ConstPtr& message) {
   _left = left;
   _right = right;
 
-  if(left == 160){
-      LSetpoint = 1000;
+  if(left >= 160){
+      LSetpoint = 700;
   }else{
       LSetpoint = 0;
   }
 
-  if(right == 160){
-      RSetpoint = 1000;
+  if(right >= 160){
+      RSetpoint = 700;
   } else {
       RSetpoint = 0;
   }
@@ -239,7 +239,7 @@ void driveCommandHandler(const geometry_msgs::Twist::ConstPtr& message) {
   right = ROutput;
 
 
-  cout<<"DRIVEFIX: e_left = "<<e_left << " e_right = " << e_right << endl;
+  cout<<"DRIVEFIX: e_left = "<<e_left << " e_right = " << e_right <<" time : "<< leftPID.millis() << endl;
   cout<<"DRIVEFIX: left = "<<left << " right = " << right << endl;
 
   // Cap motor commands at 120. Experimentally determined that high values (tested 180 and 255) can cause 
@@ -386,8 +386,8 @@ void parseData(string str) {
 				odom.twist.twist.linear.y = atof(dataSet.at(6).c_str()) / 100.0;
 				odom.twist.twist.angular.z = atof(dataSet.at(7).c_str());
 
-//                e_left = atof(dataSet.at(8).c_str());
-//                e_right = atof(dataSet.at(9).c_str());
+                e_left = atof(dataSet.at(8).c_str());
+                e_right = atof(dataSet.at(9).c_str());
 			}
 			else if (dataSet.at(0) == "USL") {
 				sonarLeft.header.stamp = ros::Time::now();
