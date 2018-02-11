@@ -121,8 +121,8 @@ double LOutput = 0;
 double LSetpoint = 0;
 
 double LKP = 0.05;
-double LKI = 0.01;
-double LKD = 0.01;
+double LKI = 0.0;
+double LKD = 0.0;
 
 PID leftPID(&LInput, &LOutput, &LSetpoint, LKP, LKI, LKD, P_ON_E, DIRECT);
 
@@ -131,18 +131,18 @@ double ROutput = 0;
 double RSetpoint = 0;
 
 double RKP = 0.05;
-double RKI = 0.01;
-double RKD = 0.01;
+double RKI = 0.0;
+double RKD = 0.0;
 
 PID rightPID(&RInput, &ROutput, &RSetpoint, RKP, RKI, RKD, P_ON_E, DIRECT);
 
 //=========================================================================//
 //Tune
-double aTuneStep=50, aTuneNoise=1, aTuneStartValue=100;
+double aTuneStep=20, aTuneNoise=0.5, aTuneStartValue=100;
 unsigned int aTuneLookBack=20;
 
 PID_ATune leftTune(&LInput, &LOutput);
-PID_ATune rightTune(&LInput, &LOutput);
+PID_ATune rightTune(&RInput, &ROutput);
 
 bool leftTuning = true;
 bool rightTuning = true;
@@ -287,8 +287,9 @@ void driveCommandHandler(const geometry_msgs::Twist::ConstPtr& message) {
   right = ROutput;
 
 
-  cout<<"DRIVEFIX: e_left = "<<e_left << " e_right = " << e_right <<" time : "<< leftPID.millis() << endl;
+  cout<<"DRIVEFIX: e_left = "<<e_left << " e_right = " << e_right << endl;
   cout<<"DRIVEFIX: left = "<<left << " right = " << right << endl;
+  cout<<"KP "<<LKP<<" KI "<<LKI<<" KD "<<LKD<<endl;
 
   // Cap motor commands at 120. Experimentally determined that high values (tested 180 and 255) can cause 
   // the hardware to fail when the robot moves itself too violently.
