@@ -10,6 +10,25 @@ bool DropBehavior::tick(){
             stage = GPS_TARGET;
             break;
         }
+        case SEARCH_FOR_CENTER:
+        {
+            // Check if there is a center that we can see
+            if(TargetHandler::instance()->getNumberOfCenterTagsSeen() > 0){
+                stage = DROP;
+            } else {
+                //If we do not see any tags yet. Try to drive around
+                //If this is our first search try
+                if(searchTry == 0){
+                    // Drive one meter forward
+                    if(DriveController::instance()->goToDistance(1, OdometryHandler::instance()->getTheta())){
+                        searchTry++;
+                    }
+                } else if(searchTry == 1){
+                    // If second try, figure out what to do.
+                    stage = GPS_TARGET;
+                }
+            }
+        }
         case GPS_TARGET:
         {
             // If we see center

@@ -12,6 +12,7 @@
 class DropBehavior : public Behavior{
     enum Stages{
         ODOM_TARGET = 0,
+        SEARCH_FOR_CENTER,
         GPS_TARGET,
         SEARCH,
         ASK,
@@ -19,6 +20,7 @@ class DropBehavior : public Behavior{
     };
 
    Stages stage = ODOM_TARGET;
+   int searchTry = 0;
 
     public:
         DropBehavior() : Behavior(DROP_BEHAVIOR_TYPE){
