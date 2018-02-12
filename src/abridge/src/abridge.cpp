@@ -17,6 +17,8 @@
 //Package include
 #include <usbSerial.h>
 
+#include "DriveFix.h"
+
 using namespace std;
 
 //aBridge functions
@@ -95,8 +97,8 @@ ros::Timer publish_heartbeat_timer;
 void publishHeartBeatTimerEventHandler(const ros::TimerEvent& event);
 void modeHandler(const std_msgs::UInt8::ConstPtr& message);
 
-float _left;
-float _right;
+int _left;
+int _right;
 bool _calcError = false;
 float _initRoll = 0;
 float _initPitch = 0;
@@ -106,8 +108,14 @@ float _rollError = 0;
 float _pitchError = 0;
 float _yawError = 0;
 
-float e_left = 0;
-float e_right = 0;
+int e_left = 0;
+int e_right = 0;
+
+int corrected_v_left;
+int corrected_v_right;
+
+DriveFix fix(&e_left, &e_right, &_left, &_right, &corrected_v_left, &corrected_v_right, 200, 1000);
+
 
 int main(int argc, char **argv) {
     
@@ -180,12 +188,13 @@ void driveCommandHandler(const geometry_msgs::Twist::ConstPtr& message) {
   float left = (message->linear.x); //target linear velocity in meters per second
   float right = (message->angular.z); //angular error in radians
 
-//  if((e_left - e_right > 20) && e_left > 0 && e_right > 0 ){
-//      right = right + ((e_left - e_right) * 0.15);
-//  }
-
   _left = left;
   _right = right;
+
+  fix.compute();
+
+  left = corrected_v_left;
+  right = corrected_v_right;
 
   cout<<"DRIVEFIX: e_left = "<<e_left << " e_right = " << e_right << endl;
   cout<<"DRIVEFIX: left = "<<left << " right = " << right << endl;
@@ -353,8 +362,6 @@ void parseData(string str) {
 		}
 	}
 }
-
-
 
 void modeHandler(const std_msgs::UInt8::ConstPtr& message) {
 	currentMode = message->data;
