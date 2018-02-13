@@ -38,28 +38,67 @@ void DriveFix::compute(){
                     if(fabs(*e_left - *e_right) > 5){
                         // we need to adjust the slowest wheel
                         //if left or right encoders are greater than max
-                        if(*e_left > max_e_val || *e_right > max_e_val){
-                            // if left encoders is greater than max value
-                            if(*e_left > max_e_val){
-                                // lower the left voltage a bit
-                                adjust_value_left -= 5;
-                            }
 
-                            //if right encoders is greater than max val
-                            if(*e_right > max_e_val){
-                                   // lower max
-                                adjust_value_right -= 5;
+                        //If driving forwards
+                        if(curr_v_left > 0){
+                            if(*e_left > max_e_val || *e_right > max_e_val){
+                                // if left encoders is greater than max value
+                                if(*e_left > max_e_val){
+                                    // lower the left voltage a bit
+                                    adjust_value_left -= 5;
+                                }
+
+                                //if right encoders is greater than max val
+                                if(*e_right > max_e_val){
+                                       // lower max
+                                    adjust_value_right -= 5;
+                                }
+                            }
+                        } else { // If driving backwards
+                            if(*e_left < max_e_val || *e_right < max_e_val){
+                                // if left encoders is greater than max value
+                                if(*e_left < max_e_val){
+                                    // lower the left voltage a bit
+                                    adjust_value_left += 5;
+                                }
+
+                                //if right encoders is greater than max val
+                                if(*e_right < max_e_val){
+                                       // lower max
+                                    adjust_value_right += 5;
+                                }
                             }
                         }
 
                         //if left is greater than right
-                        if(*e_left > *e_right && *e_right < max_e_val){
-                            adjust_value_right += 5;
+                        // In some cases ajusting will not help because we will be at the max speed of
+                        // the motors. This is why there is an if statement checking that adjust is
+                        // between -255 and 255
 
-                        } else if(*e_right > *e_left && *e_left < max_e_val) {
-                            adjust_value_left +=5;
+                        // If driving forwards
+                        if(curr_v_left > 0){
+                            if(*e_left > *e_right && *e_right < max_e_val){
+                                if(adjust_value_right >= -255 && adjust_value_right <=255 )
+                                    adjust_value_right += 5;
 
+                            } else if(*e_right > *e_left && *e_left < max_e_val) {
+                                if(adjust_value_left >= -255 && adjust_value_left <=255 )
+                                    adjust_value_left +=5;
+
+                            }
+                        } else { // Driving backwards
+                            if(*e_left > *e_right && *e_right < max_e_val){
+                                if(adjust_value_right >= -255 && adjust_value_right <=255 )
+                                    adjust_value_left -= 5;
+
+                            } else if(*e_right > *e_left && *e_left < max_e_val) {
+                                if(adjust_value_left >= -255 && adjust_value_left <=255 )
+                                    adjust_value_right -=5;
+
+                            }
                         }
+
+
                         cout<<"Learned new value for " << *curr_v_left <<endl;
                         //Save the currect setting.
                         valuesMap[make_pair(*curr_v_left, *curr_v_right)] = Point(adjust_value_left, adjust_value_right, max_e_val);
@@ -70,7 +109,6 @@ void DriveFix::compute(){
 
             }
         }
-
 
         // boost e_right value
         *v_output_right = *curr_v_right + adjust_value_right;
