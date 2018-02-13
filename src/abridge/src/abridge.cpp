@@ -190,8 +190,10 @@ void driveCommandHandler(const geometry_msgs::Twist::ConstPtr& message) {
   float left = (message->linear.x); //target linear velocity in meters per second
   float right = (message->angular.z); //angular error in radians
 
-  left = 120;
-  right = 120;
+  if(left > 0){
+      left = 160;
+      right = 160;
+  }
 
   left_v = left;
   right_v = right;
@@ -199,10 +201,10 @@ void driveCommandHandler(const geometry_msgs::Twist::ConstPtr& message) {
   _left = left;
   _right = right;
 
-  fix.compute();
+//  fix.compute();
 
-  left = corrected_v_left;
-  right = corrected_v_right;
+  //left = corrected_v_left;
+  //right = corrected_v_right;
 
   cout<<"DRIVEFIX: e_left = "<<e_left << " e_right = " << e_right << endl;
   cout<<"DRIVEFIX: left = "<< corrected_v_left << " right = " << corrected_v_right << endl;

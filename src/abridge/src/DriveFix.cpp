@@ -35,7 +35,7 @@ void DriveFix::compute(){
                 //if enough time passed to trigger a compute
                 if(millis() - lastCheckTime >= refreshTime){
                     // If the dif between encoders is greater than 10 ticks
-                    if(fabs(*e_left - *e_right) > 10){
+                    if(fabs(*e_left - *e_right) > 5){
                         // we need to adjust the slowest wheel
                         //if left or right encoders are greater than max
                         if(*e_left > max_e_val || *e_right > max_e_val){
