@@ -116,7 +116,7 @@ int right_v;
 int corrected_v_left;
 int corrected_v_right;
 
-DriveFix fix(&e_left, &e_right, &left_v, &right_v, &corrected_v_left, &corrected_v_right, 2000, 1000);
+DriveFix fix(&e_left, &e_right, &left_v, &right_v, &corrected_v_left, &corrected_v_right, 500);
 
 
 int main(int argc, char **argv) {

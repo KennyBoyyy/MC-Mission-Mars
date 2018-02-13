@@ -12,6 +12,9 @@ class DriveFix{
     int *e_left;
     int *e_right;
 
+    int prev_e_left;
+    int prev_e_right;
+
     int *curr_v_left;
     int *curr_v_right;
 
@@ -27,19 +30,25 @@ class DriveFix{
     int adjust_value_left;
 
     bool maxRegisterd;
+    bool terminalVelocityReached;
 
     public:
 
-        DriveFix(int *e_left, int *e_right, int *curr_v_left, int *curr_v_right, int *v_output_left, int *v_output_right, int refreshTime, int max_e_val) :
+        DriveFix(int *e_left, int *e_right, int *curr_v_left, int *curr_v_right, int *v_output_left, int *v_output_right, int refreshTime) :
             e_left(e_left), e_right(e_right), curr_v_left(curr_v_left), curr_v_right(curr_v_right), v_output_left(v_output_left),
-            v_output_right(v_output_right), refreshTime(refreshTime), max_e_val(max_e_val){
+            v_output_right(v_output_right), refreshTime(refreshTime){
             currentTime = millis();
             lastCheckTime = millis();
 
             adjust_value_left = 0;
             adjust_value_right = 0;
 
+            prev_e_left = 0;
+            prev_e_right =0;
+
             maxRegisterd = false;
+            terminalVelocityReached = false;
+            max_e_val = 1000;
         }
 
 
