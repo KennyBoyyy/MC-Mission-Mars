@@ -5,9 +5,8 @@ void DriveFix::compute(){
     if(last_v_left == *curr_v_left && last_v_right == *curr_v_right){
         // Check if we learned the valuse for this speed
         if(valuesMap.count(make_pair(*curr_v_left, *curr_v_right))){
-            *v_output_right = valuesMap[make_pair(*curr_v_left, *curr_v_right)].first;
-            // boost e_left value
-            *v_output_left = valuesMap[make_pair(*curr_v_left, *curr_v_right)].second;
+            *v_output_left = valuesMap[make_pair(*curr_v_left, *curr_v_right)].first;
+            *v_output_right = valuesMap[make_pair(*curr_v_left, *curr_v_right)].second;
 
             cout<<"DRIVEFIX: used learned value for "<<*curr_v_left<<endl;
             return;
