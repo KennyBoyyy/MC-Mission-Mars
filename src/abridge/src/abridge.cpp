@@ -116,7 +116,7 @@ int right_v;
 int corrected_v_left;
 int corrected_v_right;
 
-DriveFix fix(&e_left, &e_right, &left_v, &right_v, &corrected_v_left, &corrected_v_right, 1000, 1000);
+DriveFix fix(&e_left, &e_right, &left_v, &right_v, &corrected_v_left, &corrected_v_right, 2000, 1000);
 
 
 int main(int argc, char **argv) {
@@ -205,7 +205,7 @@ void driveCommandHandler(const geometry_msgs::Twist::ConstPtr& message) {
   right = corrected_v_right;
 
   cout<<"DRIVEFIX: e_left = "<<e_left << " e_right = " << e_right << endl;
-  cout<<"DRIVEFIX: left = "<<left_v << " right = " << right_v << endl;
+  cout<<"DRIVEFIX: left = "<< corrected_v_left << " right = " << corrected_v_right << endl;
 
   // Cap motor commands at 120. Experimentally determined that high values (tested 180 and 255) can cause 
   // the hardware to fail when the robot moves itself too violently.
