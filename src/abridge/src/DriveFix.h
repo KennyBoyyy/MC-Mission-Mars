@@ -2,6 +2,9 @@
 #define DRIVE_FIX2_H
 #include "math.h"
 #include <sys/time.h>
+#include <iostream>
+
+using namespace std;
 
 class DriveFix{
     int refreshTime;
@@ -44,7 +47,7 @@ class DriveFix{
             adjust_value_right = 0;
 
             prev_e_left = 0;
-            prev_e_right =0;
+            prev_e_right = 0;
 
             maxRegisterd = false;
             terminalVelocityReached = false;
