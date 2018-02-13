@@ -109,10 +109,10 @@ void DriveFix::compute(){
                 //if enough time passed to trigger a compute
                 if(millis() - lastCheckTime >= refreshTime){
                     // If the dif between encoders is greater than 10 ticks
-                    if((fabs(*e_left) - fabs(*e_right)) > 5){
+                    if(fabs((fabs(*e_left) - fabs(*e_right))) > 5){
                         //If we are making a left turn
                         if(curr_v_left < 0){
-                            if(*e_left < max_e_val || *e_right > max_e_val){
+                            if(*e_left < max_e_val || *e_right > fabs(max_e_val)){
                                 // if left encoders is greater than max value
                                 if(*e_left < max_e_val){
                                     // lower the left voltage a bit
@@ -120,15 +120,15 @@ void DriveFix::compute(){
                                 }
 
                                 //if right encoders is greater than max val
-                                if(*e_right > max_e_val){
+                                if(*e_right > fabs(max_e_val)){
                                        // lower max
                                     adjust_value_right -= 5;
                                 }
                             }
                         } else {
-                            if(*e_left > max_e_val || *e_right < max_e_val){
+                            if(*e_left > fabs(max_e_val) || *e_right < max_e_val){
                                 // if left encoders is greater than max value
-                                if(*e_left > max_e_val){
+                                if(*e_left > fabs(max_e_val)){
                                     // lower the left voltage a bit
                                     adjust_value_left -= 5;
                                 }
