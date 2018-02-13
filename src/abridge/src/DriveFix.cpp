@@ -141,6 +141,30 @@ void DriveFix::compute(){
                             }
                         }
 
+
+                        //If we are making a left turn
+                        if(curr_v_left < 0){
+                            if(fabs(*e_left) > fabs(*e_right) && *e_right < fabs(max_e_val)){
+                                if(adjust_value_right >= -255 && adjust_value_right <=255 )
+                                    adjust_value_right += 5;
+
+                            } else if(fabs(*e_right) > fabs(*e_left) && *e_left > max_e_val) {
+                                if(adjust_value_left >= -255 && adjust_value_left <=255 )
+                                    adjust_value_left -=5;
+
+                            }
+                        } else { //else if we are turning right
+                            if(fabs(*e_left) > fabs(*e_right) && *e_right > max_e_val){
+                                if(adjust_value_right >= -255 && adjust_value_right <=255 )
+                                    adjust_value_right -= 5;
+
+                            } else if(fabs(*e_right) > fabs(*e_left) && *e_left < fabs(max_e_val)) {
+                                if(adjust_value_left >= -255 && adjust_value_left <=255 )
+                                    adjust_value_left +=5;
+
+                            }
+                        }
+
                         cout<<"Learned new value for " << *curr_v_left <<endl;
                         //Save the currect setting.
                         valuesMap[make_pair(*curr_v_left, *curr_v_right)] = Point(adjust_value_left, adjust_value_right, max_e_val);
