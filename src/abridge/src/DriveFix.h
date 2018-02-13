@@ -26,6 +26,8 @@ class DriveFix{
     int adjust_value_right;
     int adjust_value_left;
 
+    bool maxRegisterd;
+
     public:
 
         DriveFix(int *e_left, int *e_right, int *curr_v_left, int *curr_v_right, int *v_output_left, int *v_output_right, int refreshTime, int max_e_val) :
@@ -36,6 +38,8 @@ class DriveFix{
 
             adjust_value_left = 0;
             adjust_value_right = 0;
+
+            maxRegisterd = false;
         }
 
 

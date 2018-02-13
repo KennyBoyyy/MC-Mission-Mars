@@ -111,10 +111,12 @@ float _yawError = 0;
 int e_left = 0;
 int e_right = 0;
 
+int left_v;
+int right_v;
 int corrected_v_left;
 int corrected_v_right;
 
-DriveFix fix(&e_left, &e_right, &_left, &_right, &corrected_v_left, &corrected_v_right, 200, 1000);
+DriveFix fix(&e_left, &e_right, &left_v, &right_v, &corrected_v_left, &corrected_v_right, 1000, 1000);
 
 
 int main(int argc, char **argv) {
@@ -188,6 +190,12 @@ void driveCommandHandler(const geometry_msgs::Twist::ConstPtr& message) {
   float left = (message->linear.x); //target linear velocity in meters per second
   float right = (message->angular.z); //angular error in radians
 
+  left = 120;
+  right = 120;
+
+  left_v = left;
+  right_v = right;
+
   _left = left;
   _right = right;
 
@@ -201,7 +209,7 @@ void driveCommandHandler(const geometry_msgs::Twist::ConstPtr& message) {
 
   // Cap motor commands at 120. Experimentally determined that high values (tested 180 and 255) can cause 
   // the hardware to fail when the robot moves itself too violently.
-  int max_motor_cmd = 160;
+  int max_motor_cmd = 180;
 
   // Check that the resulting motor commands do not exceed the specified safe maximum value
   if (left > max_motor_cmd)
