@@ -4,13 +4,15 @@
 #include <sys/time.h>
 #include <iostream>
 #include <map>
+#include "Point.h"
 
 
 using namespace std;
 
 class DriveFix{
 
-    map< pair<int, int>, pair<int, int> > valuesMap;
+
+    map< pair<int, int>, Point > valuesMap;
 
     int refreshTime;
 
