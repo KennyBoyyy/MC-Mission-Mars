@@ -190,9 +190,18 @@ void driveCommandHandler(const geometry_msgs::Twist::ConstPtr& message) {
   float left = (message->linear.x); //target linear velocity in meters per second
   float right = (message->angular.z); //angular error in radians
 
-  if(left > 0){
+  if(left>0 && right <0){
+      left = 160;
+      right = -160;
+  } else if(left<0 && right>0){
+      left = -160;
+      right = 160;
+  } else if(left > 0){
       left = 160;
       right = 160;
+  } else if (left < 0){
+      left = -160;
+      right = -160;
   }
 
   left_v = left;
