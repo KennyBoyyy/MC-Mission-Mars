@@ -1,8 +1,17 @@
 #include "DriveFix.h"
 
-void DriveFix::compute(){
+void DriveFix::compute(){    
     // if the values are the same as last check
     if(last_v_left == *curr_v_left && last_v_right == *curr_v_right){
+        // Check if we learned the valuse for this speed
+        if(valuesMap.count(make_pair(*curr_v_left, *curr_v_right))){
+            *v_output_right = valuesMap[make_pair(*curr_v_left, *curr_v_right)].first;
+            // boost e_left value
+            *v_output_left = valuesMap[make_pair(*curr_v_left, *curr_v_right)].second;
+
+            cout<<"DRIVEFIX: used learned value for "<<*curr_v_left<<endl;
+            return;
+        }
 
         if(!terminalVelocityReached){
             if(((prev_e_left != *e_left) && (fabs(prev_e_left - *e_left) <= 10)) || ((prev_e_right != *e_right) && (fabs(prev_e_right - *e_right) <= 10))){
@@ -52,6 +61,9 @@ void DriveFix::compute(){
                             adjust_value_left +=5;
 
                         }
+                    } else { // else we found good values. Need to remember them.
+                        valuesMap[make_pair(*curr_v_left, *curr_v_right)] = make_pair(*curr_v_left + adjust_value_left, *curr_v_right + adjust_value_right);
+                        cout<<"DRIVEFIX: learned value for "<<*curr_v_left<<endl;
                     }
                     lastCheckTime = millis();
                 }

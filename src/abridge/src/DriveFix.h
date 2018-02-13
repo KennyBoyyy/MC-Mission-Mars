@@ -3,11 +3,15 @@
 #include "math.h"
 #include <sys/time.h>
 #include <iostream>
-#include <std_msgs/String.h>
+#include <map>
+
 
 using namespace std;
 
 class DriveFix{
+
+    map< pair<int, int>, pair<int, int> > valuesMap;
+
     int refreshTime;
 
     long currentTime;
