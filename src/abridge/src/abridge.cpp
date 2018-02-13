@@ -209,7 +209,7 @@ void driveCommandHandler(const geometry_msgs::Twist::ConstPtr& message) {
 
   // Cap motor commands at 120. Experimentally determined that high values (tested 180 and 255) can cause 
   // the hardware to fail when the robot moves itself too violently.
-  int max_motor_cmd = 180;
+  int max_motor_cmd = 200;
 
   // Check that the resulting motor commands do not exceed the specified safe maximum value
   if (left > max_motor_cmd)

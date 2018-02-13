@@ -3,6 +3,7 @@
 #include "math.h"
 #include <sys/time.h>
 #include <iostream>
+#include <std_msgs/String.h>
 
 using namespace std;
 
@@ -52,6 +53,7 @@ class DriveFix{
             maxRegisterd = false;
             terminalVelocityReached = false;
             max_e_val = 1000;
+
         }
 
 

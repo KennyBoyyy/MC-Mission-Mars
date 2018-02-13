@@ -5,7 +5,7 @@ void DriveFix::compute(){
     if(last_v_left == *curr_v_left && last_v_right == *curr_v_right){
 
         if(!terminalVelocityReached){
-            if(fabs(prev_e_left - *e_left) <= 30 || fabs(prev_e_right - *e_right) <= 30){
+            if(((prev_e_left != *e_left) && (fabs(prev_e_left - *e_left) <= 10)) || ((prev_e_right != *e_right) && (fabs(prev_e_right - *e_right) <= 10))){
                 terminalVelocityReached = true;
 
                 maxRegisterd = true;
@@ -14,7 +14,7 @@ void DriveFix::compute(){
                     cout<<"DRIVEFIX: terminal on left "<<*e_left<<endl;
                 } else {
                     max_e_val = *e_right;
-                    cout<<"DRIVEFIX: terminal on right "<<*e_left<<endl;
+                    cout<<"DRIVEFIX: terminal on right "<<*e_right<<endl;
                 }
 
                 lastCheckTime = millis();
@@ -28,21 +28,21 @@ void DriveFix::compute(){
                 if(millis() - lastCheckTime >= refreshTime){
                     // If the dif between encoders is greater than 10 ticks
                     if(fabs(*e_left - *e_right) > 10){
-//                        // we need to adjust the slowest wheel
-//                        //if left or right encoders are greater than max
-//                        if(*e_left > max_e_val || *e_right > max_e_val){
-//                            // if left encoders is greater than max value
-//                            if(*e_left > max_e_val){
-//                                // lower the left voltage a bit
-//                                adjust_value_left -= 5;
-//                            }
+                        // we need to adjust the slowest wheel
+                        //if left or right encoders are greater than max
+                        if(*e_left > max_e_val || *e_right > max_e_val){
+                            // if left encoders is greater than max value
+                            if(*e_left > max_e_val){
+                                // lower the left voltage a bit
+                                adjust_value_left -= 5;
+                            }
 
-//                            //if right encoders is greater than max val
-//                            if(*e_right > max_e_val){
-//                                   // lower max
-//                                adjust_value_right -= 5;
-//                            }
-//                        }
+                            //if right encoders is greater than max val
+                            if(*e_right > max_e_val){
+                                   // lower max
+                                adjust_value_right -= 5;
+                            }
+                        }
 
                         //if left is greater than right
                         if(*e_left > *e_right && *e_right < max_e_val){
