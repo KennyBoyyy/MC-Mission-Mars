@@ -9,7 +9,6 @@ void DriveFix::compute(){
             *v_output_right = valuesMap[make_pair(*curr_v_left, *curr_v_right)].second;
 
             cout<<"DRIVEFIX: used learned value for "<<*curr_v_left<<endl;
-            return;
         }
 
         if(!terminalVelocityReached){
@@ -60,9 +59,8 @@ void DriveFix::compute(){
                             adjust_value_left +=5;
 
                         }
-                    } else { // else we found good values. Need to remember them.
+                        cout<<"Learned new value for " << *curr_v_left <<endl;
                         valuesMap[make_pair(*curr_v_left, *curr_v_right)] = make_pair(*curr_v_left + adjust_value_left, *curr_v_right + adjust_value_right);
-                        cout<<"DRIVEFIX: learned value for "<<*curr_v_left<<endl;
                     }
                     lastCheckTime = millis();
                 }
