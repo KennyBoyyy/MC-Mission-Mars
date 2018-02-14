@@ -107,9 +107,6 @@ TargetHandler* TargetHandler::instance() {
 
 void TargetHandler::handle(const apriltags_ros::AprilTagDetectionArray::ConstPtr& message)
 {
-    // Create a lock
-    std::lock_guard<std::mutex> guard(instanceMutex);
-
     // If message contains elements
     if (message->detections.size() > 0) {
 
@@ -144,7 +141,7 @@ void TargetHandler::handle(const apriltags_ros::AprilTagDetectionArray::ConstPtr
         cubeTagsList = cubeTags;
         centerTagsList = centerTags;
 
-        if (centerTagsList.size() > 0) {
+        if (cubeTagsList.size() > 0) {
             // Calculate the distance to the closest seen tag and store it
             // This is done in case we loose the tag while breaking but since
             // stored the last known location we know where to turn to find it
