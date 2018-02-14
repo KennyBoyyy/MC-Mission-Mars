@@ -16,6 +16,8 @@ class DriveFix{
 
     int refreshTime;
 
+    long volt_change_wait_time = 0;
+
     long currentTime;
     long lastCheckTime;
 

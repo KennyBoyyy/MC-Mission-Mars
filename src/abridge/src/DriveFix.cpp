@@ -3,7 +3,7 @@
 void DriveFix::compute(){    
     // if the values are the same as last check
     if(last_v_left == *curr_v_left && last_v_right == *curr_v_right && curr_v_right != 0 && curr_v_left != 0){
-        if(!valuesMap.count(make_pair(*curr_v_left, *curr_v_right)) && !terminalVelocityReached && millis() - lastCheckTime > 200 ){
+        if(!valuesMap.count(make_pair(*curr_v_left, *curr_v_right)) && !terminalVelocityReached && millis() - volt_change_wait_time >= 500 ){
             if(((prev_e_left != *e_left) && ((fabs(prev_e_left) - fabs(*e_left)) <= 10)) || ((prev_e_right != *e_right) && ((fabs(prev_e_right) - fabs(*e_right)) <= 10))){
                 terminalVelocityReached = true;
 
@@ -177,6 +177,9 @@ void DriveFix::compute(){
         *v_output_left = *curr_v_left + adjust_value_left;
 
     } else {
+        if(*curr_v_left != last_v_left || *curr_v_right != last_v_right )
+            volt_change_wait_time = millis();
+
         last_v_left = *curr_v_left;
         last_v_right = *curr_v_right;
         *v_output_right = *curr_v_right;
@@ -186,6 +189,8 @@ void DriveFix::compute(){
         maxRegisterd = false;
         terminalVelocityReached = false;
         lastCheckTime = millis();
+
+
     }
 
     prev_e_left = *e_left;
