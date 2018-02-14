@@ -43,13 +43,12 @@ bool DropBehavior::tick(){
         }
         case SEARCH:
         {
-            // Turn off sonar because we found center now we wait
-            SonarHandler::instance()->setEnable(false);
             stage = ASK;
             break;
         }
         case ASK:
         {
+            SonarHandler::instance()->setEnable(false);
             stage = DROP;
             break;
         }
@@ -65,6 +64,10 @@ bool DropBehavior::tick(){
             sleep(1);
             //Wrist up
             ClawController::instance()->wristUp();
+
+            SonarHandler::instance()->setEnable(true);
+            TargetHandler::instance()->setEnabled(true);
+
             return true;
         }
 

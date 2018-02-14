@@ -2,7 +2,7 @@
 
 void DriveFix::compute(){    
     // if the values are the same as last check
-    if(last_v_left == *curr_v_left && last_v_right == *curr_v_right){
+    if(last_v_left == *curr_v_left && last_v_right == *curr_v_right && curr_v_right != 0 && curr_v_left != 0){
         if(!valuesMap.count(make_pair(*curr_v_left, *curr_v_right)) && !terminalVelocityReached){
             if(((prev_e_left != *e_left) && ((fabs(prev_e_left) - fabs(*e_left)) <= 10)) || ((prev_e_right != *e_right) && ((fabs(prev_e_right) - fabs(*e_right)) <= 10))){
                 terminalVelocityReached = true;
