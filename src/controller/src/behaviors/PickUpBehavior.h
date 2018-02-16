@@ -8,6 +8,8 @@
 #include "../controllers/ClawController.h"
 
 #include "BehaviorInterface.h"
+#include "DriveBehavior.h"
+#include "DropBehavior.h"
 
 #include <vector>
 

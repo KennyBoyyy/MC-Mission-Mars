@@ -140,9 +140,7 @@ int main(int argc, char **argv) {
 
     // Put the first behavior on stack
 
-    SMACS::instance()->push(new DriveBehavior(0, 0));
-    SMACS::instance()->push(new DriveBehavior(2.0, 2.0));
-    SMACS::instance()->push(new DriveBehavior(1, 0));
+    SMACS::instance()->push(new SearchBehavior());
 
     // Disable the sonar because the robot is not doing anything yet
     SonarHandler::instance()-> setEnable(false);
@@ -192,7 +190,8 @@ void tick(const ros::TimerEvent&) {
 // This publishes a message that the the robot is online
 void publishStatusTimerEventHandler(const ros::TimerEvent&) {
   std_msgs::String msg;
-  msg.data = "online";
+  //Added + because we will use custom arduino code
+  msg.data = "online+";
   status_publisher.publish(msg);
 }
 

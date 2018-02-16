@@ -126,9 +126,11 @@ bool CalibrateBehavior::tick(){
         {
             cout <<"CALIBRATION: left: " <<leftWheelMin<<" right: "<<rightWheelMin<<endl;
             DriveController::instance()->stop();
+            cout <<"CALIBRATION: Setting mins "<<endl;
             DriveController::instance()->setLeftRightMin(leftWheelMin, rightWheelMin);
-
+            cout <<"CALIBRATION: Putting search "<<endl;
             SMACS::instance()->pushNext(new SearchBehavior());
+            cout <<"CALIBRATION: Done "<<endl;
             return true;
         }
 

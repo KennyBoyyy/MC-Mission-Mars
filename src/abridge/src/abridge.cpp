@@ -17,6 +17,8 @@
 //Package include
 #include <usbSerial.h>
 
+#include "DriveFix.h"
+
 using namespace std;
 
 //aBridge functions
@@ -95,8 +97,8 @@ ros::Timer publish_heartbeat_timer;
 void publishHeartBeatTimerEventHandler(const ros::TimerEvent& event);
 void modeHandler(const std_msgs::UInt8::ConstPtr& message);
 
-float _left;
-float _right;
+int _left;
+int _right;
 bool _calcError = false;
 float _initRoll = 0;
 float _initPitch = 0;
@@ -106,8 +108,16 @@ float _rollError = 0;
 float _pitchError = 0;
 float _yawError = 0;
 
-float e_left = 0;
-float e_right = 0;
+int e_left = 0;
+int e_right = 0;
+
+int left_v;
+int right_v;
+int corrected_v_left;
+int corrected_v_right;
+
+DriveFix fix(&e_left, &e_right, &left_v, &right_v, &corrected_v_left, &corrected_v_right, 500);
+
 
 int main(int argc, char **argv) {
     
@@ -180,19 +190,23 @@ void driveCommandHandler(const geometry_msgs::Twist::ConstPtr& message) {
   float left = (message->linear.x); //target linear velocity in meters per second
   float right = (message->angular.z); //angular error in radians
 
-//  if((e_left - e_right > 20) && e_left > 0 && e_right > 0 ){
-//      right = right + ((e_left - e_right) * 0.15);
-//  }
+  left_v = left;
+  right_v = right;
 
   _left = left;
   _right = right;
 
+  fix.compute();
+
+  left = corrected_v_left;
+  right = corrected_v_right;
+
   cout<<"DRIVEFIX: e_left = "<<e_left << " e_right = " << e_right << endl;
-  cout<<"DRIVEFIX: left = "<<left << " right = " << right << endl;
+  cout<<"DRIVEFIX: left = "<< corrected_v_left << " right = " << corrected_v_right << endl;
 
   // Cap motor commands at 120. Experimentally determined that high values (tested 180 and 255) can cause 
   // the hardware to fail when the robot moves itself too violently.
-  int max_motor_cmd = 160;
+  int max_motor_cmd = 255;
 
   // Check that the resulting motor commands do not exceed the specified safe maximum value
   if (left > max_motor_cmd)
@@ -334,8 +348,8 @@ void parseData(string str) {
 				odom.twist.twist.linear.y = atof(dataSet.at(6).c_str()) / 100.0;
 				odom.twist.twist.angular.z = atof(dataSet.at(7).c_str());
 
-//                e_left = atof(dataSet.at(8).c_str());
-//                e_right = atof(dataSet.at(9).c_str());
+                e_left = atof(dataSet.at(8).c_str());
+                e_right = atof(dataSet.at(9).c_str());
 			}
 			else if (dataSet.at(0) == "USL") {
 				sonarLeft.header.stamp = ros::Time::now();
@@ -353,8 +367,6 @@ void parseData(string str) {
 		}
 	}
 }
-
-
 
 void modeHandler(const std_msgs::UInt8::ConstPtr& message) {
 	currentMode = message->data;

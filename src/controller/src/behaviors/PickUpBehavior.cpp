@@ -227,7 +227,7 @@ bool PickUpBehavior::tick(){
                     //TODO: maybe add a camera block seen chack by checking how far is the picked up block from camera
                     //target was picked up
                     ClawController::instance()->wristDownWithCube();
-                    TargetHandler::instance()->setIsHandlerOn(false);
+                    TargetHandler::instance()->setEnabled(false);
                     SonarHandler::instance()->setEnable(true);
                     currentStage = DROP;
                 } else {
@@ -288,40 +288,22 @@ bool PickUpBehavior::tick(){
         }
         case DROP:
         {
-           if(DriveController::instance()->goToLocation(0, 0)){
+            //Get current x and y
+            float x = OdometryHandler::instance()->getX();
+            float y = OdometryHandler::instance()->getY();
 
-               ClawController::instance()->fingerOpen();
-               ClawController::instance()->wristUp();
-               DriveController::instance()->sendDriveCommand(-50, -50);
+            //Put return behavior in the stack
+            SMACS::instance()->pushNext(new DriveBehavior(x, y));
+            //Put drop behavior to the stack
+            SMACS::instance()->pushNext(new DropBehavior());
 
-               sleep(3);
-               ClawController::instance()->fingerClose();
-               return true;
-
-           }
-            return false;
+            //return true to pop pick up from stack and execute DropBehavior()
+            return true;
         }
-
 
     }
 
     return false;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }
 

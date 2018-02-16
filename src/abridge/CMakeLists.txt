@@ -19,7 +19,7 @@ include_directories(
 )
 
 add_executable(
-  abridge src/abridge.cpp src/usbSerial.cpp
+  abridge src/abridge.cpp src/usbSerial.cpp src/DriveFix.cpp
 )
 
 target_link_libraries(

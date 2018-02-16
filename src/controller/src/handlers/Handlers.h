@@ -118,7 +118,7 @@ public:
     std::vector<Tag> getCenterTags();
 
     // set if camera handler is enabled
-    void setIsHandlerOn(bool isHandlerOn){
+    void setEnabled(bool isHandlerOn){
         this->isHandlerOn = isHandlerOn;
     }
 

@@ -31,6 +31,7 @@ public:
 
     //pushes on top of the stack
     void push(Behavior* b);
+    void pushWithMutex(Behavior* b);
     //pops from top of the stack
     void pop();
     /*

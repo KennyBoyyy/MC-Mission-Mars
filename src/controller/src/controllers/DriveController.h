@@ -30,8 +30,8 @@ class DriveController{
    
     // The initial left min and right min values for the robot
     // Used when the robot never ran the calibration 
-    double leftMin = 45;
-    double rightMin = 45;
+    double leftMin = 50;
+    double rightMin = 50;
 
     ros::Publisher drivePublisher;
     geometry_msgs::Twist velocity;
