@@ -2,8 +2,8 @@
 
 void DriveFix::compute(){    
     // if the values are the same as last check
-    if(last_v_left == *curr_v_left && last_v_right == *curr_v_right){
-        if(!valuesMap.count(make_pair(*curr_v_left, *curr_v_right)) && !terminalVelocityReached){
+    if(last_v_left == *curr_v_left && last_v_right == *curr_v_right && curr_v_right != 0 && curr_v_left != 0){
+        if(!valuesMap.count(make_pair(*curr_v_left, *curr_v_right)) && !terminalVelocityReached && millis() - volt_change_wait_time >= 500 ){
             if(((prev_e_left != *e_left) && ((fabs(prev_e_left) - fabs(*e_left)) <= 10)) || ((prev_e_right != *e_right) && ((fabs(prev_e_right) - fabs(*e_right)) <= 10))){
                 terminalVelocityReached = true;
 
@@ -17,7 +17,6 @@ void DriveFix::compute(){
                 }
 
                 lastCheckTime = millis();
-
 
             }
         } else {
@@ -108,57 +107,55 @@ void DriveFix::compute(){
             } else if(*curr_v_left == -(*curr_v_right) && *curr_v_left != 0) { //turning
                 //if enough time passed to trigger a compute
                 if(millis() - lastCheckTime >= refreshTime){
+                    *e_left = fabs(*e_left);
+                    *e_right = fabs(*e_right);
+                    max_e_val = fabs(max_e_val);
                     // If the dif between encoders is greater than 10 ticks
-                    if(fabs((fabs(*e_left) - fabs(*e_right))) > 5){
+                    if(fabs(*e_left - *e_right) > 5){
                         //If we are making a left turn
                         if(curr_v_left < 0){
-                            if(*e_left < max_e_val || *e_right > fabs(max_e_val)){
-                                // if left encoders is greater than max value
-                                if(*e_left < max_e_val){
-                                    // lower the left voltage a bit
-                                    adjust_value_left += 5;
-                                }
-
-                                //if right encoders is greater than max val
-                                if(*e_right > fabs(max_e_val)){
-                                       // lower max
-                                    adjust_value_right -= 5;
-                                }
+                            // if left encoders is greater than max value
+                            if(*e_left > max_e_val){
+                                // lower the left voltage a bit
+                                adjust_value_left += 5;
                             }
-                        } else {
-                            if(*e_left > fabs(max_e_val) || *e_right < max_e_val){
-                                // if left encoders is greater than max value
-                                if(*e_left > fabs(max_e_val)){
-                                    // lower the left voltage a bit
-                                    adjust_value_left -= 5;
-                                }
 
-                                //if right encoders is greater than max val
-                                if(*e_right < max_e_val){
-                                       // lower max
-                                    adjust_value_right += 5;
-                                }
+                            //if right encoders is greater than max val
+                            if(*e_right > max_e_val){
+                                   // lower max
+                                adjust_value_right -= 5;
+                            }
+                        } else { // right turn
+                            if(*e_left > max_e_val){
+                                // lower the left voltage a bit
+                                adjust_value_left -= 5;
+                            }
+
+                            //if right encoders is greater than max val
+                            if(*e_right > max_e_val){
+                                   // lower max
+                                adjust_value_right += 5;
                             }
                         }
 
 
                         //If we are making a left turn
                         if(curr_v_left < 0){
-                            if(fabs(*e_left) > fabs(*e_right) && *e_right < fabs(max_e_val)){
+                            if(*e_left > *e_right && *e_right < max_e_val){
                                 if(adjust_value_right >= -255 && adjust_value_right <=255 )
                                     adjust_value_right += 5;
 
-                            } else if(fabs(*e_right) > fabs(*e_left) && *e_left > max_e_val) {
+                            } else if(*e_right > *e_left && *e_left < max_e_val) {
                                 if(adjust_value_left >= -255 && adjust_value_left <=255 )
                                     adjust_value_left -=5;
 
                             }
                         } else { //else if we are turning right
-                            if(fabs(*e_left) > fabs(*e_right) && *e_right > max_e_val){
+                            if(*e_left > *e_right && *e_right < max_e_val){
                                 if(adjust_value_right >= -255 && adjust_value_right <=255 )
                                     adjust_value_right -= 5;
 
-                            } else if(fabs(*e_right) > fabs(*e_left) && *e_left < fabs(max_e_val)) {
+                            } else if(*e_right > *e_left && *e_left < max_e_val) {
                                 if(adjust_value_left >= -255 && adjust_value_left <=255 )
                                     adjust_value_left +=5;
 
@@ -180,6 +177,9 @@ void DriveFix::compute(){
         *v_output_left = *curr_v_left + adjust_value_left;
 
     } else {
+        if(*curr_v_left != last_v_left || *curr_v_right != last_v_right )
+            volt_change_wait_time = millis();
+
         last_v_left = *curr_v_left;
         last_v_right = *curr_v_right;
         *v_output_right = *curr_v_right;
@@ -189,6 +189,8 @@ void DriveFix::compute(){
         maxRegisterd = false;
         terminalVelocityReached = false;
         lastCheckTime = millis();
+
+
     }
 
     prev_e_left = *e_left;

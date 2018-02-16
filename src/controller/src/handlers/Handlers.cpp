@@ -107,9 +107,6 @@ TargetHandler* TargetHandler::instance() {
 
 void TargetHandler::handle(const apriltags_ros::AprilTagDetectionArray::ConstPtr& message)
 {
-    // Create a lock
-    std::lock_guard<std::mutex> guard(instanceMutex);
-
     // If message contains elements
     if (message->detections.size() > 0) {
 
@@ -139,12 +136,14 @@ void TargetHandler::handle(const apriltags_ros::AprilTagDetectionArray::ConstPtr
               cubeTags.push_back(loc);
           } else { // if center tag
               centerTags.push_back(loc);
+              cout << "TARGETHANDLE: saw a center tag"<<endl;
           }
         }
         cubeTagsList = cubeTags;
         centerTagsList = centerTags;
+        cout << "TARGETHANDLE: Assigned center tag list"<<endl;
 
-        if (centerTagsList.size() > 0) {
+        if (cubeTagsList.size() > 0) {
             // Calculate the distance to the closest seen tag and store it
             // This is done in case we loose the tag while breaking but since
             // stored the last known location we know where to turn to find it
@@ -198,6 +197,7 @@ void TargetHandler::handle(const apriltags_ros::AprilTagDetectionArray::ConstPtr
         // if handler is on and we see a center tag
         if (isHandlerOn && centerTagsList.size() > 0){
             // Avoid center behavior
+            cout << "TARGETHANDLE: center tag seen avoid is on"<<endl;
         } 
         // if handler is on and we see a center tag
         else if(isHandlerOn && cubeTagsList.size() > 0){
@@ -210,6 +210,7 @@ void TargetHandler::handle(const apriltags_ros::AprilTagDetectionArray::ConstPtr
         // if no tags were seen clear the list so that we don't keep old tags
         cubeTagsList.clear();
         centerTagsList.clear();
+        cout << "TARGETHANDLE: Cleared center tag cleared"<<endl;
     }
 
 
@@ -220,20 +221,16 @@ int TargetHandler::getLastSeenBlockError(){
 }
 
 int TargetHandler::getNumberOfCubeTags(){
-    std::lock_guard<std::mutex> guard(instanceMutex);
     return cubeTagsList.size();
 }
 int TargetHandler::getNumberOfCenterTagsSeen(){
-    std::lock_guard<std::mutex> guard(instanceMutex);
     return centerTagsList.size();
 }
 
 std::vector<Tag> TargetHandler::getCubeTags(){
-    std::lock_guard<std::mutex> guard(instanceMutex);
     return cubeTagsList;
 }
 std::vector<Tag> TargetHandler::getCenterTags(){
-    std::lock_guard<std::mutex> guard(instanceMutex);
     return centerTagsList;
 }
 
