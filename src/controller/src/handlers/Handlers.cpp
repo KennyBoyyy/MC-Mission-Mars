@@ -91,6 +91,24 @@ void OdometryHandler::handle(const nav_msgs::Odometry::ConstPtr &message){
 //==============================================================================//
 //==============================================================================//
 
+//==============================================================================//
+//                         Encoders handler                                     //
+//==============================================================================//
+EncoderHandler *EncoderHandler::s_instance = 0;
+EncoderHandler* EncoderHandler::instance() {
+    if(!s_instance)
+        s_instance = new EncoderHandler;
+    return s_instance;
+}
+
+void EncoderHandler::handle(const geometry_msgs::Twist::ConstPtr& message){
+    left = message->angular.x;
+    right = message->angular.y;
+}
+
+
+//==============================================================================//
+//==============================================================================//
 
 //==============================================================================//
 //                          Targets handler methods                             //

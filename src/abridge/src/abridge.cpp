@@ -83,6 +83,8 @@ ros::Publisher sonarRightPublish;
 ros::Publisher infoLogPublisher;
 ros::Publisher heartbeatPublisher;
 
+ros::Publisher encoderPublisher;
+
 //Subscribers
 ros::Subscriber driveControlSubscriber;
 ros::Subscriber fingerAngleSubscriber;
@@ -152,11 +154,13 @@ int main(int argc, char **argv) {
     sonarRightPublish = aNH.advertise<sensor_msgs::Range>((publishedName + "/sonarRight"), 10);
     infoLogPublisher = aNH.advertise<std_msgs::String>("/infoLog", 1, true);
     heartbeatPublisher = aNH.advertise<std_msgs::String>((publishedName + "/abridge/heartbeat"), 1, true);
-    
+    encoderPublisher = aNH.advertise<geometry_msgs::Twist>((publishedName + "/encoders"), 10);
+
     driveControlSubscriber = aNH.subscribe((publishedName + "/driveControl"), 10, driveCommandHandler);
     fingerAngleSubscriber = aNH.subscribe((publishedName + "/fingerAngle/cmd"), 1, fingerAngleHandler);
     wristAngleSubscriber = aNH.subscribe((publishedName + "/wristAngle/cmd"), 1, wristAngleHandler);
     modeSubscriber = aNH.subscribe((publishedName + "/mode"), 1, modeHandler);
+
 
     
     publishTimer = aNH.createTimer(ros::Duration(deltaTime), serialActivityTimer);
@@ -348,8 +352,14 @@ void parseData(string str) {
 				odom.twist.twist.linear.y = atof(dataSet.at(6).c_str()) / 100.0;
 				odom.twist.twist.angular.z = atof(dataSet.at(7).c_str());
 
+                geometry_msgs::Twist msg;
                 e_left = atof(dataSet.at(8).c_str());
                 e_right = atof(dataSet.at(9).c_str());
+
+                msg.angular.x = e_left;
+                msg.angular.y = e_right;
+
+                encoderPublisher.publish(msg);
 			}
 			else if (dataSet.at(0) == "USL") {
 				sonarLeft.header.stamp = ros::Time::now();

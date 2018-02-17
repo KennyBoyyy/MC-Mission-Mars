@@ -88,6 +88,26 @@ public:
 };
 
 
+class EncoderHandler{
+    int left;
+    int right;
+    static EncoderHandler* s_instance;
+
+    EncoderHandler(){
+        left = 0;
+        right = 0;
+    }
+
+public:
+    static EncoderHandler* instance();
+
+    void handle(const geometry_msgs::Twist::ConstPtr& message);
+
+    int getEncoderLeft(){return left;}
+    int getEncoderRight(){return right;}
+
+};
+
 
 
 

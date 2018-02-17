@@ -72,6 +72,7 @@ ros::Subscriber leftSonarSubscriber;
 ros::Subscriber centerSonarSubscriber;
 ros::Subscriber rightSonarSubscriber;
 ros::Subscriber odometrySubscriber;
+ros::Subscriber encoderSubscriber;
 
 
 //Times for ticking the stack
@@ -127,6 +128,7 @@ int main(int argc, char **argv) {
     rightSonarSubscriber = nh.subscribe((publishedName + "/sonarRight"), 10, &SonarHandler::handleRight, SonarHandler::instance());
     odometrySubscriber = nh.subscribe((publishedName + "/odom/filtered"), 10, &OdometryHandler::handle, OdometryHandler::instance());
     targetSubscriber = nh.subscribe((publishedName + "/targets"), 10, &TargetHandler::handle, TargetHandler::instance());
+    encoderSubscriber = nh.subscribe((publishedName + "/encoders"), 10, &EncoderHandler::handle, EncoderHandler::instance());
 
     //Timers to publish something.
     stateMachineTimer = nh.createTimer(ros::Duration(behaviourLoopTimeStep), tick);
