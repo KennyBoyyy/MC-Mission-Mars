@@ -6,98 +6,55 @@ bool CalibrateBehavior::tick(){
     if(!isRetunrSet){
         returnTheta = OdometryHandler::instance()->getTheta();
         isRetunrSet = true;
+        lastMillis = millis();
     }
 
     switch (currentStage) {
         // Calibration steps
-        case FIND_MIN_LEFT_WHEELS:
+        case FIND_MIN_LEFT_TURN:
         {
-            // If time is not initialised
-            if(!isTimeInit){
-                //init start time
-                time(&initTime);
-                isTimeInit = true;
-                //start turning left with current calibration speed
-                initTheta = OdometryHandler::instance()->getTheta();
-                DriveController::instance()->sendDriveCommand(leftWheelMin, 0);
-                cout<<"CALIBRATION: left: "<<leftWheelMin<<endl;
-
-            } else {    //else time is init
-                //calculate how many seconds passed
-                secSince = difftime(time(NULL), initTime);
-                // If enough seconds passed
-                if(secSince > secTillNextSpeedIter){
-                    cout << "CALIBRATION: "<<"secSince: "<<secSince<<endl;
-                    //Check if robot direction changed
-                    //calculate the diferance between current theta and initial
-                    float currentTheta = OdometryHandler::instance()->getTheta();
-                    float abs_error = fabs(angles::shortest_angular_distance(currentTheta, initTheta));
-
-                    //if we turned 5 or more degrees in 5 sec
-                    if(abs_error >= angleTolerance){
-                        DriveController::instance()->sendDriveCommand(0 ,0);
-                        isTimeInit = false;
-                        currentStage = FIND_MIN_RIGHT_WHEELS;
-
+            DriveController::instance()->sendDriveCommand(leftWheelMinNeg, rightWheelMinPos);
+            //Left positive, right negative
+            //if enought time passed
+            if(millis() - lastMillis > millisToNextIncrease){
+                int left = fabs(EncoderHandler::instance()->getEncoderLeft());
+                int right = fabs(EncoderHandler::instance()->getEncoderRight());
+                //if current encoders not equal the desired value
+                if(fabs(left - encoderTickStopPoint) > 10 && !leftTurnLeftWheel){
+                    //if it is too fast slow down. If slow speed up
+                    if(left < encoderTickStopPoint){
+                        leftWheelMinNeg -= iterationInctrease;
                     } else {
-                        DriveController::instance()->sendDriveCommand(0 ,0);
-                        //else we did not complete the turn. Need to increase the reatio
-                        leftWheelMin += iterationInctrease;
-                        //reset the init direction
-                        isTimeInit = false;
-
-                        cout<<"CALIBRATION: Not enough. Increase left to: "<<leftWheelMin<<endl;
+                        leftWheelMinNeg += iterationInctrease;
                     }
+                } else {
+                    leftTurnLeftWheel = true;
                 }
+
+                // Check right wheel encoders
+                if(fabs(right - encoderTickStopPoint) > 10 && !rightTurnLeftWheel){
+                    if(right < encoderTickStopPoint){
+                        rightWheelMinPos += iterationInctrease;
+                    } else {
+                        rightWheelMinPos -= iterationInctrease;
+                    }
+                } else {
+                    leftTurnLeftWheel = true;
+                }
+
+                lastMillis = millis();
             }
 
+            if(leftTurnLeftWheel && leftTurnRightWheel){
+                currentStage == FIND_MIN_RIGHT_TURN;
+            }
             break;
         }
-        case FIND_MIN_RIGHT_WHEELS:
+        case FIND_MIN_RIGHT_TURN:
         {
-            // If time is not initialised
-            if(!isTimeInit){
-                //init start time
-                initTime = time(NULL);
-                isTimeInit = true;
-                //start turning left with current calibration speed
-                initTheta = OdometryHandler::instance()->getTheta();
-                DriveController::instance()->sendDriveCommand(0, rightWheelMin);
-                cout<<"CALIBRATION: right: "<<rightWheelMin<<endl;
-            } else {    //else time is init
-                //calculate how many seconds passed
-                secSince = difftime(time(NULL), initTime);
-                // If enough seconds passed
-                if(secSince > secTillNextSpeedIter){
-                    cout << "CALIBRATION: "<<"secSince: "<<secSince<<endl;
-                    //Check if robot direction changed
-                    //calculate the diferance between current theta and initial
-                    float currentTheta = OdometryHandler::instance()->getTheta();
-                    float abs_error = fabs(angles::shortest_angular_distance(currentTheta, initTheta));
+            if(millis() - lastMillis > millisToNextIncrease){
 
-                    //if we turned 5 or more degrees in 5 sec
-                    if(abs_error >= angleTolerance){
-                        DriveController::instance()->sendDriveCommand(0 ,0);
-                        isTimeInit = false;
-                        currentStage = RUTURN_TO_POSITION;
-
-                        //figure out if we need to tun left to return or right
-                        float currentTheta = OdometryHandler::instance()->getTheta();
-                        error = angles::shortest_angular_distance(currentTheta, returnTheta);
-
-                    } else {
-                        DriveController::instance()->sendDriveCommand(0 ,0);
-                        //else we did not complete the turn. Need to increase the reatio
-                        rightWheelMin += iterationInctrease;
-                        //reset the init direction
-                        isTimeInit = false;
-
-                        cout<<"CALIBRATION: Not enough. Increase right to: "<<rightWheelMin<<endl;
-
-                    }
-                }
             }
-
             break;
         }
         case RUTURN_TO_POSITION:
@@ -107,14 +64,13 @@ bool CalibrateBehavior::tick(){
 
             if(abs_error >= finalAngleTolerance){
                 DriveController::instance()->sendDriveCommand(0 ,0);
-                isTimeInit = false;
                 currentStage = FIND_RATIO;
             }
 
             if (error < 0){
-                DriveController::instance()->sendDriveCommand(rightWheelMin, -rightWheelMin);
+                DriveController::instance()->sendDriveCommand(leftWheelMinPos, -rightWheelMinNeg);
             } else {
-                DriveController::instance()->sendDriveCommand(-leftWheelMin, leftWheelMin);
+                DriveController::instance()->sendDriveCommand(-leftWheelMinNeg, rightWheelMinPos);
             }
 
             cout << "CALIBRATION: " << "Error is :"<< error << endl;
@@ -124,10 +80,10 @@ bool CalibrateBehavior::tick(){
 
         case FIND_RATIO:
         {
-            cout <<"CALIBRATION: left: " <<leftWheelMin<<" right: "<<rightWheelMin<<endl;
+            cout <<"CALIBRATION: left: " <<leftWheelMinPos<<" right: "<<rightWheelMinPos<<endl;
             DriveController::instance()->stop();
             cout <<"CALIBRATION: Setting mins "<<endl;
-            DriveController::instance()->setLeftRightMin(leftWheelMin, rightWheelMin);
+            DriveController::instance()->setLeftRightMin(leftWheelMinPos, rightWheelMinPos);
             cout <<"CALIBRATION: Putting search "<<endl;
             SMACS::instance()->pushNext(new SearchBehavior());
             cout <<"CALIBRATION: Done "<<endl;
