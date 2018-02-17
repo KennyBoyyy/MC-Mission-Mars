@@ -142,7 +142,7 @@ int main(int argc, char **argv) {
 
     // Put the first behavior on stack
 
-    SMACS::instance()->push(new CalibrateBehavior());
+    SMACS::instance()->push(new SearchBehavior());
 
     // Disable the sonar because the robot is not doing anything yet
     SonarHandler::instance()-> setEnable(false);
