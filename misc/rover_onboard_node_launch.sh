@@ -95,18 +95,43 @@ fi
 
 nohup > logs/$HOSTNAME"_localization_navsat_log.txt" rosrun robot_localization navsat_transform_node __name:=$HOSTNAME\_NAVSAT _world_frame:=map _frequency:=10 _magnetic_declination_radians:=0.1530654 _yaw_offset:=0 /imu/data:=/$HOSTNAME/imu /gps/fix:=/$HOSTNAME/fix /odometry/filtered:=/$HOSTNAME/odom/ekf /odometry/gps:=/$HOSTNAME/odom/navsat &
 
+
 rosparam set /$HOSTNAME\_ODOM/odom0 /$HOSTNAME/odom
 rosparam set /$HOSTNAME\_ODOM/imu0 /$HOSTNAME/imu
-rosparam set /$HOSTNAME\_ODOM/odom0_config [false,false,false,false,false,false,true,false,false,false,false,true,false,false,false]
-rosparam set /$HOSTNAME\_ODOM/imu0_config [false,false,false,false,false,true,false,false,false,false,false,true,true,false,false]
+rosparam set /$HOSTNAME\_ODOM/odom0_config [false,false,false, # X, Y, Z
+                                            false,false,false, # roll, pitch, yaw 
+                                            true,false,false,  # (Velocity X), Velocity Y, Velocity Z
+                                            false,false,true,  # differential roll, differential pitch, (differential yaw) 
+                                            false,false,false] # Acceleration X, Acceleration Y, Acceleration Z
+
+rosparam set /$HOSTNAME\_ODOM/imu0_config [false,false,false,  # X, Y, Z
+                                           false,false,true,   # roll, pitch, (yaw) 
+                                           false,false,false,  # Velocity X, Velocity Y, Velocity Z
+                                           false,false,true,   # differential roll, differential pitch, (differential yaw) 
+                                           true,false,false]   # (Acceleration X), Acceleration Y, Acceleration Z
+
 nohup > logs/$HOSTNAME"_odom_EKF_log.txt" rosrun robot_localization ekf_localization_node _two_d_mode:=true _world_frame:=odom _frequency:=10 __name:=$HOSTNAME\_ODOM /odometry/filtered:=/$HOSTNAME/odom/filtered &
 
 rosparam set /$HOSTNAME\_MAP/odom0 /$HOSTNAME/odom/navsat
 rosparam set /$HOSTNAME\_MAP/odom1 /$HOSTNAME/odom/filtered
 rosparam set /$HOSTNAME\_MAP/imu0 /$HOSTNAME/imu
-rosparam set /$HOSTNAME\_MAP/odom0_config [true,true,false,false,false,false,false,false,false,false,false,false,false,false,false]
-rosparam set /$HOSTNAME\_MAP/odom1_config [false,false,false,false,false,false,true,false,false,false,false,false,false,false,false]
-rosparam set /$HOSTNAME\_MAP/imu0_config [false,false,false,false,false,true,false,false,false,false,false,true,false,false,false]
+rosparam set /$HOSTNAME\_MAP/odom0_config [true,true,false,    # (X), (Y), Z
+                                           false,false,false,  # roll, pitch, yaw 
+                                           false,false,false,  # Velocity X, Velocity Y, Velocity Z
+                                           false,false,false,  # differential roll, differential pitch, differential yaw 
+                                           false,false,false]  # Acceleration X, Acceleration Y, Acceleration Z
+
+rosparam set /$HOSTNAME\_MAP/odom1_config [false,false,false,  # X, Y, Z
+                                           false,false,false,  # roll, pitch, yaw 
+                                           true,false,false,   # (Velocity X), Velocity Y, Velocity Z
+                                           false,false,false,  # differential roll, differential pitch, differential yaw 
+                                           false,false,false]  # Acceleration X, Acceleration Y, Acceleration Z
+
+rosparam set /$HOSTNAME\_MAP/imu0_config [false,false,false,   # X, Y, Z
+                                          false,false,true,    # roll, pitch, (yaw) 
+                                          false,false,false,   # Velocity X, Velocity Y, Velocity Z
+                                          false,false,true,    # differential roll, differential pitch, (differential yaw) 
+                                          false,false,false]   # Acceleration X, Acceleration Y, Acceleration Z
 
 rosparam set /$HOSTNAME\_MAP/initial_estimate_covariance "[1e-9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /
                                                0, 1e-9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /
