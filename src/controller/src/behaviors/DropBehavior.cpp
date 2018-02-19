@@ -15,8 +15,8 @@ bool DropBehavior::tick(){
             double currX= OdometryHandler::instance()->getX();
             double currY = OdometryHandler::instance()->getY();
 
-            //While disnace driven is less than a meter
-            if(hypot(x - currX, y - currY) < 1){
+            //While disnace driven is less than 0.5 of a meter
+            if(hypot(x - currX, y - currY) < 0.5){
                 // Drive forwards
                 DriveController::instance()->sendDriveCommand(slowDrive, slowDrive);
             } else {
@@ -45,7 +45,7 @@ bool DropBehavior::tick(){
             double currY = OdometryHandler::instance()->getY();
 
             //While disnace driven is less than a meter
-            if(fabs(hypot(x - currX, y - currY)) < 1.5){
+            if(fabs(hypot(x - currX, y - currY)) < 1){
                 // Drive forwards
                 DriveController::instance()->sendDriveCommand(-slowDrive, -slowDrive);
             } else {
