@@ -119,6 +119,7 @@ add_executable(
   src/controllers/DriveController.cpp
   src/controllers/PID.cpp
   src/controllers/ClawController.cpp
+  src/behaviors/SearchForDropBehavior.cpp
 )
 
 add_dependencies(controller ${catkin_EXPORTED_TARGETS})

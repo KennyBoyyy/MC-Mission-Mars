@@ -8,6 +8,8 @@
 #include "AvoidBehavior.h"
 #include "PickUpBehavior.h"
 #include "DriveBehavior.h"
+#include "SearchForDropBehavior.h"
+#include "DropBehavior.h"
 
 #include "ros/ros.h"
 #include "../controllers/DriveController.h"

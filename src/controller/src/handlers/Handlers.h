@@ -121,6 +121,8 @@ class TargetHandler{
 
     TargetHandler();
 
+
+    bool hasCube = false;
     bool isHandlerOn = true;
 
     float lastSeenBlockErrorYaw = 0;

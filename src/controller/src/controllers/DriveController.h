@@ -19,14 +19,19 @@ class DriveController{
       STATE_MACHINE_SKID_STEER
     };
 
+    bool hasCube = false;
+
+    int centerX = 0;
+    int centerY = 0;
+
     StateMachineStates stateMachineState;
     float rotateOnlyAngleTolerance = 0.262;
     float finalRotationTolerance = 0.0349;
     const float waypointTolerance = 0.15; //15 cm tolerance.
 
     float scaler = 0.5;
-    float searchVelocity = 0.65; // meters/second  //0.65 MAX value
-    float yawVelocity = 0.65;
+    float searchVelocity = 0.40; // meters/second  //0.65 MAX value
+    float yawVelocity = 0.40;
    
     // The initial left min and right min values for the robot
     // Used when the robot never ran the calibration 
@@ -148,6 +153,9 @@ class DriveController{
 
         // get right wheel min
         double getRightMin(){return rightMin;}
+
+        double getDistance(double currX, double currY, double x, double y);
+
 
 
 

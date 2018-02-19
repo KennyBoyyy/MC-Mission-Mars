@@ -216,7 +216,10 @@ void TargetHandler::handle(const apriltags_ros::AprilTagDetectionArray::ConstPtr
         if (isHandlerOn && centerTagsList.size() > 0){
             // Avoid center behavior
             cout << "TARGETHANDLE: center tag seen avoid is on"<<endl;
-        } 
+        } else if(hasCube && centerTagsList.size() > 0){
+            // Drop cube behavior
+            cout << "TARGETHANDLE: center tag seen dropping cube"<<endl;
+        }
         // if handler is on and we see a center tag
         else if(isHandlerOn && cubeTagsList.size() > 0){
             // Push PickUpBehavior on stack

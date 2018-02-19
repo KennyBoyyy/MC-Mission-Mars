@@ -295,7 +295,7 @@ bool PickUpBehavior::tick(){
             //Put return behavior in the stack
             SMACS::instance()->pushNext(new DriveBehavior(x, y));
             //Put drop behavior to the stack
-            SMACS::instance()->pushNext(new DropBehavior());
+            SMACS::instance()->pushNext(new SearchForDropBehavior());
 
             //return true to pop pick up from stack and execute DropBehavior()
             return true;
