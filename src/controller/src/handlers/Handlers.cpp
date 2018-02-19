@@ -219,11 +219,12 @@ void TargetHandler::handle(const apriltags_ros::AprilTagDetectionArray::ConstPtr
         } else if(hasCube && centerTagsList.size() > 0){
             // Drop cube behavior
             cout << "TARGETHANDLE: center tag seen dropping cube"<<endl;
+            //SMACS::instance()->pushWithMutex(new DropBehavior);
         }
         // if handler is on and we see a center tag
         else if(isHandlerOn && cubeTagsList.size() > 0){
             // Push PickUpBehavior on stack
-            SMACS::instance()->pushWithMutex(new PickUpBehavior());
+            SMACS::instance()->pushWithMutex(new PickUpBehavior);
 
         }
 

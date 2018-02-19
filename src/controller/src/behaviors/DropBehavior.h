@@ -4,9 +4,11 @@
 #include "BehaviorInterface.h"
 #include "../handlers/Handlers.h"
 
+
 class DropBehavior : public Behavior{
     enum Stages{
-        DRIVE_TO_CENTER = 0,
+        INIT = 0,
+        DRIVE_TO_CENTER,
         DROP_CUBE,
         DRIVE_BACK
     };
@@ -14,16 +16,13 @@ class DropBehavior : public Behavior{
     Stages stage = DRIVE_TO_CENTER;
 
     //The initial x and y from whch we drive
-    double x;
-    double y;
+    double x = 0;
+    double y = 0;
 
     int slowDrive = 60;
 
     public:
-        DropBehavior() : Behavior(DROP_BEHAVIOR_TYPE){
-            x = OdometryHandler::instance()->getX();
-            y = OdometryHandler::instance()->getX();
-        }
+        DropBehavior() : Behavior(DROP_BEHAVIOR_TYPE){}
         bool tick();
 };
 

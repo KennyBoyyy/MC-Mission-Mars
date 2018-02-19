@@ -339,10 +339,6 @@ void DriveController::sendDriveCommand(double left, double right){
 }
 
 
-double DriveController::getDistance(double currX, double currY, double x, double y){
-    //Distance driven
-    return hypot(x - currX, y - currY);
-}
 
 
 

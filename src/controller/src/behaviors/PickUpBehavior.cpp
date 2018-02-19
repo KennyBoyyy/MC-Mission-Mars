@@ -228,6 +228,7 @@ bool PickUpBehavior::tick(){
                     //target was picked up
                     ClawController::instance()->wristDownWithCube();
                     TargetHandler::instance()->setEnabled(false);
+                    TargetHandler::instance()->setHasCube(true);
                     SonarHandler::instance()->setEnable(true);
                     currentStage = DROP;
                 } else {

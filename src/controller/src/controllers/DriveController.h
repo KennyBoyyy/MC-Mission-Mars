@@ -21,8 +21,8 @@ class DriveController{
 
     bool hasCube = false;
 
-    int centerX = 0;
-    int centerY = 0;
+    int adjustX = 0;
+    int adjustY = 0;
 
     StateMachineStates stateMachineState;
     float rotateOnlyAngleTolerance = 0.262;
@@ -153,10 +153,6 @@ class DriveController{
 
         // get right wheel min
         double getRightMin(){return rightMin;}
-
-        double getDistance(double currX, double currY, double x, double y);
-
-
 
 
 };

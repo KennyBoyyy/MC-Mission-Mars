@@ -2,6 +2,12 @@
 
 bool DropBehavior::tick(){
     switch(stage){
+        case INIT:
+        {
+            x = OdometryHandler::instance()->getX();
+            y = OdometryHandler::instance()->getY();
+            stage = DRIVE_TO_CENTER;
+        }
         case DRIVE_TO_CENTER:
         {
             //Drive forward for a meter
@@ -43,6 +49,7 @@ bool DropBehavior::tick(){
                 // Drive forwards
                 DriveController::instance()->sendDriveCommand(-slowDrive, -slowDrive);
             } else {
+                 TargetHandler::instance()->setHasCube(false);
                  DriveController::instance()->stop();
                  TargetHandler::instance()->setEnabled(true);
                  SonarHandler::instance()->setEnable(true);
