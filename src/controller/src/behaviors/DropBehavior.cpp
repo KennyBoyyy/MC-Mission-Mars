@@ -41,7 +41,7 @@ bool DropBehavior::tick(){
             //While disnace driven is less than a meter
             if(fabs(hypot(x - currX, y - currY)) < 1.5){
                 // Drive forwards
-                DriveController::instance()->sendDriveCommand(slowDrive, slowDrive);
+                DriveController::instance()->sendDriveCommand(-slowDrive, -slowDrive);
             } else {
                  DriveController::instance()->stop();
                  TargetHandler::instance()->setEnabled(true);
