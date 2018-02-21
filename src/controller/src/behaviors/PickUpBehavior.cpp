@@ -218,7 +218,7 @@ bool PickUpBehavior::tick(){
             ClawController::instance()->wristUp();
 
 
-            if(!wait(2)){
+            if(!wait(1)){
                 // check if picked up
                 float sonarCenter = SonarHandler::instance()->getSonarCenter();
                 cout << "PICKUP: Center sonar: " <<sonarCenter<< endl;
@@ -232,13 +232,54 @@ bool PickUpBehavior::tick(){
                     SonarHandler::instance()->setEnable(true);
                     currentStage = DROP;
                 } else {
-                    initX = OdometryHandler::instance()->getX();
-                    initY = OdometryHandler::instance()->getY();
-                    currentStage = RETRY;
+                    targetLocked = false;
+                    if(TargetHandler::instance()->getNumberOfCubeTags() > 0){
+                        //get all the tags
+                        std::vector<Tag> tags = TargetHandler::instance()->getCubeTags();
+
+                        // Find closest tag and lock it
+                        double closest = std::numeric_limits<double>::max();
+                        int target  = 0;
+
+                        //this loop selects the closest visible block to makes goals for it
+                        for (int i = 0; i < tags.size(); i++)
+                        {
+
+                          if (tags[i].getID() == 0)
+                          {
+
+                            targetLocked = true;
+
+                            //absolute distance to block from camera lens
+                            double test = hypot(hypot(tags[i].getPositionX(), tags[i].getPositionY()), tags[i].getPositionZ());
+
+
+                            if (closest > test)
+                            {
+                              target = i;
+                              closest = test;
+                            }
+                          }
+                        }
+
+                        if(targetLocked){
+                            blockDistanceFromCamera = hypot(hypot(tags[target].getPositionX(), tags[target].getPositionY()), tags[target].getPositionZ());
+                        }
+                    }
+                    // make a camera check
+                    if (blockDistanceFromCamera < 0.14){
+                        ClawController::instance()->wristDownWithCube();
+                        TargetHandler::instance()->setEnabled(false);
+                        TargetHandler::instance()->setHasCube(true);
+                        SonarHandler::instance()->setEnable(true);
+                        currentStage = DROP;
+                    } else {
+                        initX = OdometryHandler::instance()->getX();
+                        initY = OdometryHandler::instance()->getY();
+                        currentStage = RETRY;
+                    }
                 }
             }
-
-
 
             break;
         }
