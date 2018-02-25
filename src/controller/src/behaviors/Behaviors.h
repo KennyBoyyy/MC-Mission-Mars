@@ -10,6 +10,7 @@
 #include "DriveBehavior.h"
 #include "SearchForDropBehavior.h"
 #include "DropBehavior.h"
+#include "TriangulateBehavior.h"
 
 #include "ros/ros.h"
 #include "../controllers/DriveController.h"

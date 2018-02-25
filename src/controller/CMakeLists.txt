@@ -120,6 +120,7 @@ add_executable(
   src/controllers/PID.cpp
   src/controllers/ClawController.cpp
   src/behaviors/SearchForDropBehavior.cpp
+  src/behaviors/TriangulateBehavior.cpp
 )
 
 add_dependencies(controller ${catkin_EXPORTED_TARGETS})

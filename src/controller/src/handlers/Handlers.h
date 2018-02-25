@@ -87,6 +87,21 @@ public:
 
 };
 
+class NavigationHandler{
+    Point navigationLocation;
+    float navigationSequence;
+    static NavigationHandler* s_instance;
+
+    NavigationHandler();
+    
+public:
+    static NavigationHandler* instance();
+
+    void handle(const nav_msgs::Odometry::ConstPtr& message);
+    int getNavSeq(){return navigationSequence;}
+    float getNavX(){return navigationLocation.x;}
+    float getNavY(){return navigationLocation.y;}
+};
 
 class EncoderHandler{
     int left;

@@ -91,6 +91,31 @@ void OdometryHandler::handle(const nav_msgs::Odometry::ConstPtr &message){
 //==============================================================================//
 //==============================================================================//
 
+
+
+//==============================================================================//
+//                    Navigation handler methods                                //
+//==============================================================================//
+
+NavigationHandler *NavigationHandler::s_instance = 0;
+
+NavigationHandler::NavigationHandler(){}
+
+NavigationHandler* NavigationHandler::instance() {
+    if(!s_instance)
+        s_instance = new NavigationHandler;
+    return s_instance;
+}
+
+void NavigationHandler::handle(const nav_msgs::Odometry::ConstPtr &message){
+    this->navigationLocation.x = message->pose.pose.position.x;
+    this->navigationLocation.y = message->pose.pose.position.y;
+
+    navigationSequence = message->header.seq;
+}    
+
+
+
 //==============================================================================//
 //                         Encoders handler                                     //
 //==============================================================================//

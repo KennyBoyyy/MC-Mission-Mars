@@ -72,6 +72,7 @@ ros::Subscriber leftSonarSubscriber;
 ros::Subscriber centerSonarSubscriber;
 ros::Subscriber rightSonarSubscriber;
 ros::Subscriber odometrySubscriber;
+ros::Subscriber navigationSubscriber;
 ros::Subscriber encoderSubscriber;
 
 
@@ -128,6 +129,7 @@ int main(int argc, char **argv) {
     rightSonarSubscriber = nh.subscribe((publishedName + "/sonarRight"), 10, &SonarHandler::handleRight, SonarHandler::instance());
     odometrySubscriber = nh.subscribe((publishedName + "/odom/filtered"), 10, &OdometryHandler::handle, OdometryHandler::instance());
     targetSubscriber = nh.subscribe((publishedName + "/targets"), 10, &TargetHandler::handle, TargetHandler::instance());
+    navigationSubscriber = nh.subscribe((publishedName + "/odom/navsat"), 10, &NavigationHandler::handle, NavigationHandler::instance());
     encoderSubscriber = nh.subscribe((publishedName + "/encoders"), 10, &EncoderHandler::handle, EncoderHandler::instance());
 
     //Timers to publish something.
@@ -142,6 +144,7 @@ int main(int argc, char **argv) {
 
     // Put the first behavior on stack
 
+    SMACS::instance()->push(new TriangulateBehavior());
     SMACS::instance()->push(new SearchBehavior());
     SMACS::instance()->push(new DropBehavior());
 
