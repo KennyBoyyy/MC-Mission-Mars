@@ -7,6 +7,7 @@ bool DropBehavior::tick(){
             x = OdometryHandler::instance()->getX();
             y = OdometryHandler::instance()->getY();
             stage = DRIVE_TO_CENTER;
+            break;
         }
         case DRIVE_TO_CENTER:
         {
@@ -14,6 +15,8 @@ bool DropBehavior::tick(){
             //get current location
             double currX= OdometryHandler::instance()->getX();
             double currY = OdometryHandler::instance()->getY();
+
+            cout<<"CENTERDRIVE: "<<hypot(x - currX, y - currY)<<endl;
 
             //While disnace driven is less than 0.5 of a meter
             if(hypot(x - currX, y - currY) < 0.5){
@@ -36,7 +39,7 @@ bool DropBehavior::tick(){
             x = OdometryHandler::instance()->getX();
             y = OdometryHandler::instance()->getY();
 
-
+            break;
         }
         case DRIVE_BACK:
         {
@@ -55,6 +58,8 @@ bool DropBehavior::tick(){
                  SonarHandler::instance()->setEnable(true);
                  return true;
             }
+
+            break;
         }
     }
 }

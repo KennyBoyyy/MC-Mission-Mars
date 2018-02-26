@@ -13,7 +13,7 @@ class DropBehavior : public Behavior{
         DRIVE_BACK
     };
 
-    Stages stage = INIT;
+    Stages stage;
 
     //The initial x and y from whch we drive
     double x = 0;
@@ -22,7 +22,7 @@ class DropBehavior : public Behavior{
     int slowDrive = 60;
 
     public:
-        DropBehavior() : Behavior(DROP_BEHAVIOR_TYPE){}
+        DropBehavior() : Behavior(DROP_BEHAVIOR_TYPE){stage = INIT;}
         bool tick();
 };
 
