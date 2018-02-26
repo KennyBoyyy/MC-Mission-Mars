@@ -7,6 +7,7 @@ bool DropBehavior::tick(){
             x = OdometryHandler::instance()->getX();
             y = OdometryHandler::instance()->getY();
             stage = DRIVE_TO_CENTER;
+            SonarHandler::instance()->setEnable(false);
             break;
         }
         case DRIVE_TO_CENTER:

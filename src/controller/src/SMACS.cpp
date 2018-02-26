@@ -20,7 +20,7 @@ void SMACS::pushWithMutex(Behavior* b){
 
     //lock the stack from being used while we are doing something with it
     std::lock_guard<std::mutex> guard(stackMutex);
-    cout << "STACK: " << "Stack locked"<< endl;
+    //cout << "STACK: " << "Stack locked"<< endl;
 
     //if stack is not empty, check if behavior is stackable
     if(!behaviorStack.empty()){
@@ -41,7 +41,7 @@ void SMACS::pushWithMutex(Behavior* b){
     behaviorStack.push(b);
     cout << "STACK: " << "Pushed to stack"<< endl;
 
-    cout << "STACK: " << "Stack unlocked"<< endl;
+    //cout << "STACK: " << "Stack unlocked"<< endl;
 }
 
 
@@ -58,10 +58,10 @@ void SMACS::push(Behavior* b){
     //if stack is not empty, check if behavior is stackable
     if(!behaviorStack.empty()){
         Behavior *top = behaviorStack.top();
-        cout << "STACK: " << "Got top"<< endl;
+        //cout << "STACK: " << "Got top"<< endl;
         if(b->getType() == top->getType()){
             if(!b->isStackable()){
-                cout << "STACK: " << "Behavior is not stackable. Was not pushed to stack"<< endl;
+                //cout << "STACK: " << "Behavior is not stackable. Was not pushed to stack"<< endl;
                 return;
             }
         }
@@ -74,7 +74,7 @@ void SMACS::push(Behavior* b){
     behaviorStack.push(b);
     cout << "STACK: " << "Pushed to stack"<< endl;
 
-    cout << "STACK: " << "Stack unlocked"<< endl;
+    //cout << "STACK: " << "Stack unlocked"<< endl;
 }
 
 void SMACS::pop(){
@@ -85,7 +85,7 @@ void SMACS::pop(){
 
     //lock stack
     std::lock_guard<std::mutex> guard(stackMutex);
-    cout << "STACK: " << "Stack locked"<< endl;
+    //cout << "STACK: " << "Stack locked"<< endl;
 
     DriveController::instance()->stop();
     cout << "STACK: " << "Popped from stack"<< endl;
@@ -93,7 +93,7 @@ void SMACS::pop(){
     //pop element
     behaviorStack.pop();
 
-    cout << "STACK: " << "Stack unlocked"<< endl;
+    //cout << "STACK: " << "Stack unlocked"<< endl;
 }
 
 void SMACS::pushNext(Behavior *b){
@@ -101,7 +101,7 @@ void SMACS::pushNext(Behavior *b){
         cout << "STACK: " << "NULL pointer passed to stack"<< endl;
         return;
     }
-    cout << "STACK: " << "Stack not locked for push next"<< endl;
+   // cout << "STACK: " << "Stack not locked for push next"<< endl;
 
     // if stack is not empty, then save top element and pop it to get to the next element
     if(!behaviorStack.empty()){
@@ -139,16 +139,16 @@ bool SMACS::tick(){
 
     // If stack is not empty
     if(!behaviorStack.empty()){
-	    cout << "STACK: " << "Stack locked for tick"<< endl;
+        cout << "STACK: " << "Ticking behvior: "<< behaviorStack.top()->getCurrentBehavior()<< endl;
         if(behaviorStack.top()->tick()){
             DriveController::instance()->stop();
             cout << "STACK: " << "Popped from stack"<< endl;
             //pop element
             behaviorStack.pop();
-            cout << "STACK: " << "Stack popped from tick"<< endl;
+            //cout << "STACK: " << "Stack popped from tick"<< endl;
             return true;
         }
-        cout << "STACK: " << "Stack unlocked for tick"<< endl;
+        //cout << "STACK: " << "Stack unlocked for tick"<< endl;
     }
     return false;
 }

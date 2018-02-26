@@ -183,8 +183,10 @@ void tick(const ros::TimerEvent&) {
         	// Stop robot
             DriveController::instance()->stop();
             stopped = true;
-            ClawController::instance()->fingerClose();
-            ClawController::instance()->wristUp();
+            if(!TargetHandler::instance()->getHasCube()){
+                ClawController::instance()->fingerClose();
+                ClawController::instance()->wristUp();
+            }
         }
     }
 }
