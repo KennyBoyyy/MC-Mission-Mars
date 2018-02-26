@@ -13,7 +13,7 @@ class DropBehavior : public Behavior{
         DRIVE_BACK
     };
 
-    Stages stage = DRIVE_TO_CENTER;
+    Stages stage = INIT;
 
     //The initial x and y from whch we drive
     double x = 0;

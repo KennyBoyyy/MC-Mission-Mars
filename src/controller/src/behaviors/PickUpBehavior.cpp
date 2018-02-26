@@ -218,12 +218,12 @@ bool PickUpBehavior::tick(){
             ClawController::instance()->wristUp();
 
 
-            if(!wait(1)){
+            if(!wait(2)){
                 // check if picked up
                 float sonarCenter = SonarHandler::instance()->getSonarCenter();
                 cout << "PICKUP: Center sonar: " <<sonarCenter<< endl;
 
-                if(sonarCenter < 0.12){
+                if(sonarCenter < 0.14){
                     //TODO: maybe add a camera block seen chack by checking how far is the picked up block from camera
                     //target was picked up
                     ClawController::instance()->wristDownWithCube();
