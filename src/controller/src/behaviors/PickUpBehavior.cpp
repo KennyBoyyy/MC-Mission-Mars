@@ -266,6 +266,7 @@ bool PickUpBehavior::tick(){
                             blockDistanceFromCamera = hypot(hypot(tags[target].getPositionX(), tags[target].getPositionY()), tags[target].getPositionZ());
                         }
                     }
+                    cout << "CUBECAMPICKUP: distance" << blockDistanceFromCamera << endl;
                     // make a camera check
                     if (blockDistanceFromCamera < 0.14){
                         ClawController::instance()->wristDownWithCube();
