@@ -222,7 +222,7 @@ void TargetHandler::handle(const apriltags_ros::AprilTagDetectionArray::ConstPtr
             SMACS::instance()->pushWithMutex(new DropBehavior);
         }
         // if handler is on and we see a center tag
-        else if(isHandlerOn && cubeTagsList.size() > 0){
+        else if(isHandlerOn && cubeTagsList.size() > 0 && centerTagsList.size() == 0){
             // Push PickUpBehavior on stack
             SMACS::instance()->pushWithMutex(new PickUpBehavior);
 
