@@ -21,7 +21,7 @@ class AvoidBehavior : public Behavior{
 
     float emergencyTurnStop = 0.3;
     float emergencyStop = 0.4;
-    float clearDistance = 1; // 1 meter means clear
+    float clearDistance = 0.7; // 1 meter means clear
 
     float directionToDrive = 0;
 
@@ -35,7 +35,7 @@ class AvoidBehavior : public Behavior{
 
     public:
         AvoidBehavior() : Behavior(AVOID_BEHAVIOR_TYPE){
-            waitTime = 3;
+            waitTime = 1;
             stage = WAIT;
         }
         bool tick();
