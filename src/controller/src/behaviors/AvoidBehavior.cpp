@@ -73,7 +73,7 @@ bool AvoidBehavior::tick(){
 
                     //if we are not in the emergency stop point
                     //and if obstacle on center is less than meter away
-                    if(right < minColisionDistanse || center <= clearDistance || left <= emergencyStop){
+                    if(right <= minColisionDistanse|| center <= clearDistance || left <= minColisionDistanse+0.05){
                         DriveController::instance()->turnRight(minTurnRight + 20);
                     }else{
                         //else center is 1 meter clear. we can drive forward
@@ -103,8 +103,8 @@ bool AvoidBehavior::tick(){
 
                     //if we are not in the emergency stop point
                     //and if obstacle on center is less than meter away
-                    if(right <= emergencyStop || center <= clearDistance || left < minColisionDistanse){
-                        DriveController::instance()->turnLeft(minTurnleft + 10);
+                    if(right <= minColisionDistanse+0.05 || center <= clearDistance || left <= minColisionDistanse){
+                        DriveController::instance()->turnLeft(minTurnleft + 20);
                     }else{
                         //else center is 1 meter clear. we can drive forward
                         DriveController::instance()->stop();
@@ -152,19 +152,18 @@ bool AvoidBehavior::tick(){
         }
         case DRIVE:
         {
-            cout<<"AVOID: Drinving 0.5 meter"<<endl;
-            // Check if we can drive forward
-            if(left <= minColisionDistanse || right <= minColisionDistanse || center <= minColisionDistanse){
-                DriveController::instance()->stop();
-                stage = TURN;
-                break;
-            }
-
             // Drive forvard and if finished return true
             if(DriveController::instance()->goToDistance(0.5, directionToDrive)){
                 DriveController::instance()->stop();
                 return true;
             } else {
+                cout<<"AVOID: Drinving 0.5 meter "<<minColisionDistanse<<" "<<left<<endl;
+                // Check if we can drive forward
+                if(left < minColisionDistanse || right < minColisionDistanse || center < minColisionDistanse){
+                    DriveController::instance()->stop();
+                    stage = TURN;
+                    break;
+                }
                 return false;
             }
 
