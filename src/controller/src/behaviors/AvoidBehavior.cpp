@@ -10,6 +10,7 @@ bool AvoidBehavior::tick(){
     switch (stage) {
         case WAIT:
         {
+            cout<<"AVOID: waiting"<<endl;
             //if we haven't started counting the time, start
             if(!isTimeInit){
                 time(&initTime);
@@ -20,14 +21,7 @@ bool AvoidBehavior::tick(){
 
                 //If enough time passed
                 if(secSince >= waitTime){
-                    //Check if we are still blocked
-                    float left = SonarHandler::instance()->getSonarLeft();
-                    float right = SonarHandler::instance()->getSonarRight();
-                    float center = SonarHandler::instance()->getSonarCenter();
-
-                    float minDistance = SonarHandler::instance()->getMinDistance();
-
-                    //Id path is clear, return true to signal the completion of avoid behavior
+                    //If path is clear, return true to signal the completion of avoid behavior
                     if(center>minDistance && left>minDistance && right>minDistance){
                         return true;
                     } else {
@@ -41,7 +35,7 @@ bool AvoidBehavior::tick(){
         }
         case TURN:
         {
-
+            cout<<"AVOID: Turning"<<endl;
             if(!turnLock){
                 if(left < right){
                     isLeftTurn = false;
@@ -71,6 +65,7 @@ bool AvoidBehavior::tick(){
                 //See what direction is better to turn to
                 //if left is blocked more than right
                 if(!isLeftTurn){
+                    cout<<"AVOID: Trying right"<<endl;
                     //turn right until center and right are clear
 
                     //if right is blocked but it is not too bad keep turning
@@ -99,6 +94,7 @@ bool AvoidBehavior::tick(){
 
 
                 } else {
+                    cout<<"AVOID: Trying left"<<endl;
                     // else left is more clear so have to turn left
                     //turn left until center and left are clear
 
@@ -128,6 +124,7 @@ bool AvoidBehavior::tick(){
                 }
 
             } else {
+                cout<<"AVOID: Driving back. cant turn"<<endl;
                 //if we haven't started counting the time, start
                 if(!isTimeInit){
                     time(&initTime);
@@ -151,12 +148,11 @@ bool AvoidBehavior::tick(){
                 break;
             }
 
-
-
             break;
         }
         case DRIVE:
         {
+            cout<<"AVOID: Drinving 0.5 meter"<<endl;
             // Check if we can drive forward
             if(left <= minColisionDistanse || right <= minColisionDistanse || center <= minColisionDistanse){
                 DriveController::instance()->stop();
@@ -165,7 +161,7 @@ bool AvoidBehavior::tick(){
             }
 
             // Drive forvard and if finished return true
-            if(DriveController::instance()->goToDistance(0.3, directionToDrive)){
+            if(DriveController::instance()->goToDistance(0.5, directionToDrive)){
                 DriveController::instance()->stop();
                 return true;
             } else {
