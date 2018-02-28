@@ -165,7 +165,7 @@ bool AvoidBehavior::tick(){
             }
 
             // Drive forvard and if finished return true
-            if(DriveController::instance()->goToDistance(1, directionToDrive)){
+            if(DriveController::instance()->goToDistance(0.3, directionToDrive)){
                 DriveController::instance()->stop();
                 return true;
             } else {

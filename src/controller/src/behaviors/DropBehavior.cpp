@@ -1,76 +1,67 @@
 #include "DropBehavior.h"
 
 bool DropBehavior::tick(){
-
     switch(stage){
-        case ODOM_TARGET:
+        case INIT:
         {
-            TargetHandler::instance()->setEnabled(false);
-            SMACS::instance()->push(new CenterDriveBehavior(0, 0));
-            stage = GPS_TARGET;
-            break;
-        }
-        case SEARCH_FOR_CENTER:
-        {
-            // Check if there is a center that we can see
-            if(TargetHandler::instance()->getNumberOfCenterTagsSeen() > 0){
-                stage = DROP;
-            } else {
-                //If we do not see any tags yet. Try to drive around
-                //If this is our first search try
-                if(searchTry == 0){
-                    // Drive one meter forward
-                    if(DriveController::instance()->goToDistance(1, OdometryHandler::instance()->getTheta())){
-                        searchTry++;
-                    }
-                } else if(searchTry == 1){
-                    // If second try, figure out what to do.
-                    stage = GPS_TARGET;
-                }
-            }
-        }
-        case GPS_TARGET:
-        {
-            // If we see center
-            if(TargetHandler::instance()->getNumberOfCenterTagsSeen() > 0){
-                SonarHandler::instance()->setEnable(false);
-                stage = ASK;
-            } else {
-                // Set GPS target dive
-            }
-            stage = SEARCH;
-            break;
-        }
-        case SEARCH:
-        {
-            stage = ASK;
-            break;
-        }
-        case ASK:
-        {
+            x = OdometryHandler::instance()->getX();
+            y = OdometryHandler::instance()->getY();
+            stage = DRIVE_TO_CENTER;
             SonarHandler::instance()->setEnable(false);
-            stage = DROP;
             break;
         }
-        case DROP:
+        case DRIVE_TO_CENTER:
         {
-            // drive to center
+            //Drive forward for a meter
+            //get current location
+            double currX= OdometryHandler::instance()->getX();
+            double currY = OdometryHandler::instance()->getY();
 
-            // Open fingers
-            ClawController::instance()->fingerOpen();
+            cout<<"CENTERDRIVE: "<<hypot(x - currX, y - currY)<<endl;
 
-            //Drive back
-            DriveController::instance()->sendDriveCommand(-50, -50);
-            sleep(1);
-            //Wrist up
-            ClawController::instance()->wristUp();
+            //While disnace driven is less than 0.5 of a meter
+            if(hypot(x - currX, y - currY) < 0.5){
+                // Drive forwards
+                DriveController::instance()->sendDriveCommand(slowDrive, slowDrive);
+            } else {
+                 DriveController::instance()->stop();
+                 stage = DROP_CUBE;
+            }
 
-            SonarHandler::instance()->setEnable(true);
-            TargetHandler::instance()->setEnabled(true);
-
-            return true;
+            break;
         }
+        case DROP_CUBE:
+        {
+            // Drop the cube
+            ClawController::instance()->fingerOpen();
+            ClawController::instance()->wristUp();
+            stage = DRIVE_BACK;
 
+            x = OdometryHandler::instance()->getX();
+            y = OdometryHandler::instance()->getY();
+
+            break;
+        }
+        case DRIVE_BACK:
+        {
+            //Drive back a meter
+            double currX= OdometryHandler::instance()->getX();
+            double currY = OdometryHandler::instance()->getY();
+
+            //While disnace driven is less than a meter
+            if(fabs(hypot(x - currX, y - currY)) < 1){
+                // Drive back
+                DriveController::instance()->sendDriveCommand(-slowDrive, -slowDrive);
+            } else {
+                 TargetHandler::instance()->setHasCube(false);
+                 DriveController::instance()->stop();
+                 TargetHandler::instance()->setEnabled(true);
+                 SonarHandler::instance()->setEnable(true);
+                 return true;
+            }
+
+            break;
+        }
     }
 
     return false;

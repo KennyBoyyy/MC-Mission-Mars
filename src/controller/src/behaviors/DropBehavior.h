@@ -2,45 +2,28 @@
 #define DROP_BEHAVIOR_H
 
 #include "BehaviorInterface.h"
-
-#include "../controllers/DriveController.h"
-#include "../controllers/ClawController.h"
 #include "../handlers/Handlers.h"
-#include "DriveBehavior.h"
-#include "../SMACS.h"
+
 
 class DropBehavior : public Behavior{
     enum Stages{
-        ODOM_TARGET = 0,
-        SEARCH_FOR_CENTER,
-        GPS_TARGET,
-        SEARCH,
-        ASK,
-        DROP
+        INIT = 0,
+        DRIVE_TO_CENTER,
+        DROP_CUBE,
+        DRIVE_BACK
     };
 
-   Stages stage = ODOM_TARGET;
-   int searchTry = 0;
+    Stages stage;
+
+    //The initial x and y from whch we drive
+    double x = 0;
+    double y = 0;
+
+    int slowDrive = 60;
 
     public:
-        DropBehavior() : Behavior(DROP_BEHAVIOR_TYPE){
-
-        }
-
+        DropBehavior() : Behavior(DROP_BEHAVIOR_TYPE){stage = INIT;}
         bool tick();
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #endif

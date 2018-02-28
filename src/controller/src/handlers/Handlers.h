@@ -19,6 +19,7 @@
 #include "../SMACS.h"
 #include "../behaviors/AvoidBehavior.h"
 #include "../behaviors/PickUpBehavior.h"
+#include "../behaviors/DropBehavior.h"
 
 #include <mutex>
 
@@ -121,6 +122,8 @@ class TargetHandler{
 
     TargetHandler();
 
+
+    bool hasCube = false;
     bool isHandlerOn = true;
 
     float lastSeenBlockErrorYaw = 0;
@@ -140,6 +143,14 @@ public:
     // set if camera handler is enabled
     void setEnabled(bool isHandlerOn){
         this->isHandlerOn = isHandlerOn;
+    }
+
+    void setHasCube(bool hasCube){
+        this->hasCube=hasCube;
+    }
+
+    bool getHasCube(){
+        return hasCube;
     }
 
 };

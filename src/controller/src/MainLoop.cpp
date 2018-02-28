@@ -143,6 +143,7 @@ int main(int argc, char **argv) {
     // Put the first behavior on stack
 
     SMACS::instance()->push(new SearchBehavior());
+    //SMACS::instance()->push(new DropBehavior());
 
     // Disable the sonar because the robot is not doing anything yet
     SonarHandler::instance()-> setEnable(false);
@@ -182,8 +183,10 @@ void tick(const ros::TimerEvent&) {
         	// Stop robot
             DriveController::instance()->stop();
             stopped = true;
-            ClawController::instance()->fingerClose();
-            ClawController::instance()->wristUp();
+            if(!TargetHandler::instance()->getHasCube()){
+                ClawController::instance()->fingerClose();
+                ClawController::instance()->wristUp();
+            }
         }
     }
 }
