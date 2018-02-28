@@ -6,7 +6,7 @@ bool AvoidBehavior::tick(){
     float left = SonarHandler::instance()->getSonarLeft();
     float center = SonarHandler::instance()->getSonarCenter();
     float right = SonarHandler::instance()->getSonarRight();
-
+    float minDistance = minColisionDistanse;
     switch (stage) {
         case WAIT:
         {
