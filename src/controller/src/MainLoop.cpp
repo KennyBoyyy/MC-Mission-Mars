@@ -149,7 +149,7 @@ int main(int argc, char **argv) {
     SonarHandler::instance()-> setEnable(false);
 
     // Close fingers
-    ClawController::instance()->fingerClose();
+    ClawController::instance()->fingerOpen();
     // Put wist up
     ClawController::instance()->wristUp();
 
@@ -184,7 +184,7 @@ void tick(const ros::TimerEvent&) {
             DriveController::instance()->stop();
             stopped = true;
             if(!TargetHandler::instance()->getHasCube()){
-                ClawController::instance()->fingerClose();
+                ClawController::instance()->fingerOpen();
                 ClawController::instance()->wristUp();
             }
         }

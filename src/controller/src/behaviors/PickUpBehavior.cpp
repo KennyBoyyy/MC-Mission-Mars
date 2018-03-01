@@ -71,7 +71,7 @@ bool PickUpBehavior::tick(){
             } else {
                 DriveController::instance()->stop();
                 SonarHandler::instance()->setEnable(true);
-                ClawController::instance()->fingerClose();
+                ClawController::instance()->fingerOpen();
                 ClawController::instance()->wristUp();
                 return true;
             }
@@ -300,7 +300,7 @@ bool PickUpBehavior::tick(){
                 int numberOftags = TargetHandler::instance()->getNumberOfCenterTagsSeen();
                 if(numberOftags > 0){
                     ClawController::instance()->wristUp();
-                    ClawController::instance()->fingerClose();
+                    ClawController::instance()->fingerOpen();
                     precisionDrive = false;
                     currentStage = LOCK_TARGET;
                     DriveController::instance()->stop();
@@ -318,7 +318,7 @@ bool PickUpBehavior::tick(){
                     }
 
                     ClawController::instance()->wristUp();
-                    ClawController::instance()->fingerClose();
+                    ClawController::instance()->fingerOpen();
                     precisionDrive = false;
                     currentStage = LOCK_TARGET;
                     DriveController::instance()->stop();
